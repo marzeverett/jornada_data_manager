@@ -17,6 +17,9 @@
 
 #Pickle help here: https://www.pythonlikeyoumeanit.com/Module5_OddsAndEnds/WorkingWithFiles.html 
 
+#Use this info for per-feature error: https://neptune.ai/blog/keras-loss-functions
+
+
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']  = '3'
 #
@@ -34,24 +37,16 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.9
 gpu_devices = tf.config.experimental.list_physical_devices("GPU")
 for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
-# (train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
-# train_images, test_images = train_images / 255.0, test_images / 255.0
-# class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer','dog', 'frog', 'horse', 'ship', 'truck']
-# model = models.Sequential()
-# model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
-# model.add(layers.MaxPooling2D((2, 2)))
-# model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-# model.add(layers.MaxPooling2D((2, 2)))
-# model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-# model.add(layers.Flatten())
-# model.add(layers.Dense(64, activation='relu'))
-# model.add(layers.Dense(10))
-# model.compile(optimizer='adam',loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),metrics=['accuracy'])
-# history = model.fit(train_images, train_labels,batch_size= 64, epochs=10,validation_data=(test_images, test_labels))
-# test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
-
 
 #NOTES - You need to better define your saving/loading naming schema for a particular dataset. 
+
+#true first, then pred. 
+loss_dict = {
+    "mape": tf.keras.losses.MeanAbsolutePercentageError(),
+    "mse": tf.keras.losses.MeanSquaredError(),
+    "mae": tf.keras.losses.MeanAbsoluteError(),
+}
+
 
 experiment_1 = {
     "model":{
@@ -74,14 +69,16 @@ experiment_1 = {
         #"loss_function": "mean_square_error",
         "optimizer": "adam",
         "batch_size": 32,
-        "epochs": 4,
+        "epochs": 2,
         "test_split": 0.1,
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]
-        "metrics": ["mae", "mape", "mse"]
+        "metrics": ["mse", "mape", "mae"]
 
-    }
+    },
+    "experiment_folder_path": "/home/marz/Documents/ai_research/jornada/experiments/",
+    "experiment_name": "test_experiment_1"
 }
 
 
@@ -151,8 +148,6 @@ def return_base_model(model_type):
     if model_type == "Sequential":
         model = models.Sequential()
         return model 
-
-
 
 def add_input_layer(model, prepared_dataset, experiment_object):
     x = prepared_dataset["x"]
@@ -279,7 +274,6 @@ def fit_model(model, prepared_dataset, experiment_object):
 
 
 def evaluate_model(model, prepared_dataset, experiment_object):
-    pass
     if "x_test" in list(prepared_dataset.keys()):
         x_vect = prepared_dataset["x_test"]
         y_vect = prepared_dataset["y_test"]
@@ -288,8 +282,13 @@ def evaluate_model(model, prepared_dataset, experiment_object):
         y_vect = prepared_dataset["y"]
 
     final_metrics = model.evaluate(x=x_vect, y=y_vect)
+    metrics_dict = {}
+    #Dictionary workaround from here: https://github.com/keras-team/keras/issues/14045
+    final_metrics = {name: final_metrics[val] for val, name in enumerate(model.metrics_names)}
     print("Final metrics", final_metrics)
     return final_metrics
+
+
     # Model.evaluate(
     #     x=None,
     #     y=None,
@@ -305,21 +304,12 @@ def evaluate_model(model, prepared_dataset, experiment_object):
     #     **kwargs
     # )
 
-def predict_values(model, prepared_dataset, experiment_object, x_key=None, prediction_key=None):
+def predict_values(model, prepared_dataset):
+    predictions = {} 
     values_to_predict = ["x", "x_train", "x_test"]
-    suffix = "_predictions"
-
-    if x_key == None:
-        x_vals = prepared_dataset["x"]
-    else:
-        x_vals = prepared_dataset[x_key]
-    predictions = model.predict(x_vals)
-    if prediction_key == None:
-        prediction_label = "predictions"
-    else:
-        prediction_label = prediction_key
-    prepared_dataset[prediction_label] = predictions
-    return prepared_dataset
+    for item in values_to_predict:
+        predictions[item] = model.predict(prepared_dataset[item])
+    return predictions 
     # Model.predict(
     #     x,
     #     batch_size=None,
@@ -373,23 +363,78 @@ def graph_predictions(prepared_dataset, pred_key=None, y_key=None):
 # plt.show()
 
 
+def eval_feature(true_column, pred_column, loss):
+    loss_function = loss_dict[loss]
+    value = loss_function(true_column, pred_column).numpy()
+    return value
+
+def get_all_per_feature_evals(predictions, prepared_dataset, experiment_object):
+    per_feature = {}
+    x_test = predictions["x_test"]
+    y_test = prepared_dataset["y_test"]
+    metrics = experiment_object["model"]["metrics"]
+    for metric in metrics:
+        feature_list = []
+        for i in range(0, len(x_test[0])):
+            val = eval_feature(y_test[i], x_test[i], metric)
+            feature_list.append(val)
+        per_feature[metric] = feature_list
+    return per_feature
+
+
+#Create the experiment result object. 
+def create_experiment_result_object(history, model, prepared_dataset, experiment_object):
+    experiment_result = {} 
+    
+    #Get the entire model history
+    experiment_result["model_history"] = history.history
+    
+    #Get the test evaluation metrics 
+    test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
+    experiment_result["test_metrics"] = test_metrics
+    
+    #Predict on all x's, also test and train x's. 
+    experiment_result["predictions"] = predict_values(model, prepared_dataset)
+    
+    #Get the per-feature metrics on test set.
+    experiment_result["per_feature"] = get_all_per_feature_evals(experiment_result["predictions"], prepared_dataset, experiment_object)
+  
+    #Write the model save path 
+    experiment_result["model_save_path"] = experiment_object["experiment_folder_path"]
+
+
+    #ax.plot(prepared_dataset[y_index], prepared_dataset[pred_index][:, 0])
+
+    return experiment_result
+
+
+
 def experiment_from_experiment_object(experiment_object):
     #Test for now 
-    prepared_dataset = dg.return_test_dataset()
+    prepared_dataset, dataset_descriptor = dg.return_test_dataset()
     prepared_dataset = split_training_test(prepared_dataset, experiment_object)
     #Change is here - uncomment 
     model = build_model(prepared_dataset, experiment_object)
     print(model.summary())
     history = fit_model(model, prepared_dataset, experiment_object)
-    test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
-    prepared_dataset = predict_values(model, prepared_dataset, experiment_object)
+    experiment_result = create_experiment_result_object(history, model, prepared_dataset, experiment_object)
+    #print(experiment_result)
+    #test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
+    #prepared_dataset = predict_values(model, prepared_dataset, experiment_object)
     #Graph
-    graph_predictions(prepared_dataset, pred_key=None, y_key=None)
-    return history, test_metrics
+    #graph_predictions(prepared_dataset, pred_key=None, y_key=None)
 
-history, test_metrics = experiment_from_experiment_object(experiment_1)
-print(history.history)
-print(test_metrics)
+    #Save the dataset descriptor, dataset result, experiment descriptor, and experiment
+    #result in the experiment folder under the appropriate name. 
+
+    #return history, test_metrics
+
+
+experiment_from_experiment_object(experiment_1)
+
+# history, test_metrics = experiment_from_experiment_object(experiment_1)
+# print(history.history)
+# print(test_metrics)
 
 # x = prepared_dataset["x"]
 # y = prepared_dataset["y"]
@@ -443,9 +488,29 @@ print(test_metrics)
 
 #https://www.tensorflow.org/api_docs/python/tf/keras/metrics
 
-#TODO: Output Sequence:
-#Look into: https://www.kaggle.com/code/kmkarakaya/lstm-output-types-return-sequences-state 
 
-#TODO: 
-#Split training and test set 
+# def predict_values(model, prepared_dataset, experiment_object, x_key=None, prediction_key=None):
+#     values_to_predict = ["x", "x_train", "x_test"]
+#     suffix = "_predictions"
 
+#     if x_key == None:
+#         x_vals = prepared_dataset["x"]
+#     else:
+#         x_vals = prepared_dataset[x_key]
+#     predictions = model.predict(x_vals)
+#     if prediction_key == None:
+#         prediction_label = "predictions"
+#     else:
+#         prediction_label = prediction_key
+#     prepared_dataset[prediction_label] = predictions
+#     return prepared_dataset
+#     # Model.predict(
+#     #     x,
+#     #     batch_size=None,
+#     #     verbose="auto",
+#     #     steps=None,
+#     #     callbacks=None,
+#     #     max_queue_size=10,
+#     #     workers=1,
+#     #     use_multiprocessing=False,
+#     # )

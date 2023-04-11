@@ -4,7 +4,10 @@ import numpy as np
 from datetime import datetime, timedelta
 import os
 import json 
+import pickle 
 
+
+#Pickle help here: https://ianlondon.github.io/blog/pickling-basics/ 
 #Help from: https://www.statology.org/pandas-keep-columns/
 #From here: https://www.geeksforgeeks.org/how-to-create-an-empty-dataframe-and-append-rows-columns-to-it-in-pandas/
 #From here: https://pandas.pydata.org/docs/user_guide/merging.html 
@@ -123,45 +126,39 @@ def return_filepath(dataset_object, file_kind):
         send_path = full_path+"_dataset_object.json"
     return send_path 
 
-def load_in_file(dataset_object, file_kind):
-    filepath = return_filepath(dataset_object, file_kind)
-    if file_kind == "x" or file_kind == "y" or file_kind == "x_key" or file_kind == "y_key": 
-        loaded_file = np.load(filepath)
-        return loaded_file
-    elif file_kind == "dataset_object":
-        f = open(filepath)
-        loaded_file = json.load(f)
-        f.close()
-        return loaded_file
-    return {}
-
-
-def save_dataset(x, y, x_key, y_key, dataset_object):
-    model_index = dataset_object["model_index"]
+#Returns folder_path,  dataset descriptor filepath and dataset result filepath. 
+def get_data_filepaths(dataset_object):
     dataset_name = dataset_object["dataset_name"]
     sub_path = dataset_object["dataset_folder_path"]
-    full_path = sub_path+str(model_index)
+    full_path = sub_path+ "/" + str(dataset_name)+"/"
+    dataset_result_path = full_path+ "dataset_result.pickle"
+    dataset_descriptor_path = full_path+ "dataset_descriptor.pickle"
+    return full_path, dataset_result_path, dataset_descriptor_path
+
+def load_in_data(dataset_object):
+    full_path, dataset_result_path, dataset_descriptor_path = get_data_filepaths(dataset_object)
+    with open(dataset_result_path, "rb") as f:
+        dataset_result = pickle.load(f)
+    with open(dataset_descriptor_path, "rb") as f:
+        dataset_object = pickle.load(f)
+    return dataset_result, dataset_object
+
+def save_dataset(x, y, x_key, y_key, dataset_object):
+    full_path, dataset_result_path, dataset_descriptor_path = get_data_filepaths(dataset_object)
     os.makedirs(full_path, exist_ok=True)
-    x_path = full_path+"/"+dataset_name+"_x.npy"
-    y_path = full_path+"/"+dataset_name+"_y.npy"
-    x_key_path = full_path+"/"+dataset_name+"_x_key.npy"
-    y_key_path = full_path+"/"+dataset_name+"_y_key.npy"
-    d_obj_path = full_path+"/"+dataset_name+"_dataset_object.json"
-    np.save(x_path, x)
-    np.save(y_path, y)
-    np.save(x_key_path, x_key)
-    np.save(y_key_path, y_key)
-    dataset_descriptor = json.dumps(dataset_object)
-    with open(d_obj_path, "w") as f:
-        f.write(dataset_descriptor)
-     
+    #Make the dataset result object. 
+    dataset_result = {
+        "x": x,
+        "y": y,
+        "x_key": x_key,
+        "y_key": y_key,
+    }
+    #Save to pickle files.
+    with open(dataset_result_path, "wb") as f:
+        pickle.dump(dataset_result, f)
+    with open(dataset_descriptor_path, "wb") as f:
+        pickle.dump(dataset_object, f)
 
-    # os.makedirs('folder/subfolder', exist_ok=True)  
-    # df.to_csv('folder/subfolder/out.csv')  
-
-
-# with open("sample.json", "w") as outfile:
-#     outfile.write(json_object)
 
 def get_input_output_fields(dataset_object, field_object_index):
     i_fields = dataset_object[field_object_index]
@@ -196,7 +193,7 @@ def handle_categorical(df, dataset_object):
             df[field] = df[field].cat.codes
             dataset_object["cat_codes"][field] = field_categories
     except Exception as e:
-        print("Could code categorical variables: ", e)
+        print("Could not code categorical variables: ", e)
     return df  
 
 #Normalize data 
@@ -379,25 +376,13 @@ def create_dataset_from_dataset_object(dataset_object):
 
 #create_dataset_from_dataset_object(dataset_1)
 
+#dataset_result, dataset_descriptor = load_in_data(dataset_1)
+#print(dataset_result, dataset_descriptor)
 
-def load_in_prepared_dataset_from_dataset_object(dataset_object):
-    prepared_dataset = {}
-    prepared_dataset_keys = ["x", "y", "x_key", "y_key", "dataset_object"]
-    for item in prepared_dataset_keys:
-        prepared_dataset[item] = load_in_file(dataset_object, item)
-    return prepared_dataset
-
-#prepared_dataset = load_in_prepared_dataset_from_dataset_object(dataset_1)
-#print(prepared_dataset)
 
 def return_test_dataset():
-    #x, y, x_key, y_key, dataset_object = create_dataset_from_dataset_object(dataset_1)
-    #return x, y, x_key, y_key, dataset_object
-    prepared_dataset = {}
-    prepared_dataset_keys = ["x", "y", "x_key", "y_key", "dataset_object"]
-    for item in prepared_dataset_keys:
-        prepared_dataset[item] = load_in_file(dataset_1, item)
-    return prepared_dataset
+    dataset_result, dataset_descriptor = load_in_data(dataset_1)
+    return dataset_result, dataset_descriptor
 
 
 
@@ -429,7 +414,39 @@ def return_test_dataset():
 
 
 
+# def save_dataset(x, y, x_key, y_key, dataset_object):
+#     dataset_name = dataset_object["dataset_name"]
+#     sub_path = dataset_object["dataset_folder_path"]
+#     full_path = sub_path+ "/" + str(dataset_name)
+#     os.makedirs(full_path, exist_ok=True)
+
+#     dataset_result_path = full_path+ "_dataset_result.pickle"
+#     dataset_descriptor_path = full_path+ "_dataset_descriptor.pickle"
+#     # x_path = full_path+"/"+dataset_name+"_x.npy"
+#     # y_path = full_path+"/"+dataset_name+"_y.npy"
+#     # x_key_path = full_path+"/"+dataset_name+"_x_key.npy"
+#     # y_key_path = full_path+"/"+dataset_name+"_y_key.npy"
+#     # d_obj_path = full_path+"/"+dataset_name+"_dataset_object.json"
+
+#     np.save(x_path, x)
+#     np.save(y_path, y)
+#     np.save(x_key_path, x_key)
+#     np.save(y_key_path, y_key)
+#     dataset_descriptor = json.dumps(dataset_object)
+#     with open(d_obj_path, "w") as f:
+#         f.write(dataset_descriptor)
 
 
 
 
+# def load_in_file(dataset_object, file_kind):
+#     filepath = return_filepath(dataset_object, file_kind)
+#     if file_kind == "x" or file_kind == "y" or file_kind == "x_key" or file_kind == "y_key": 
+#         loaded_file = np.load(filepath)
+#         return loaded_file
+#     elif file_kind == "dataset_object":
+#         f = open(filepath)
+#         loaded_file = json.load(f)
+#         f.close()
+#         return loaded_file
+#     return {}
