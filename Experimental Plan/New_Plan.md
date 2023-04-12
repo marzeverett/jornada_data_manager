@@ -37,11 +37,11 @@
 
 ## To Do 
 - [ ] Figure out what data streams go where
-- [ x ] Get rid of NaNs/Clean Data
+- [x] Get rid of NaNs/Clean Data
 - [ ] Auto script to spatially align data 
-- [ x ] Auto script to pull in and out data streams as needed 
+- [x] Auto script to pull in and out data streams as needed 
 - [ ] Research best LSTM and AE practices
-- [ ] Auto script for time refactoring
+- [x] Auto script for time refactoring
 - [ ] Auto script to run models 
 - [ ] Exactly how many models to run, figure out how to auto re-run 
 - [ ] Auto-save, auto-evaluate models 
@@ -53,7 +53,6 @@
 Lorem ipsum dolor sit... 
 
 ### Base Models (Network 1)
-
 Regression Models
     ALL sites predicts ALL weather for ALL sites
     ONE site predicts ALL weather for ONE site
@@ -61,12 +60,10 @@ Regression Models
     ALL sites BROKEN Weather for ALL sites
     One site BROKEN weather for ONE Site 
 
-
 Prediction Models 
     Gap-filled precipitation? 
     Vegetative Cover
     Animal Presence 
-
 
 ### Network 2
 
@@ -76,41 +73,6 @@ Prediction Models
 
 ### Spatial Models 
 
-### Experiment Schema 
-
-# dataset_1 = {
-#     "datasets": ["npp_c_cali", "npp_c_grav"],
-#     "input_fields": {
-#         "npp_c_cali": {
-#             "Air_TempC_Avg": "Air_TempC_Avg",
-#             "Air_TempC_Max": "Air_TempC_Max"
-#         },
-#         "npp_c_grav": {
-#             "Relative_Humidity_Avg": "Relative_Humidity_Avg",
-#             "Relative_Humidity_Max": "Relative_Humidity_Max"
-#         },
-#     },
-#     "output_fields": {
-#         "npp_c_cali": {
-#             "Air_TempC_Avg": "Air_TempC_Avg",
-#             "Air_TempC_Max": "Air_TempC_Max"
-#         },
-#         "npp_c_grav": {
-#             "Relative_Humidity_Avg": "Relative_Humidity_Avg",
-#             "Relative_Humidity_Max": "Relative_Humidity_Max",
-#         },
-#     },
-#     "input_slices_days": 200,
-#     "output_slices_days": 1,
-#     "output_offset_days": 1,
-#     "task_type": "regression",
-#     #"clean_method": "drop",
-#     "clean_method": "fill",
-#     "concat_key": "Date_datetime",
-#     "dataset_name": "test_dataset_1",
-#     "model_index": 0, #0-4? 
-#     "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
-# }
 
 ### Fields Object:
 A fields object can be 1 of 2 things:
@@ -219,6 +181,7 @@ The experiment result object has the following keys:
 "predictions" - a dict of predictions, indexed by "x", "x_train", and "x_test", corresponding to prediction vectors
 "per_feature" - a dict of the metrics per feature, indexed by the metric, which corresponds to a vector of the metric values per feature on the TEST set. For instance, "mse" might be followed by a list of the mse from predicted test values on [temp, humidity, etc]...
 
+
 ### File Names and Locations 
 The dataset will be located in its dataset descriptor path/dataset name, and will include the dataset_descriptor.pickle file and the dataset_results.pickle file
 
@@ -246,7 +209,6 @@ dataset_1 = {
     "model_index": 0, #0-4? 
     "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
 }
-
 ```
 
 Dataset Descriptor 2
@@ -322,12 +284,10 @@ experiment_1 = {
     "experiment_folder_path": "/home/marz/Documents/ai_research/jornada/experiments/",
     "experiment_name": "test_experiment_1"
 }
-
-
 ```
 
 TODO: 
-1. Document experiment descriptor [x] and experiment result object
+1. Document experiment descriptor [x] and experiment result object [x]
 2. Figure out how to un-normalize the data for the below suite 
 3. Create comprehensive visualization and analytics suite
 4. Nail out phase 1 experiments. 
@@ -341,33 +301,3 @@ Phase 2 Experiments - All Jornada data with AE
 Phase 3 Experiments - All Spatial Experiments 
 
 
-<!-- experiment_1 = {
-    "model":{
-        "model_type": "Sequential",
-        #Don't include input, code will figure it out. 
-        #Don't include output, code will figure it out. 
-        "layers": 
-            [
-                {
-                    "type": "LSTM",
-                    "num_nodes": 31
-                },
-                {
-                    "type": "Dropout",
-                    "percent": 0.2,
-                },
-            ],
-        "final_activation": "relu",
-        "loss": "mse",
-        #"loss_function": "mean_square_error",
-        "optimizer": "adam",
-        "batch_size": 32,
-        "epochs": 4,
-        "test_split": 0.1,
-        "validation_split": 0.2,
-        "use_multiprocessing": True,
-        #"metrics": ["mse"]
-        "metrics": ["mae", "mape", "mse"]
-
-    }
-} -->
