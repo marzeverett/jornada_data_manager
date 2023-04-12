@@ -19,7 +19,7 @@
 
 #Use this info for per-feature error: https://neptune.ai/blog/keras-loss-functions
 
-
+import pickle
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']  = '3'
 #
@@ -74,8 +74,7 @@ experiment_1 = {
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]
-        "metrics": ["mse", "mape", "mae"]
-
+        "metrics": ["mse", "mape", "mae"],
     },
     "experiment_folder_path": "/home/marz/Documents/ai_research/jornada/experiments/",
     "experiment_name": "test_experiment_1"
@@ -221,6 +220,32 @@ def compile_model(model, experiment_object):
     )
     return model 
 
+#Experiment folder path 
+def get_full_experiment_folder(experiment_object):
+    full_path = experiment_object["experiment_folder_path"] + experiment_object["experiment_name"] +"/"
+    return full_path
+
+#Return checkpoint filepath
+def return_checkpoint_filepath(experiment_object):
+    save_path = get_full_experiment_folder(experiment_object)+"tmp/checkpoint"
+    return save_path
+
+#The callbacks we will use 
+def build_callbacks(experiment_object):
+    save_path = return_checkpoint_filepath(experiment_object)
+    save_best = tf.keras.callbacks.ModelCheckpoint(
+        filepath=save_path,
+        save_weights_only=True,
+        monitor='val_loss',
+        mode="min",
+        save_best_only=True
+    )
+
+    early_stop = tf.keras.callbacks.EarlyStopping(
+        monitor="val_loss",
+        patience=10
+    )
+    return [save_best, early_stop]
 
 def fit_model(model, prepared_dataset, experiment_object):
     model_def = experiment_object["model"]
@@ -233,20 +258,17 @@ def fit_model(model, prepared_dataset, experiment_object):
     batch_size=None
     epochs=1
     verbose=True
-    callbacks=None
+    callbacks = build_callbacks(experiment_object)
     validation_split=0.0
     validation_data=None
     shuffle=True
     use_multiprocessing=False
-
     if "batch_size" in list(model_def.keys()):
         batch_size = model_def["batch_size"]
     if "epochs" in list(model_def.keys()):
         epochs = model_def["epochs"]
     if "verbose" in list(model_def.keys()):
         verbose = model_def["verbose"]
-    if "callbacks" in list(model_def.keys()):
-        callbacks = model_def["callbacks"]
     if "validation_split" in list(model_def.keys()):
         validation_split = model_def["validation_split"]
     if "validation_data" in list(model_def.keys()):
@@ -268,6 +290,11 @@ def fit_model(model, prepared_dataset, experiment_object):
         validation_data=validation_data,
         shuffle=shuffle,
         use_multiprocessing=use_multiprocessing)
+
+    #Restore the best model
+    save_path = return_checkpoint_filepath(experiment_object)
+    model.load_weights(save_path)
+
     return history
 
 
@@ -382,6 +409,8 @@ def get_all_per_feature_evals(predictions, prepared_dataset, experiment_object):
     return per_feature
 
 
+
+
 #Create the experiment result object. 
 def create_experiment_result_object(history, model, prepared_dataset, experiment_object):
     experiment_result = {} 
@@ -398,16 +427,29 @@ def create_experiment_result_object(history, model, prepared_dataset, experiment
     
     #Get the per-feature metrics on test set.
     experiment_result["per_feature"] = get_all_per_feature_evals(experiment_result["predictions"], prepared_dataset, experiment_object)
-  
-    #Write the model save path 
-    experiment_result["model_save_path"] = experiment_object["experiment_folder_path"]
-
-
     #ax.plot(prepared_dataset[y_index], prepared_dataset[pred_index][:, 0])
 
     return experiment_result
 
 
+def save_model(model, experiment_object):
+    path = get_full_experiment_folder(experiment_object)
+    save_path = path+"model"
+    model.save(save_path)
+
+def save_experiment(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
+    dd_path = get_full_experiment_folder(experiment_descriptor)+"dataset_descriptor.pickle"
+    dr_path = get_full_experiment_folder(experiment_descriptor)+"dataset_result.pickle"
+    ed_path = get_full_experiment_folder(experiment_descriptor)+"experiment_descriptor.pickle"
+    er_path = get_full_experiment_folder(experiment_descriptor)+"experiment_result.pickle"
+    with open(dd_path, "wb") as f:
+        pickle.dump(dataset_descriptor, f)
+    with open(dr_path, "wb") as f:
+        pickle.dump(dataset_result, f)
+    with open(ed_path, "wb") as f:
+        pickle.dump(experiment_descriptor, f)
+    with open(er_path, "wb") as f:
+        pickle.dump(experiment_result, f)
 
 def experiment_from_experiment_object(experiment_object):
     #Test for now 
@@ -417,7 +459,10 @@ def experiment_from_experiment_object(experiment_object):
     model = build_model(prepared_dataset, experiment_object)
     print(model.summary())
     history = fit_model(model, prepared_dataset, experiment_object)
+    save_model(model, experiment_object)
     experiment_result = create_experiment_result_object(history, model, prepared_dataset, experiment_object)
+    save_experiment(dataset_descriptor, prepared_dataset, experiment_object, experiment_result)
+    
     #print(experiment_result)
     #test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
     #prepared_dataset = predict_values(model, prepared_dataset, experiment_object)
