@@ -128,48 +128,74 @@ Added:
 
 
 ## Dataset Result Object 
-"x" - x values of dataset object, ready for ML model 
-"y" - y values of dataset object, ready for ML model 
+"x" - x values of dataset object, ready for ML model
+
+"y" - y values of dataset object, ready for ML model
+
 "x_key" - keys of x values for use in dataframe
+
 "y_key" - keys of y values for use in dataframe
 
 After running through the split_training_test function, the following keys are added: 
 
 "x_train" - x values for training set
+
 "x_test" - x values for test set
+
 "y_train" - y values for training set
+
 "y_test" - y values for test set
+
 "x_train_key" - x keys for training set
+
 "x_test_key" - x keys for test set
+
 "y_train_key" - y keys for training set 
+
 "y_test_key" - y keys for test set 
 
 
 
 ### Experiment Descriptor Object
 The experiment descriptor object contains the following keys:
+
 "model" - indexes a dict describing a model object, see below
+
 "experiment_folder_path" - Base path of the experiment folder, must end in "/"
+
 "experiment_name" - name of the experiment
 
 #### Model Object
 The model object is a dictionary containing the following keys: 
 "model_type": The type of model (for instance, Sequential)
+
 "layers" -  a list of layer objects, see below. You won't bother with defining the input and output layer in this case
+
 "final_activation" - the final activation function of the model (string)
+
 "loss" -  the name of the model loss function (string)
+
 "optimizer" -  the name of the model optimizer
+
 "batch_size" - the batch size, number of samples per batch, of the model
+
 "epochs" - number of epochs the model should run
+
 "test_split" - the split of the test and training set (percent of training set that should be held for test, for instance 0.1)
+
 "validation_split" - the percent of the training set that should be held for validation, for instance 0.2
+
 "use_multiprocessing" - True or False, should mostly be True
+
 "metrics": A list of metric names to use in evaluating and tracking the model and its history 
 
 #### Model layer object
 A model layer objectwill always have one key:
+
 "type" - for instance, "LSTM", "Dropout"
+
 "num_nodes" - number of nodes, only where approprate
+
 "percent": percent, only when appropriate. 
 
 
@@ -177,8 +203,11 @@ A model layer objectwill always have one key:
 The experiment result object has the following keys:
 
 "model_history" - a dict of the model history throughout its epochs, indexed by the particular metric or "val_" followed by the particular metric. 
+
 "test_metrics" - the dict of the values of the final metrics on the test set, indexed by metric name
+
 "predictions" - a dict of predictions, indexed by "x", "x_train", and "x_test", corresponding to prediction vectors
+
 "per_feature" - a dict of the metrics per feature, indexed by the metric, which corresponds to a vector of the metric values per feature on the TEST set. For instance, "mse" might be followed by a list of the mse from predicted test values on [temp, humidity, etc]...
 
 
@@ -287,10 +316,11 @@ experiment_1 = {
 ```
 
 TODO: 
-1. Document experiment descriptor [x] and experiment result object [x]
-2. Figure out how to un-normalize the data for the below suite 
+1. Figure out how to un-normalize the data for the below suite 
 3. Create comprehensive visualization and analytics suite
 4. Nail out phase 1 experiments. 
+- [ ] Figure out how to define exactly what data and tests to run
+- [ ] Figure out how to run these automatically 
 5. Figure out autoencoder creation and dataset savings from AE.
 6. Nail out phase 2 experiments
 7. Figure out spatial encodings (Not in this repo)

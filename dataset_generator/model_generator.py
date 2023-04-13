@@ -451,6 +451,22 @@ def save_experiment(dataset_descriptor, dataset_result, experiment_descriptor, e
     with open(er_path, "wb") as f:
         pickle.dump(experiment_result, f)
 
+def load_in_experiment_files(experiment_descriptor):
+    dd_path = get_full_experiment_folder(experiment_descriptor)+"dataset_descriptor.pickle"
+    dr_path = get_full_experiment_folder(experiment_descriptor)+"dataset_result.pickle"
+    ed_path = get_full_experiment_folder(experiment_descriptor)+"experiment_descriptor.pickle"
+    er_path = get_full_experiment_folder(experiment_descriptor)+"experiment_result.pickle"
+    with open(dd_path, "rb") as f:
+        dataset_descriptor = pickle.load(f)
+    with open(dr_path, "rb") as f:
+        dataset_result = pickle.load(f)
+    with open(ed_path, "rb") as f:
+        experiment_descriptor = pickle.load(f)
+    with open(er_path, "rb") as f:
+        experiment_result = pickle.load(f)
+    return dataset_descriptor, dataset_result, experiment_descriptor, experiment_result
+
+
 def experiment_from_experiment_object(experiment_object):
     #Test for now 
     prepared_dataset, dataset_descriptor = dg.return_test_dataset()
@@ -475,7 +491,12 @@ def experiment_from_experiment_object(experiment_object):
     #return history, test_metrics
 
 
-experiment_from_experiment_object(experiment_1)
+#RUN IT - here.
+#experiment_from_experiment_object(experiment_1)
+
+
+def return_test_experiment_descriptor():
+    return experiment_1
 
 # history, test_metrics = experiment_from_experiment_object(experiment_1)
 # print(history.history)
