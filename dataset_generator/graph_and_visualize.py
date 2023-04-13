@@ -72,23 +72,46 @@ def plot_model_training_history(experiment_result, metric, val=True):
     )
     fig.show()
     
-def graph_prediction_against_value(dataset_result, experiment_result, index=0, kind="test"):
+def graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=0, kind="full"):
     #Works well for 2D ARRAY ONLY. 
     #You need to figure this out for 3D ARRAY Next! 
-    
+    columns = dataset_descriptor["y_columns"]
+    if kind == "full": 
     #Try for one, then you can generalize 
-    y_true = dataset_result["y_unnormalized"][:, index]
-    x_pred = experiment_result["predictions"]["x_pred_unnormalized"][:, index]
-    y_key = dataset_result["y_key"]
+        y_true = dataset_result["y_unnormalized"]
+        x_pred = experiment_result["predictions"]["x_pred_unnormalized"]
+        y_key = dataset_result["y_key"]
+    elif kind == "train":
+        y_true = dataset_result["y_train_unnormalized"]
+        x_pred = experiment_result["predictions"]["x_pred_train_unnormalized"]
+        y_key = dataset_result["y_train_key"]
+    elif kind == "test":
+        y_true = dataset_result["y_test_unnormalized"]
+        x_pred = experiment_result["predictions"]["x_pred_test_unnormalized"]
+        y_key = dataset_result["y_test_key"]
+    #If we need to reshape
+    if y_true.ndim > 2:
+        y_true = y_true.reshape(y_true.shape[0]*y_true.shape[1], y_true.shape[2])
+    if x_pred.ndim > 2:
+        x_pred = x_pred.reshape(x_pred.shape[0]*x_pred.shape[1], x_pred.shape[2])
+    if y_key.ndim > 2:
+        y_key = y_key.reshape(y_key.shape[0]*y_key.shape[1], y_key.shape[2])
+    #Get proper index of values
+    y_true = y_true[:, index]
+    x_pred = x_pred[:, index]
     y_key = np.squeeze(y_key)
+    #Create the figure
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=y_key, y=y_true, name="True", mode="markers"))
     fig.add_trace(go.Scatter(x=y_key, y=x_pred, name="Predicted", mode="markers"))
+    fig.update_layout(
+        title=f"{columns[index]} Actual vs Predicted for {kind} set",
+        xaxis_title=f"{dataset_descriptor['concat_key']}",
+        yaxis_title=f"{columns[index]} value"
+    )
     fig.show()
     #pass
     
-
-
 # fig.update_layout(
 #     title="Plot Title",
 #     xaxis_title="X Axis Title",
@@ -105,7 +128,7 @@ def graph_prediction_against_value(dataset_result, experiment_result, index=0, k
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
     #plot_model_training_history(experiment_result, "mse", val=True)
-    graph_prediction_against_value(dataset_result, experiment_result, index=0, kind="test")
+    graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=0, kind="full")
 
 
 
