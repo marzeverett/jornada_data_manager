@@ -1,3 +1,4 @@
+#Help from here for reshaping. VERY HELPFUL! https://stackoverflow.com/questions/56255643/in-keras-how-to-get-3d-input-and-3d-output-for-lstm-layers 
 #Code from here:
 #https://levelup.gitconnected.com/install-tensorflow-2-0-0-on-ubuntu-18-04-with-nvidia-gtx1650-gtx1660ti-9fd7a837d5fd
 
@@ -159,11 +160,23 @@ def add_output_layer(model, prepared_dataset, experiment_object):
     activation = model_def["final_activation"]
     y = prepared_dataset["y"]
     #LATER - put dimension checking here  #MARKED
-    dim = y.shape[1]
-    #MARKED 
-    model.add(layers.Dense(dim,
-        activation=activation))
+    num_dimensions = y.ndim
+    if num_dimensions <= 2:
+        features = y.shape[1]
+        #MARKED 
+        model.add(layers.Dense(features,
+            activation=activation))
+    else:
+        timesteps = y.shape[1]
+        features = y.shape[2]
+        model.add(layers.Dense(timesteps*features,
+            activation=activation))
+        model.add(layers.Reshape((timesteps, features)))
     return model 
+
+#10 = timesteps, 2 = features 
+# model.add(Dense(10 * 2))
+# model.add(Reshape((10, 2)))
 
 def build_model(prepared_dataset, experiment_object):
     model_def = experiment_object["model"]

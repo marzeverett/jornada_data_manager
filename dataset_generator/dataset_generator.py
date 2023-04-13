@@ -6,6 +6,8 @@ import os
 import json 
 import pickle 
 
+#Reverse_mapping help here: 
+#https://www.techiedelight.com/build-dictionary-from-list-of-keys-values-python/
 
 #Pickle help here: https://ianlondon.github.io/blog/pickling-basics/ 
 #Help from: https://www.statology.org/pandas-keep-columns/
@@ -59,7 +61,7 @@ dataset_1 = {
     "categorical": ["Sitename"],
     "normalize": True,
     "input_slices_days": 200,
-    "output_slices_days": 1,
+    "output_slices_days": 1, 
     "output_offset_days": 1,
     "task_type": "regression",
     "clean_method": "drop",
@@ -253,6 +255,10 @@ def create_merged_df(dataset_object):
     dataset_list = dataset_object["datasets"]
     concat_key = dataset_object["concat_key"]
     input_fields = dataset_object["input_fields"]
+    #Will map the renamed field back to its source data, useful for unnormalizing it.  
+    reverse_mapping = {}
+    #dictionary = dict(zip(keys, values))
+
     i = 0
     for dataset in dataset_list:
         prefix_string = dataset+"_"
@@ -264,8 +270,12 @@ def create_merged_df(dataset_object):
         #Reduce where we can 
         df = create_reduced_dataframe(dataset, df, dataset_object)
         #Rename 
+        old_columns = list(df.columns)
         df = df.add_prefix(prefix_string)
         df = df.rename(columns={prefix_concat: concat_key})
+        new_columns = list(df.columns)
+        mapping = dict(zip(new_columns, old_columns))
+        reverse_mapping.update(mapping)
         #Merge 
         if i > 0:
             #whole_df = pd.merge(whole_df, df, on=concat_key)
@@ -273,6 +283,8 @@ def create_merged_df(dataset_object):
         else:
             whole_df = df
         i = i+1
+    dataset_object["reverse_mapping"] = reverse_mapping
+    #Change is here
     return whole_df 
 
 #Drop or fill missing data (recommend fill)
