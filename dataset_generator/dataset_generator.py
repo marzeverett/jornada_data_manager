@@ -67,7 +67,6 @@ dataset_1 = {
     "clean_method": "drop",
     "concat_key": "Date_datetime",
     "dataset_name": "test_dataset_1",
-    "model_index": 0, #0-4? 
     "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
 }
 
@@ -105,28 +104,10 @@ dataset_1 = {
 #     "clean_method": "fill",
 #     "concat_key": "Date_datetime",
 #     "dataset_name": "test_dataset_1",
-#     "model_index": 0, #0-4? 
 #     "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
 # }
 
 
-def return_filepath(dataset_object, file_kind):
-    model_index = dataset_object["model_index"]
-    dataset_name = dataset_object["dataset_name"]
-    sub_path = dataset_object["dataset_folder_path"]
-    full_path = sub_path+str(model_index)+'/'+dataset_name
-    send_path = "" 
-    if file_kind == "x":
-        send_path = full_path+"_x.npy"
-    elif file_kind == "y":
-        send_path = full_path+"_y.npy"
-    elif file_kind == "x_key":
-        send_path = full_path+"_x_key.npy"
-    elif file_kind == "y_key":
-        send_path = full_path+"_y_key.npy"
-    elif file_kind == "dataset_object":
-        send_path = full_path+"_dataset_object.json"
-    return send_path 
 
 #Returns folder_path,  dataset descriptor filepath and dataset result filepath. 
 def get_data_filepaths(dataset_object):
@@ -398,67 +379,3 @@ def return_test_dataset():
 
 
 
-#NOTES - You need to better define your saving/loading naming schema for a particular dataset. 
-
-# EXPERIMENT
-# Layers: (dict)
-#     key with num layer index, 
-#     nodes: number of nodes (value)
-#     activation_function: activation function
-# Optimization (Like adam)
-# Initial LR
-# Number of epochs?
-# Early stopping
-# Metrics (list)
-# Model save path (do you need multiple? Maybe per number of epochs)
-# Save values (model history) - what to save 
-# Save path as well ...
-
-#Tomorrow - start with figuring out your scaling
-#Maybe small network just to check 
-#Also loading in the dataset. 
-
-
-
-
-
-
-
-
-
-# def save_dataset(x, y, x_key, y_key, dataset_object):
-#     dataset_name = dataset_object["dataset_name"]
-#     sub_path = dataset_object["dataset_folder_path"]
-#     full_path = sub_path+ "/" + str(dataset_name)
-#     os.makedirs(full_path, exist_ok=True)
-
-#     dataset_result_path = full_path+ "_dataset_result.pickle"
-#     dataset_descriptor_path = full_path+ "_dataset_descriptor.pickle"
-#     # x_path = full_path+"/"+dataset_name+"_x.npy"
-#     # y_path = full_path+"/"+dataset_name+"_y.npy"
-#     # x_key_path = full_path+"/"+dataset_name+"_x_key.npy"
-#     # y_key_path = full_path+"/"+dataset_name+"_y_key.npy"
-#     # d_obj_path = full_path+"/"+dataset_name+"_dataset_object.json"
-
-#     np.save(x_path, x)
-#     np.save(y_path, y)
-#     np.save(x_key_path, x_key)
-#     np.save(y_key_path, y_key)
-#     dataset_descriptor = json.dumps(dataset_object)
-#     with open(d_obj_path, "w") as f:
-#         f.write(dataset_descriptor)
-
-
-
-
-# def load_in_file(dataset_object, file_kind):
-#     filepath = return_filepath(dataset_object, file_kind)
-#     if file_kind == "x" or file_kind == "y" or file_kind == "x_key" or file_kind == "y_key": 
-#         loaded_file = np.load(filepath)
-#         return loaded_file
-#     elif file_kind == "dataset_object":
-#         f = open(filepath)
-#         loaded_file = json.load(f)
-#         f.close()
-#         return loaded_file
-#     return {}

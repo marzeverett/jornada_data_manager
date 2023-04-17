@@ -5,6 +5,8 @@ import model_generator
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd 
+
 
 #https://plotly.com/python/figure-labels/
 #Help for multiple lines: https://www.tutorialspoint.com/how-to-plot-multiple-lines-on-the-same-y-axis-in-python-plotly 
@@ -52,8 +54,6 @@ def unnormalize_data(dataset_descriptor, dataset_result, experiment_result):
 # #y columns will either be 2D or 3D. 
 #Going to have to think about how we visualize 
 #predictions for y with more than one output! 
-
-
 def plot_model_training_history(experiment_result, metric, val=True):
     history = experiment_result["model_history"]
     title = metric+ " across training epochs"
@@ -70,11 +70,21 @@ def plot_model_training_history(experiment_result, metric, val=True):
         xaxis_title="Epochs",
         yaxis_title=f"{metric} value"
     )
-    fig.show()
-    
-def graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=0, kind="full"):
-    #Works well for 2D ARRAY ONLY. 
-    #You need to figure this out for 3D ARRAY Next! 
+    #fig.show()
+    graph_folder = get_graph_folder_path(experiment_descriptor, "model_training")
+    graph_title = graph_folder + metric+"_training_history.png"
+    fig.write_image(graph_title)
+
+
+def get_graph_folder_path(experiment_descriptor, kind):
+    experiment_folder_path = model_generator.get_full_experiment_folder(experiment_descriptor)
+    image_path = experiment_folder_path + kind + "/"    
+    if not os.path.exists(image_path):
+        os.mkdir(image_path)
+    return image_path
+
+#Reformats the prediction data into something that can be graphed 
+def get_usable_pred_data(dataset_descriptor, dataset_result, experiment_result, index=0, kind="full"):
     columns = dataset_descriptor["y_columns"]
     if kind == "full": 
     #Try for one, then you can generalize 
@@ -100,6 +110,15 @@ def graph_prediction_against_value(dataset_descriptor, dataset_result, experimen
     y_true = y_true[:, index]
     x_pred = x_pred[:, index]
     y_key = np.squeeze(y_key)
+    return y_true, x_pred, y_key
+
+
+#Graphs the prediction against the actual value
+def graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=0, kind="full"):
+    #Works well for 2D ARRAY ONLY. 
+    #You need to figure this out for 3D ARRAY Next! 
+    columns = dataset_descriptor["y_columns"]
+    y_true, x_pred, y_key = get_usable_pred_data(dataset_descriptor, dataset_result, experiment_result, index=index, kind=kind)
     #Create the figure
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=y_key, y=y_true, name="True", mode="markers"))
@@ -109,33 +128,79 @@ def graph_prediction_against_value(dataset_descriptor, dataset_result, experimen
         xaxis_title=f"{dataset_descriptor['concat_key']}",
         yaxis_title=f"{columns[index]} value"
     )
-    fig.show()
-    #pass
+    graph_folder = get_graph_folder_path(experiment_descriptor, kind)
+    graph_title = graph_folder + str(columns[index])+"_predicted_vs_actual.png"
+    fig.write_image(graph_title)
+    #fig.show()
+
+#Scatter plot of 
+def per_feature_scatter_plot(dataset_descriptor, experiment_result, metric):
+    columns = dataset_descriptor["x_columns"]
+    #num_columns = len(columns)
+    per_feature = experiment_result["per_feature"]
+    metric_values = per_feature[metric]
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=columns, y=metric_values))
+    fig.update_layout(
+        title=f"{metric} Values per Feature",
+    )
+    #fig.show()
+    graph_folder = get_graph_folder_path(experiment_descriptor, "per_feature")
+    graph_title = graph_folder + str(metric)+"_values_per_feature.png"
+    fig.write_image(graph_title)
     
-# fig.update_layout(
-#     title="Plot Title",
-#     xaxis_title="X Axis Title",
-#     yaxis_title="Y Axis Title",
-#     legend_title="Legend Title",
-#     font=dict(
-#         family="Courier New, monospace",
-#         size=18,
-#         color="RebeccaPurple"
-#     )
-# )
+
+def save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result):
+    model_descriptor = experiment_descriptor["model"]
+    metrics = model_descriptor["metrics"]
+    for metric in metrics: 
+        per_feature_scatter_plot(dataset_descriptor, experiment_result, metric)
+        
+
+
+#Saves graphs on predictions for all features 
+def save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_result): 
+    columns = dataset_descriptor["y_columns"]
+    num_columns = len(columns)
+    kinds = ["full", "train", "test"]
+    kinds = ["test"]
+    #For each kind
+    for dataset_kind in kinds: 
+        #For each data variable 
+        for i in range(0, num_columns):
+            graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=i, kind=dataset_kind)
+
+def save_all_model_history_graphs(experiment_descriptor, experiment_result):
+    model_descriptor = experiment_descriptor["model"]
+    metrics = model_descriptor["metrics"]
+    metrics.append('loss')
+    for metric in metrics: 
+        plot_model_training_history(experiment_result, metric)
+
+def save_to_csv(experiment_descriptor, experiment_result):
+    csv_name = "metric_results.csv"
+    experiment_folder_path = model_generator.get_full_experiment_folder(experiment_descriptor)
+    save_path = experiment_folder_path+csv_name
+    per_feature = experiment_result["per_feature"]
+    test_metrics = experiment_result["test_metrics"]
+    #test_metrics["per_feature"] = test_metrics
+    #df = pd.DataFrame.from_dict(test_metrics)
+    df = pd.DataFrame.from_dict([test_metrics])
+
+    df.to_csv(save_path)
 
 
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
-    #plot_model_training_history(experiment_result, "mse", val=True)
-    graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=0, kind="full")
-
-
+    save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_result)
+    save_all_model_history_graphs(experiment_descriptor, experiment_result)
+    save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
+    save_to_csv(experiment_descriptor, experiment_result)
 
 experiment_1 = model_generator.return_test_experiment_descriptor()
 dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.load_in_experiment_files(experiment_1)
 
-visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
+#visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 # print("GRAPH AND VISUALIZE")
 # print(dataset_descriptor)
@@ -153,3 +218,16 @@ visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor,
 #         text_list.append(val_metric)
 #     fig = px.line(y=line_list, name=text_list)
 #     fig.show()
+
+
+# fig.update_layout(
+#     title="Plot Title",
+#     xaxis_title="X Axis Title",
+#     yaxis_title="Y Axis Title",
+#     legend_title="Legend Title",
+#     font=dict(
+#         family="Courier New, monospace",
+#         size=18,
+#         color="RebeccaPurple"
+#     )
+# )

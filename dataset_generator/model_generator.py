@@ -376,37 +376,31 @@ def graph_predictions(prepared_dataset, pred_key=None, y_key=None):
     ax.plot(prepared_dataset[y_index], prepared_dataset[pred_index][:, 0])
     plt.show()
     
-
-# import matplotlib.pyplot as plt
-
-# x = [1, 2, 3, 4, 5, 6]
-# y = [2, 4, 6, 5, 6, 8]
-# y2 = [5, 3, 7, 8, 9, 6]
-
-# fig, ax = plt.subplots()
-
-# ax.plot(x, y)
-# ax.plot(x, y2)
-# plt.show()
-
-# import matplotlib.pyplot as plt
-# import numpy as np
-
-# line_1 = np.random.randint(low = 0, high = 50, size = 50)
-# line_2 = np.random.randint(low = -15, high = 100, size = 50)
-
-# fig, ax = plt.subplots()
-
-# ax.plot(line_1, color = 'green', label = 'Line 1')
-# ax.plot(line_2, color = 'red', label = 'Line 2')
-# ax.legend(loc = 'upper left')
-# plt.show()
-
-
 def eval_feature(true_column, pred_column, loss):
     loss_function = loss_dict[loss]
+    # if true_column.ndim > 1: 
+    #     true_column = true_column.reshape(true_column[0]*true_column[1])
+    # if pred_column.ndim > 1: 
+    #     pred_column = pred_column.reshape(pred_column[0]*pred_column[1])
+
     value = loss_function(true_column, pred_column).numpy()
     return value
+
+    #y_true = y_true.reshape(y_true.shape[0]*y_true.shape[1], y_true.shape[2])
+
+def eval_all_features(true_column, pred_column, metric):
+    if true_column.ndim > 2: 
+        true_column = true_column.reshape(true_column.shape[0]*true_column.shape[1], true_column.shape[2])
+    if pred_column.ndim > 2: 
+        pred_column = pred_column.reshape(pred_column.shape[0]*pred_column.shape[1], pred_column.shape[2])
+    feature_list = []
+    #For each feature
+    for i in range(0, len(true_column[1])):
+        val = eval_feature(true_column[:, i], pred_column[:, i], metric)
+        feature_list.append(val)
+    return feature_list
+
+    #y_true = y_true.reshape(y_true.shape[0]*y_true.shape[1], y_true.shape[2])
 
 def get_all_per_feature_evals(predictions, prepared_dataset, experiment_object):
     per_feature = {}
@@ -414,10 +408,12 @@ def get_all_per_feature_evals(predictions, prepared_dataset, experiment_object):
     y_test = prepared_dataset["y_test"]
     metrics = experiment_object["model"]["metrics"]
     for metric in metrics:
-        feature_list = []
-        for i in range(0, len(x_test[0])):
-            val = eval_feature(y_test[i], x_test[i], metric)
-            feature_list.append(val)
+        # feature_list = []
+        # print(len(x_test[0]))
+        # for i in range(0, len(x_test[0])):
+        #     val = eval_feature(y_test[i].copy(), x_test[i].copy(), metric)
+        #     feature_list.append(val
+        feature_list = eval_all_features(y_test.copy(), x_test.copy(), metric)
         per_feature[metric] = feature_list
     return per_feature
 
