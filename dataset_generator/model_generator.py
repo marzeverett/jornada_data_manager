@@ -1,23 +1,16 @@
 #Help from here for reshaping. VERY HELPFUL! https://stackoverflow.com/questions/56255643/in-keras-how-to-get-3d-input-and-3d-output-for-lstm-layers 
 #Code from here:
 #https://levelup.gitconnected.com/install-tensorflow-2-0-0-on-ubuntu-18-04-with-nvidia-gtx1650-gtx1660ti-9fd7a837d5fd
-
 #Keras has a built in way to separate time steps" https://keras.io/examples/timeseries/timeseries_weather_forecasting/ 
 #Extensive use of the keras documentation 
-
 #For reshaping y: 
 #https://stackoverflow.com/questions/54948059/keras-2d-dense-layer-for-output
-
 #Help from here: https://stackoverflow.com/questions/40426502/is-there-a-way-to-suppress-the-messages-tensorflow-prints
 #On suppressing annoying tf output!!
 #These two lines suppress annoying tf output 
-
 #Plotting help from here: https://stackabuse.com/matplotlib-plot-multiple-line-plots-same-and-different-scales/ 
-
 #Getting numpy column help from here: https://stackoverflow.com/questions/4455076/how-do-i-access-the-ith-column-of-a-numpy-multidimensional-array 
-
 #Pickle help here: https://www.pythonlikeyoumeanit.com/Module5_OddsAndEnds/WorkingWithFiles.html 
-
 #Use this info for per-feature error: https://neptune.ai/blog/keras-loss-functions
 
 import pickle
@@ -115,7 +108,6 @@ def build_layer(model, layer_object):
             num_nodes=layer_object["num_nodes"]
         else:
             num_nodes = 20 
-        #Change is here!!! #MARKED 
         model.add(layers.LSTM(num_nodes))
     #Dropout Layer 
     if layer_type == "Dropout":
@@ -205,7 +197,10 @@ def compile_model(model, experiment_object):
     steps_per_execution=None
     jit_compile=None
     if "optimizer" in list(model_def.keys()):
-        optimizer = model_def["optimizer"]
+        #Change is here- make nicer!
+        #optimizer = model_def["optimizer"]
+        optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+
     if "loss" in list(model_def.keys()):
         loss = model_def["loss"]
     if "metrics" in list(model_def.keys()):
@@ -306,7 +301,10 @@ def fit_model(model, prepared_dataset, experiment_object):
 
     #Restore the best model
     save_path = return_checkpoint_filepath(experiment_object)
-    model.load_weights(save_path)
+    try:
+        model.load_weights(save_path)
+    except Exception as e:
+        print("Issue loading model, likely ", e)
 
     return history
 
@@ -476,18 +474,18 @@ def load_in_experiment_files(experiment_descriptor):
     return dataset_descriptor, dataset_result, experiment_descriptor, experiment_result
 
 
-def experiment_from_experiment_object(experiment_object):
-    #Test for now 
-    prepared_dataset, dataset_descriptor = dg.return_test_dataset()
+def experiment_from_experiment_object(dataset_descriptor, experiment_object):
+    #Load dataset and split it 
+    prepared_dataset, dataset_descriptor = dg.load_in_data(dataset_descriptor)
     prepared_dataset = split_training_test(prepared_dataset, experiment_object)
-    #Change is here - uncomment 
+    #Build the model
     model = build_model(prepared_dataset, experiment_object)
     print(model.summary())
     history = fit_model(model, prepared_dataset, experiment_object)
     save_model(model, experiment_object)
     experiment_result = create_experiment_result_object(history, model, prepared_dataset, experiment_object)
     save_experiment(dataset_descriptor, prepared_dataset, experiment_object, experiment_result)
-    
+    return dataset_descriptor, prepared_dataset, experiment_object, experiment_result
     #print(experiment_result)
     #test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
     #prepared_dataset = predict_values(model, prepared_dataset, experiment_object)
@@ -501,9 +499,10 @@ def experiment_from_experiment_object(experiment_object):
 
 
 #RUN IT - here.
-#experiment_from_experiment_object(experiment_1)
+#prepared_dataset, dataset_descriptor = dg.return_test_dataset()
+#experiment_from_experiment_object(dataset_descriptor, experiment_1)
 
-
+prepared_dataset, dataset_descriptor = dg.return_test_dataset()
 def return_test_experiment_descriptor():
     return experiment_1
 

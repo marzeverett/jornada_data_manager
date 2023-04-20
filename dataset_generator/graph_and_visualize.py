@@ -12,7 +12,7 @@ import pandas as pd
 #Help for multiple lines: https://www.tutorialspoint.com/how-to-plot-multiple-lines-on-the-same-y-axis-in-python-plotly 
 #Numpy indexing: https://stackoverflow.com/questions/42916029/indexing-over-the-last-axis-when-you-dont-know-the-rank-in-advance
 
-
+#CHANGE is here 
 def unnormalize_data_transformation(feature_array, dataset_descriptor):
     y_columns = dataset_descriptor["y_columns"]
     reverse_mapping = dataset_descriptor["reverse_mapping"]
@@ -21,9 +21,11 @@ def unnormalize_data_transformation(feature_array, dataset_descriptor):
     #For each feature in our feature vector:
     for i in range(0, len(feature_array)):
         name = y_columns[i]
-        mapped_item = reverse_mapping[name]
-        if mapped_item in list(normalization_data.keys()):
-            feature_info = normalization_data[mapped_item]
+        #mapped_item = reverse_mapping[name]
+        #if mapped_item in list(normalization_data.keys()):
+        if name in list(normalization_data.keys()):
+            #feature_info = normalization_data[mapped_item]
+            feature_info = normalization_data[name]
             max_val = feature_info["max"]
             min_val = feature_info["min"]
             feature_array[i] = (feature_array[i]*(max_val-min_val))+min_val
@@ -54,7 +56,7 @@ def unnormalize_data(dataset_descriptor, dataset_result, experiment_result):
 # #y columns will either be 2D or 3D. 
 #Going to have to think about how we visualize 
 #predictions for y with more than one output! 
-def plot_model_training_history(experiment_result, metric, val=True):
+def plot_model_training_history(experiment_descriptor, experiment_result, metric, val=True):
     history = experiment_result["model_history"]
     title = metric+ " across training epochs"
     title = title.title()
@@ -114,7 +116,7 @@ def get_usable_pred_data(dataset_descriptor, dataset_result, experiment_result, 
 
 
 #Graphs the prediction against the actual value
-def graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=0, kind="full"):
+def graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result, index=0, kind="full"):
     #Works well for 2D ARRAY ONLY. 
     #You need to figure this out for 3D ARRAY Next! 
     columns = dataset_descriptor["y_columns"]
@@ -134,7 +136,7 @@ def graph_prediction_against_value(dataset_descriptor, dataset_result, experimen
     #fig.show()
 
 #Scatter plot of 
-def per_feature_scatter_plot(dataset_descriptor, experiment_result, metric):
+def per_feature_scatter_plot(dataset_descriptor, experiment_descriptor, experiment_result, metric):
     columns = dataset_descriptor["x_columns"]
     #num_columns = len(columns)
     per_feature = experiment_result["per_feature"]
@@ -154,12 +156,14 @@ def save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, exper
     model_descriptor = experiment_descriptor["model"]
     metrics = model_descriptor["metrics"]
     for metric in metrics: 
-        per_feature_scatter_plot(dataset_descriptor, experiment_result, metric)
+        #Should track this down eventually 
+        if metric != "loss":
+            per_feature_scatter_plot(dataset_descriptor, experiment_descriptor, experiment_result, metric)
         
 
 
 #Saves graphs on predictions for all features 
-def save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_result): 
+def save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result): 
     columns = dataset_descriptor["y_columns"]
     num_columns = len(columns)
     kinds = ["full", "train", "test"]
@@ -168,14 +172,14 @@ def save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_re
     for dataset_kind in kinds: 
         #For each data variable 
         for i in range(0, num_columns):
-            graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_result, index=i, kind=dataset_kind)
+            graph_prediction_against_value(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result, index=i, kind=dataset_kind)
 
 def save_all_model_history_graphs(experiment_descriptor, experiment_result):
     model_descriptor = experiment_descriptor["model"]
     metrics = model_descriptor["metrics"]
     metrics.append('loss')
     for metric in metrics: 
-        plot_model_training_history(experiment_result, metric)
+        plot_model_training_history(experiment_descriptor, experiment_result, metric)
 
 def save_to_csv(experiment_descriptor, experiment_result):
     csv_name = "metric_results.csv"
@@ -192,13 +196,13 @@ def save_to_csv(experiment_descriptor, experiment_result):
 
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
-    save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_result)
+    save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
     save_all_model_history_graphs(experiment_descriptor, experiment_result)
     save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
     save_to_csv(experiment_descriptor, experiment_result)
 
-experiment_1 = model_generator.return_test_experiment_descriptor()
-dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.load_in_experiment_files(experiment_1)
+#experiment_1 = model_generator.return_test_experiment_descriptor()
+#dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.load_in_experiment_files(experiment_1)
 
 #visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 

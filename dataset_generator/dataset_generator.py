@@ -23,7 +23,8 @@ import pickle
 #https://stackoverflow.com/questions/30510562/get-mapping-of-categorical-variables-in-pandas 
 #https://www.geeksforgeeks.org/normalize-a-column-in-pandas/ 
 #https://www.w3schools.com/python/python_howto_remove_duplicates.asp 
-#https://numpy.org/doc/stable/reference/generated/numpy.load.html 
+#https://numpy.org/doc/stable/reference/generated/numpy.load.html
+#https://sparkbyexamples.com/pandas/pandas-drop-columns-with-nan-none-values/  
 
 #Start with JUST One - NPP 
 sites = ["c_cali", "c_grav", "c_sand", "g_basn", "g_ibpe", "g_summ", "m_nort", "m_rabb", "m_well", "p_coll", "p_smal", "p_tobo", "t_east", "t_tayl", "t_west"]
@@ -180,24 +181,29 @@ def handle_categorical(df, dataset_object):
     return df  
 
 #Normalize data 
-def normalize_data(df, dataset_object, fields):
+def normalize_data(dataset_name, df, dataset_object, fields):
+    prefix_string = dataset_name+"_"
     concat_key = dataset_object["concat_key"]
     if "normalization_data" not in list(dataset_object.keys()):
         dataset_object["normalization_data"] = {}
     #From the geeks for geeks tutorial on normalization 
     for field in fields: 
         if field != "concat_key":
-            max_val = df[field].max()
-            min_val = df[field].min()
-            n_dict = {
-                "max": max_val,
-                "min": min_val
-            }
-            diff_between = max_val - min_val
-            #Handle potential divide by zero issue 
-            if diff_between != 0:
-                df[field] = (df[field] - min_val) / (max_val - min_val)
-                dataset_object["normalization_data"][field] = n_dict
+            try:
+                max_val = df[field].max()
+                min_val = df[field].min()
+                n_dict = {
+                    "max": max_val,
+                    "min": min_val
+                }
+                diff_between = max_val - min_val
+                #Handle potential divide by zero issue 
+                if diff_between != 0:
+                    df[field] = (df[field] - min_val) / (max_val - min_val)
+                    field_name = prefix_string+field
+                    dataset_object["normalization_data"][field_name] = n_dict
+            except Exception as e:
+                pass
     return df 
 
 #Create a dataframe with preprocessed data, and reduce to only necessary data columns 
@@ -221,9 +227,15 @@ def create_reduced_dataframe(dataset_name, df, dataset_object):
     if normalize:
         normalize_fields = i_fields + o_fields
         normalize_fields = list(dict.fromkeys(normalize_fields))
-        df = normalize_data(df, dataset_object, normalize_fields)
+        df = normalize_data(dataset_name, df, dataset_object, normalize_fields)
     keep_cols = i_fields + o_fields + [concat_key]
-    df = df[keep_cols]
+
+    #Handle any missing cols 
+    actual_cols = list(df.columns)
+    final_cols = list(set(keep_cols) & set(actual_cols))
+    df = df[final_cols]
+    #df = df[keep_cols]
+
     if i_dict != {}:
         df = df.rename(columns=i_dict)
     if o_dict != {}:
@@ -248,6 +260,8 @@ def create_merged_df(dataset_object):
         module = importlib.import_module(dataset, package=None)
         #Get the dataframe from the module
         df = module.return_data()
+        #Drop any columns that are all NaN
+        # Drop columns that have all NaN values
         #Reduce where we can 
         df = create_reduced_dataframe(dataset, df, dataset_object)
         #Rename 
@@ -265,7 +279,6 @@ def create_merged_df(dataset_object):
             whole_df = df
         i = i+1
     dataset_object["reverse_mapping"] = reverse_mapping
-    #Change is here
     return whole_df 
 
 #Drop or fill missing data (recommend fill)
@@ -277,6 +290,10 @@ def deal_with_missing_data(df, dataset_object):
         df = df.reset_index(drop=True)
     elif clean_method == "fill":
         df = df.fillna(method="pad")
+        print("BEFORE CLEAN")
+        print("--------------AFTER CLEAN----------------")
+        print(df.head())
+        
     return df
 
 #Take a slice and make it a numpy array 
@@ -303,11 +320,19 @@ def time_slice(dataset_object, df):
     input_fields = get_input_output_fields(dataset_object, "input_fields")
     output_fields = get_input_output_fields(dataset_object, "output_fields")
     concat_key_fields = [dataset_object["concat_key"]]
-    x_cols = df[input_fields]
-    y_cols = df[output_fields]
-    dataset_object["x_columns"] = list(x_cols.columns)
-    dataset_object["y_columns"] = list(y_cols.columns)
-    print("Dataset object ", dataset_object)
+    #Handle any missing cols
+    actual_cols = list(df.columns)
+    actual_input = list(set(input_fields)&set(actual_cols))
+    actual_output = list(set(output_fields)&set(actual_cols))
+    # x_cols = df[input_fields]
+    # y_cols = df[output_fields]
+    x_cols = df[actual_input]
+    y_cols = df[actual_output]
+    x_cols_names = list(x_cols.columns)
+    y_cols_names = list(y_cols.columns)
+    dataset_object["x_columns"] = x_cols_names
+    dataset_object["y_columns"] = y_cols_names
+    #print("Dataset object ", dataset_object)
     num_rows = len(df)
     x_vect = []
     y_vect = []
@@ -319,7 +344,7 @@ def time_slice(dataset_object, df):
     y_end = y_start+output_slices_days-1
     #Get x and y values indexed properly. 
     while y_end < num_rows-1:
-        x_array, y_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols, y_cols, input_fields, output_fields)
+        x_array, y_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols, y_cols, x_cols_names, y_cols_names)
         x_key_array, y_key_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols, y_cols, concat_key_fields, concat_key_fields)
         if output_slices_days <= 1:
             y_array = y_array[0]
@@ -358,7 +383,7 @@ def create_dataset_from_dataset_object(dataset_object):
     #2. Drop or fill N/A data 
     df = deal_with_missing_data(df, dataset_object)
     print(df.describe())
-    print(list(df.columns))
+    #print(list(df.columns))
     print("--------------")
     #3. Time Slice 
     x_vect, y_vect, x_key, y_key = time_slice(dataset_object, df)
