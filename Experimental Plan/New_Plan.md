@@ -121,9 +121,19 @@ A Dataset a dictionary with the following keys:
 
 "reverse_mapping": A dictionary, where the new value of a merged column (after being renamed with it's prefix dataset) corresponds to its original field name. 
 
-Added:
+"dataset_class": A dictionary, which could have the following keys:
+    "location_scheme": the index the location level scheme (0-4) being used 
+    "datastream_scheme" the index of the data stream level scheme (0-4) being used
+    "l_combo": the index of the combination of input/output locations being used
+    "ds_combo": the index of the combination of input/output data streams being used 
+    "input_days": the number of input days
+    "output_days": the number of output days 
+    "version": version of the experiments being run  
+
+Added: 
 "x_columns": list of names, in order, of the x columns.
 "y_columns": list of names, in order, of the y columns.
+
 
 
 ## Dataset Result Object 
