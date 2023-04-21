@@ -218,11 +218,17 @@ def create_reduced_dataframe(dataset_name, df, dataset_object):
     i_dict = {}
     o_dict = {}
     if isinstance(i_fields, dict):
-        i_dict = i_fields[dataset_name]
-        i_fields = list(i_fields[dataset_name].keys())
+        if dataset_name in list(i_fields.keys()):
+            i_dict = i_fields[dataset_name]
+            i_fields = list(i_fields[dataset_name].keys())
+        else:
+            i_fields = []
     if isinstance(o_fields, dict):
-        o_dict = o_fields[dataset_name]
-        o_fields = list(o_fields[dataset_name].keys())
+        if dataset_name in list(o_fields.keys()):
+            o_dict = o_fields[dataset_name]
+            o_fields = list(o_fields[dataset_name].keys())
+        else:
+            o_fields = []
     #Normalize if necessary
     if normalize:
         normalize_fields = i_fields + o_fields
@@ -251,15 +257,16 @@ def create_merged_df(dataset_object):
     #Will map the renamed field back to its source data, useful for unnormalizing it.  
     reverse_mapping = {}
     #dictionary = dict(zip(keys, values))
-
     i = 0
     for dataset in dataset_list:
         prefix_string = dataset+"_"
         prefix_concat = prefix_string+concat_key
         #Import the appropriate module 
-        module = importlib.import_module(dataset, package=None)
+        save_name = "pickled_datasets/"+dataset+".pkl"
+        #module = importlib.import_module(dataset, package=None)
         #Get the dataframe from the module
-        df = module.return_data()
+        #df = module.return_data()
+        df = pd.read_pickle(save_name)
         #Drop any columns that are all NaN
         # Drop columns that have all NaN values
         #Reduce where we can 
@@ -290,10 +297,6 @@ def deal_with_missing_data(df, dataset_object):
         df = df.reset_index(drop=True)
     elif clean_method == "fill":
         df = df.fillna(method="pad")
-        print("BEFORE CLEAN")
-        print("--------------AFTER CLEAN----------------")
-        print(df.head())
-        
     return df
 
 #Take a slice and make it a numpy array 

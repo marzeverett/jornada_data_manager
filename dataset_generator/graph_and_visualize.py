@@ -7,7 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd 
 
-
+#https://www.geeksforgeeks.org/how-to-append-pandas-dataframe-to-existing-csv-file/
 #https://plotly.com/python/figure-labels/
 #Help for multiple lines: https://www.tutorialspoint.com/how-to-plot-multiple-lines-on-the-same-y-axis-in-python-plotly 
 #Numpy indexing: https://stackoverflow.com/questions/42916029/indexing-over-the-last-axis-when-you-dont-know-the-rank-in-advance
@@ -177,7 +177,6 @@ def save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_de
 def save_all_model_history_graphs(experiment_descriptor, experiment_result):
     model_descriptor = experiment_descriptor["model"]
     metrics = model_descriptor["metrics"]
-    metrics.append('loss')
     for metric in metrics: 
         plot_model_training_history(experiment_descriptor, experiment_result, metric)
 
@@ -185,13 +184,20 @@ def save_to_csv(experiment_descriptor, experiment_result):
     csv_name = "metric_results.csv"
     experiment_folder_path = model_generator.get_full_experiment_folder(experiment_descriptor)
     save_path = experiment_folder_path+csv_name
-    per_feature = experiment_result["per_feature"]
+    #per_feature = experiment_result["per_feature"]
     test_metrics = experiment_result["test_metrics"]
     #test_metrics["per_feature"] = test_metrics
     #df = pd.DataFrame.from_dict(test_metrics)
     df = pd.DataFrame.from_dict([test_metrics])
-
     df.to_csv(save_path)
+
+def save_to_main_csv(dataset_descriptor, experiment_descriptor, experiment_result):
+    dict_1 = experiment_result["test_metrics"]
+    dict_2 = dataset_descriptor["dataset_class"]
+    dict_2.update(dict_1)
+    path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
+    df = pd.DataFrame.from_dict([dict_2])
+    df.to_csv(path_name, mode='a', index=False, header=False)
 
 
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
@@ -200,6 +206,8 @@ def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descrip
     save_all_model_history_graphs(experiment_descriptor, experiment_result)
     save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
     save_to_csv(experiment_descriptor, experiment_result)
+    #Change is here 
+    save_to_main_csv(dataset_descriptor, experiment_descriptor, experiment_result)
 
 #experiment_1 = model_generator.return_test_experiment_descriptor()
 #dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.load_in_experiment_files(experiment_1)
