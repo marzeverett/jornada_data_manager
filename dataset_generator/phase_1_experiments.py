@@ -236,7 +236,7 @@ experiment_1 = {
             [
                 {
                     "type": "LSTM",
-                    "num_nodes": 31
+                    "num_nodes": 32
                 },
                 {
                     "type": "Dropout",
