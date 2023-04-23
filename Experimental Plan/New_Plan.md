@@ -225,6 +225,8 @@ The experiment result object has the following keys:
 
 "predictions" - a dict of predictions, indexed by "x", "x_train", and "x_test", corresponding to prediction vectors
 
+"training_time": the amount of time, in seconds, it took to train the model. 
+
 Added: 
 
 "x_pred_unnormalized" - unnormalized x pred values

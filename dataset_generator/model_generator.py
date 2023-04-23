@@ -23,6 +23,7 @@ from tensorflow.keras import datasets, layers, models
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
 
+import time
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import dataset_generator as dg 
@@ -286,6 +287,7 @@ def fit_model(model, prepared_dataset, experiment_object):
     if "use_multiprocessing" in list(model_def.keys()):
         use_multiprocessing = model_def["use_multiprocessing"]
 
+    start_time = time.time()
     #Actually train it 
     history = model.fit(
         x_vect, 
@@ -298,6 +300,7 @@ def fit_model(model, prepared_dataset, experiment_object):
         validation_data=validation_data,
         shuffle=shuffle,
         use_multiprocessing=use_multiprocessing)
+    end_time = time.time()
 
     #Restore the best model
     save_path = return_checkpoint_filepath(experiment_object)
@@ -306,7 +309,9 @@ def fit_model(model, prepared_dataset, experiment_object):
     except Exception as e:
         print("Issue loading model, likely ", e)
 
-    return history
+    total_time = end_time - start_time
+
+    return history, total_time
 
 
 
@@ -419,11 +424,14 @@ def get_all_per_feature_evals(predictions, prepared_dataset, experiment_object):
 
 
 #Create the experiment result object. 
-def create_experiment_result_object(history, model, prepared_dataset, experiment_object):
+def create_experiment_result_object(history, total_time, model, prepared_dataset, experiment_object):
     experiment_result = {} 
     
     #Get the entire model history
     experiment_result["model_history"] = history.history
+
+    #experiment training time
+    experiment_result["training_time"] = total_time
     
     #Get the test evaluation metrics 
     test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
@@ -435,6 +443,7 @@ def create_experiment_result_object(history, model, prepared_dataset, experiment
     #Get the per-feature metrics on test set.
     experiment_result["per_feature"] = get_all_per_feature_evals(experiment_result["predictions"], prepared_dataset, experiment_object)
     #ax.plot(prepared_dataset[y_index], prepared_dataset[pred_index][:, 0])
+
 
     return experiment_result
 
@@ -481,9 +490,9 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     #Build the model
     model = build_model(prepared_dataset, experiment_object)
     print(model.summary())
-    history = fit_model(model, prepared_dataset, experiment_object)
+    history, total_time = fit_model(model, prepared_dataset, experiment_object)
     save_model(model, experiment_object)
-    experiment_result = create_experiment_result_object(history, model, prepared_dataset, experiment_object)
+    experiment_result = create_experiment_result_object(history, total_time, model, prepared_dataset, experiment_object)
     save_experiment(dataset_descriptor, prepared_dataset, experiment_object, experiment_result)
     return dataset_descriptor, prepared_dataset, experiment_object, experiment_result
     #print(experiment_result)
@@ -502,7 +511,7 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
 #prepared_dataset, dataset_descriptor = dg.return_test_dataset()
 #experiment_from_experiment_object(dataset_descriptor, experiment_1)
 
-prepared_dataset, dataset_descriptor = dg.return_test_dataset()
+#prepared_dataset, dataset_descriptor = dg.return_test_dataset()
 def return_test_experiment_descriptor():
     return experiment_1
 

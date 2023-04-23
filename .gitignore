@@ -160,3 +160,8 @@ cython_debug/
 #.idea/
 
 dataset_generator/generated_files/*
+
+.keras/
+.local/
+.config/
+.nv/

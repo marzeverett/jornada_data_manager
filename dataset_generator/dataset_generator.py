@@ -367,14 +367,14 @@ def time_slice(dataset_object, df):
     y_vect = np.array(y_vect)
     x_key = np.array(x_key)
     y_key = np.array(y_key)
-    print("Number of x samples", len(x_vect))
-    print("Number of y samples", len(y_vect))
-    print("First x sample", x_vect[0])
-    print("First y sample", y_vect[0])
-    # print("First x key", x_key[0])
-    # print("First y key", y_key[0])
-    print("X shape:", x_vect.shape)
-    print("Y shape:", y_vect.shape)
+    # print("Number of x samples", len(x_vect))
+    # print("Number of y samples", len(y_vect))
+    # print("First x sample", x_vect[0])
+    # print("First y sample", y_vect[0])
+    # # print("First x key", x_key[0])
+    # # print("First y key", y_key[0])
+    # print("X shape:", x_vect.shape)
+    # print("Y shape:", y_vect.shape)
     return x_vect, y_vect, x_key, y_key
 
 
@@ -385,9 +385,9 @@ def create_dataset_from_dataset_object(dataset_object):
     df = create_merged_df(dataset_object)
     #2. Drop or fill N/A data 
     df = deal_with_missing_data(df, dataset_object)
-    print(df.describe())
+    #print(df.describe())
     #print(list(df.columns))
-    print("--------------")
+    #print("--------------")
     #3. Time Slice 
     x_vect, y_vect, x_key, y_key = time_slice(dataset_object, df)
     #4. Save. 

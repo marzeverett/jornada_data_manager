@@ -185,7 +185,8 @@ def save_to_csv(experiment_descriptor, experiment_result):
     experiment_folder_path = model_generator.get_full_experiment_folder(experiment_descriptor)
     save_path = experiment_folder_path+csv_name
     #per_feature = experiment_result["per_feature"]
-    test_metrics = experiment_result["test_metrics"]
+    test_metrics = experiment_result["test_metrics"].copy()
+    test_metrics["training_time"] = experiment_result["training_time"]
     #test_metrics["per_feature"] = test_metrics
     #df = pd.DataFrame.from_dict(test_metrics)
     df = pd.DataFrame.from_dict([test_metrics])
@@ -195,6 +196,7 @@ def save_to_main_csv(dataset_descriptor, experiment_descriptor, experiment_resul
     dict_1 = experiment_result["test_metrics"]
     dict_2 = dataset_descriptor["dataset_class"]
     dict_2.update(dict_1)
+    dict_2["training_time"] = experiment_result["training_time"]
     path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
     df = pd.DataFrame.from_dict([dict_2])
     df.to_csv(path_name, mode='a', index=False, header=False)
