@@ -80,7 +80,7 @@ def plot_model_training_history(experiment_descriptor, experiment_result, metric
 
 def get_graph_folder_path(experiment_descriptor, kind):
     experiment_folder_path = model_generator.get_full_experiment_folder(experiment_descriptor)
-    image_path = experiment_folder_path + kind + "/"    
+    image_path = experiment_folder_path + kind + "/" 
     if not os.path.exists(image_path):
         os.mkdir(image_path)
     return image_path
@@ -197,6 +197,8 @@ def save_to_main_csv(dataset_descriptor, experiment_descriptor, experiment_resul
     dict_2 = dataset_descriptor["dataset_class"]
     dict_2.update(dict_1)
     dict_2["training_time"] = experiment_result["training_time"]
+    dict_2["experiment_name"] = experiment_descriptor["experiment_name"]
+    dict_2["dataset_name"] = dataset_descriptor["dataset_name"]
     path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
     df = pd.DataFrame.from_dict([dict_2])
     df.to_csv(path_name, mode='a', index=False, header=False)
@@ -204,7 +206,8 @@ def save_to_main_csv(dataset_descriptor, experiment_descriptor, experiment_resul
 
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
-    save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
+    #Later, but not now. 
+    #save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
     save_all_model_history_graphs(experiment_descriptor, experiment_result)
     save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
     save_to_csv(experiment_descriptor, experiment_result)

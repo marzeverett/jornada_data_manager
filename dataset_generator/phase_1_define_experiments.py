@@ -5,20 +5,17 @@ from datetime import datetime, timedelta
 import os
 import json 
 import pickle 
-import dataset_generator
-import model_generator
-import graph_and_visualize 
 
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
  
-pathname = "generated_files/phase1_dataset_descriptors.pickle"
-with open(pathname, "rb") as f:
-    dataset_descriptors = pickle.load(f)
+# pathname = "generated_files/phase1_dataset_descriptors.pickle"
+# with open(pathname, "rb") as f:
+#     dataset_descriptors = pickle.load(f)
 
 base_name = "lstm_nodes"
 
-def create_experiment(num_nodes):
+def create_experiment(num_nodes, dataset_name):
     experiment_1 = {
         "model":{
             "model_type": "Sequential",
@@ -39,17 +36,33 @@ def create_experiment(num_nodes):
             "loss": "mse",
             "optimizer": "adam",
             "batch_size": 32,
-            "epochs": 2,
+            "epochs": 100,
             "test_split": 0.1,
             "validation_split": 0.2,
             "use_multiprocessing": True,
             "metrics": ["mse", "mape", "mae"],
         },
+        "dataset_name": dataset_name,
         "experiment_folder_path": experiments_base_path,
         "experiment_name": base_name+str(num_nodes)
     }
 
     return experiment_1
 
-nodes = [8, 32, 64]
+#Name HAS to include dataset or it won't work. 
+#nodes = [8, 32, 64]
+nodes = [8]
 
+
+d_pathname = "generated_files/phase1_dataset_descriptors.pickle"
+with open(d_pathname, "rb") as f:
+    dataset_descriptors = pickle.load(f)
+
+experiments = []
+for node_count in nodes:
+    for dataset in dataset_descriptors: 
+        experiments.append(create_experiment(node_count, dataset["dataset_name"]))
+
+pathname = "generated_files/phase1_experiment_descriptors.pickle"
+with open(pathname, "wb") as f:
+    pickle.dump(experiments, f)

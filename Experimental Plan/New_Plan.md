@@ -181,6 +181,8 @@ The experiment descriptor object contains the following keys:
 
 "experiment_name" - name of the experiment
 
+"dataset_name" - the name of the dataset the experiment is acting on 
+
 
 #### Model Object
 The model object is a dictionary containing the following keys: 

@@ -231,7 +231,7 @@ def compile_model(model, experiment_object):
 
 #Experiment folder path 
 def get_full_experiment_folder(experiment_object):
-    full_path = experiment_object["experiment_folder_path"] + experiment_object["experiment_name"] +"/"
+    full_path = experiment_object["experiment_folder_path"] + experiment_object["experiment_name"] +"/" +experiment_object["dataset_name"]+"/"
     return full_path
 
 #Return checkpoint filepath
@@ -266,7 +266,8 @@ def fit_model(model, prepared_dataset, experiment_object):
         y_vect = prepared_dataset["y"]
     batch_size=None
     epochs=1
-    verbose=True
+    verbose=False
+    #verbose=True
     callbacks = build_callbacks(experiment_object)
     validation_split=0.0
     validation_data=None
@@ -328,7 +329,7 @@ def evaluate_model(model, prepared_dataset, experiment_object):
     metrics_dict = {}
     #Dictionary workaround from here: https://github.com/keras-team/keras/issues/14045
     final_metrics = {name: final_metrics[val] for val, name in enumerate(model.metrics_names)}
-    print("Final metrics", final_metrics)
+    #print("Final metrics", final_metrics)
     return final_metrics
 
 
@@ -351,7 +352,7 @@ def predict_values(model, prepared_dataset):
     predictions = {} 
     values_to_predict = ["x", "x_train", "x_test"]
     for item in values_to_predict:
-        predictions[item] = model.predict(prepared_dataset[item])
+        predictions[item] = model.predict(prepared_dataset[item], verbose=False)
     return predictions 
     # Model.predict(
     #     x,
@@ -489,7 +490,7 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     prepared_dataset = split_training_test(prepared_dataset, experiment_object)
     #Build the model
     model = build_model(prepared_dataset, experiment_object)
-    print(model.summary())
+    #print(model.summary())
     history, total_time = fit_model(model, prepared_dataset, experiment_object)
     save_model(model, experiment_object)
     experiment_result = create_experiment_result_object(history, total_time, model, prepared_dataset, experiment_object)

@@ -17,8 +17,8 @@ pathname = "generated_files/phase1_dataset_descriptors.pickle"
 with open(pathname, "rb") as f:
     dataset_descriptors = pickle.load(f)
 
-index=0
-for index in range(0, len(dataset_descriptors)):
+start_index=2570
+for index in range(start_index, len(dataset_descriptors)):
     dataset_generator.create_dataset_from_dataset_object(dataset_descriptors[index])
 
 # with open('filename.pickle', 'wb') as handle:

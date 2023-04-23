@@ -28,3 +28,7 @@ exit
 nvidia-smi
 python3
 exit
+exit
+apt install msmtp msmtp-mta
+apt install mpack
+exit
