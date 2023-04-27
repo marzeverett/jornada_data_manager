@@ -6,6 +6,7 @@ import os
 import json 
 import pickle 
 
+phase_path = "generated_files/base_1_regression/"
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
  
@@ -18,6 +19,7 @@ base_name = "lstm_nodes"
 def create_experiment(num_nodes, dataset_name):
     experiment_1 = {
         "model":{
+            "kind": "LSTM",
             "model_type": "Sequential",
             #Don't include input, code will figure it out. 
             #Don't include output, code will figure it out. 
@@ -50,11 +52,11 @@ def create_experiment(num_nodes, dataset_name):
     return experiment_1
 
 #Name HAS to include dataset or it won't work. 
-#nodes = [8, 32, 64]
-nodes = [8]
+nodes = [8, 32, 64]
+#nodes = [8]
 
 
-d_pathname = "generated_files/phase1_dataset_descriptors.pickle"
+d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
 with open(d_pathname, "rb") as f:
     dataset_descriptors = pickle.load(f)
 
@@ -63,6 +65,6 @@ for node_count in nodes:
     for dataset in dataset_descriptors: 
         experiments.append(create_experiment(node_count, dataset["dataset_name"]))
 
-pathname = "generated_files/phase1_experiment_descriptors.pickle"
-with open(pathname, "wb") as f:
+e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
+with open(e_pathname, "wb") as f:
     pickle.dump(experiments, f)

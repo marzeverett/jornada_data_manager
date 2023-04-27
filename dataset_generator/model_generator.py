@@ -102,7 +102,9 @@ def split_training_test(prepared_dataset, experiment_object):
 
 
 def build_layer(model, layer_object):
+    print("Building a layer")
     layer_type = layer_object["type"]
+    print(layer_type)
     #LSTM layer 
     if layer_type == "LSTM":
         if "num_nodes" in list(layer_object.keys()):
@@ -117,11 +119,12 @@ def build_layer(model, layer_object):
         else:
             percent = 0.5
         model.add(layers.Dropout(percent))
-    return model
     #Dense Layer 
     if layer_type == "Dense":
+        print("adding a dense layer ---------------")
         activation = None
         use_bias = True
+        name = None
         if "num_nodes" in list(layer_object.keys()):
             num_nodes=layer_object["num_nodes"]
         else:
@@ -130,10 +133,13 @@ def build_layer(model, layer_object):
             activation = layer_object["activation"]
         if "use_bias" in list(layer_object.keys()):
             use_bias = layer_object["use_bias"]
+        if "name" in list(layer_object.keys()):
+            name = layer_object["name"]
         
         model.add(layers.Dense(num_nodes,
         activation=activation,
         use_bias=use_bias,
+        name=name
         ))
     return model
 
@@ -143,9 +149,18 @@ def return_base_model(model_type):
         return model 
 
 def add_input_layer(model, prepared_dataset, experiment_object):
+    model_def = experiment_object["model"]
+    activation = model_def["final_activation"]
     x = prepared_dataset["x"]
-    dims = (x.shape[1], x.shape[2])
-    model.add(layers.Input(shape=dims))
+    dimensions = x.ndim
+    #Num samples, num samples in sequnece, num features 
+    if dimensions == 3:
+        dims = (x.shape[1], x.shape[2])
+        model.add(layers.Input(shape=dims))
+    if model_def["kind"] == "AE":
+        dims = x.shape[1]
+        model.add(layers.Input(shape=dims))
+        model.add(layers.Dense(dims, activation=activation))
     return model 
 
 def add_output_layer(model, prepared_dataset, experiment_object):
@@ -156,7 +171,6 @@ def add_output_layer(model, prepared_dataset, experiment_object):
     num_dimensions = y.ndim
     if num_dimensions <= 2:
         features = y.shape[1]
-        #MARKED 
         model.add(layers.Dense(features,
             activation=activation))
     else:
@@ -267,8 +281,8 @@ def fit_model(model, prepared_dataset, experiment_object):
     batch_size=None
     epochs=1
     #CHANGE
-    verbose=False
-    #verbose=True
+    #verbose=False
+    verbose=True
     callbacks = build_callbacks(experiment_object)
     validation_split=0.0
     validation_data=None
@@ -303,16 +317,13 @@ def fit_model(model, prepared_dataset, experiment_object):
         shuffle=shuffle,
         use_multiprocessing=use_multiprocessing)
     end_time = time.time()
-
     #Restore the best model
     save_path = return_checkpoint_filepath(experiment_object)
     try:
         model.load_weights(save_path)
     except Exception as e:
         print("Issue loading model, likely ", e)
-
     total_time = end_time - start_time
-
     return history, total_time
 
 
@@ -334,38 +345,12 @@ def evaluate_model(model, prepared_dataset, experiment_object):
     return final_metrics
 
 
-    # Model.evaluate(
-    #     x=None,
-    #     y=None,
-    #     batch_size=None,
-    #     verbose="auto",
-    #     sample_weight=None,
-    #     steps=None,
-    #     callbacks=None,
-    #     max_queue_size=10,
-    #     workers=1,
-    #     use_multiprocessing=False,
-    #     return_dict=False,
-    #     **kwargs
-    # )
-
 def predict_values(model, prepared_dataset):
     predictions = {} 
     values_to_predict = ["x", "x_train", "x_test"]
     for item in values_to_predict:
         predictions[item] = model.predict(prepared_dataset[item], verbose=False)
     return predictions 
-    # Model.predict(
-    #     x,
-    #     batch_size=None,
-    #     verbose="auto",
-    #     steps=None,
-    #     callbacks=None,
-    #     max_queue_size=10,
-    #     workers=1,
-    #     use_multiprocessing=False,
-    # )
-
 
 def graph_predictions(prepared_dataset, pred_key=None, y_key=None):
     pass
@@ -423,37 +408,36 @@ def get_all_per_feature_evals(predictions, prepared_dataset, experiment_object):
     return per_feature
 
 
-
-
 #Create the experiment result object. 
 def create_experiment_result_object(history, total_time, model, prepared_dataset, experiment_object):
     experiment_result = {} 
-    
     #Get the entire model history
     experiment_result["model_history"] = history.history
-
     #experiment training time
     experiment_result["training_time"] = total_time
-    
     #Get the test evaluation metrics 
     test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
     experiment_result["test_metrics"] = test_metrics
-    
     #Predict on all x's, also test and train x's. 
     experiment_result["predictions"] = predict_values(model, prepared_dataset)
-    
     #Get the per-feature metrics on test set.
     experiment_result["per_feature"] = get_all_per_feature_evals(experiment_result["predictions"], prepared_dataset, experiment_object)
     #ax.plot(prepared_dataset[y_index], prepared_dataset[pred_index][:, 0])
-
-
     return experiment_result
 
 
 def save_model(model, experiment_object):
+    model_def = experiment_object["model"]
     path = get_full_experiment_folder(experiment_object)
     save_path = path+"model"
     model.save(save_path)
+    #If this an autoencoder, we also want to save the latent space model 
+    if model_def["kind"] == "AE":
+        latent_space = model.get_layer(name="latent_space")
+        latent_output = latent_space.output
+        latent_model = models.Model(inputs = model.input, outputs=latent_output)
+        latent_save_path = path+"latent_model"
+        latent_model.save(latent_save_path)
 
 def save_experiment(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     dd_path = get_full_experiment_folder(experiment_descriptor)+"dataset_descriptor.pickle"
@@ -491,23 +475,14 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     prepared_dataset = split_training_test(prepared_dataset, experiment_object)
     #Build the model
     model = build_model(prepared_dataset, experiment_object)
-    #print(model.summary())
+    #Change here 
+    print(model.summary())
     history, total_time = fit_model(model, prepared_dataset, experiment_object)
     save_model(model, experiment_object)
     experiment_result = create_experiment_result_object(history, total_time, model, prepared_dataset, experiment_object)
     save_experiment(dataset_descriptor, prepared_dataset, experiment_object, experiment_result)
     return dataset_descriptor, prepared_dataset, experiment_object, experiment_result
-    #print(experiment_result)
-    #test_metrics = evaluate_model(model, prepared_dataset, experiment_object)
-    #prepared_dataset = predict_values(model, prepared_dataset, experiment_object)
-    #Graph
-    #graph_predictions(prepared_dataset, pred_key=None, y_key=None)
-
-    #Save the dataset descriptor, dataset result, experiment descriptor, and experiment
-    #result in the experiment folder under the appropriate name. 
-
-    #return history, test_metrics
-
+  
 
 #RUN IT - here.
 #prepared_dataset, dataset_descriptor = dg.return_test_dataset()

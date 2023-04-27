@@ -203,17 +203,16 @@ def save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, 
     path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
     df = pd.DataFrame.from_dict([dict_2])
     #Change header back to false
-    df.to_csv(path_name, mode='a', index=False, header=True)
+    df.to_csv(path_name, mode='a', index=False, header=False)
 
 
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
     #Later, but not now. 
-    #save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
-    #save_all_model_history_graphs(experiment_descriptor, experiment_result)
-    #save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
+    save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
+    save_all_model_history_graphs(experiment_descriptor, experiment_result)
+    save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
     save_to_csv(experiment_descriptor, experiment_result)
-    #Change is here 
     save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 #experiment_1 = model_generator.return_test_experiment_descriptor()

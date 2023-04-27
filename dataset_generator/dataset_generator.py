@@ -279,7 +279,7 @@ def deal_with_missing_data(df, dataset_object):
     return df
 
 #Take a slice and make it a numpy array 
-def slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols, y_cols, input_fields, output_fields):
+def slice_to_numpy(df, x_start, y_start, x_end, y_end, input_fields, output_fields):
     #Get the proper slice 
     x = df.loc[x_start:x_end, :]
     y = df.loc[y_start:y_end, :]
@@ -327,8 +327,8 @@ def time_slice(dataset_object, df):
     y_end = y_start+output_slices_days-1
     #Get x and y values indexed properly. 
     while y_end < num_rows-1:
-        x_array, y_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols, y_cols, x_cols_names, y_cols_names)
-        x_key_array, y_key_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols, y_cols, concat_key_fields, concat_key_fields)
+        x_array, y_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols_names, y_cols_names)
+        x_key_array, y_key_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, concat_key_fields, concat_key_fields)
         if output_slices_days <= 1:
             y_array = y_array[0]
             y_key_array = y_key_array[0]
@@ -360,14 +360,57 @@ def time_slice(dataset_object, df):
     return x_vect, y_vect, x_key, y_key
 
 
+def ae_format(dataset_object, df):
+    input_slices_days = dataset_object["input_slices_days"]
+    output_slices_days = dataset_object["output_slices_days"]
+    output_offset_days = dataset_object["output_offset_days"]
+    input_fields = get_input_output_fields(dataset_object, "input_fields")
+    output_fields = get_input_output_fields(dataset_object, "output_fields")
+    concat_key_fields = [dataset_object["concat_key"]]
+   
+    #Handle any missing cols
+    actual_cols = list(df.columns)
+    actual_input = list(set(input_fields)&set(actual_cols))
+    actual_output = list(set(output_fields)&set(actual_cols))
+    x_cols = df[actual_input]
+    y_cols = df[actual_output]
+    x_cols_names = list(x_cols.columns)
+    y_cols_names = list(y_cols.columns)
+    dataset_object["x_columns"] = x_cols_names
+    dataset_object["y_columns"] = y_cols_names
+
+    x = df[x_cols_names]
+    y = df[y_cols_names]
+    #Change from a dataframe to the vector we want 
+    x_array = x.to_numpy()
+    y_array = y.to_numpy()
+
+    x_key = df[concat_key_fields]
+    y_key = df[concat_key_fields]
+
+    x_key_array = x_key.to_numpy()
+    y_key_array = y_key.to_numpy()
+
+    #CHANGE
+    # print("Cols ", actual_input)
+    # print(len(actual_input))
+    # print("Number of x samples", len(x_array))
+    # print("Number of y samples", len(y_array))
+    # print("First x sample", x_array[0])
+    # print("First y sample", y_array[0])
+    # # print("First x key", x_key[0])
+    # # print("First y key", y_key[0])
+    # print("X shape:", x_array.shape)
+    # print("Y shape:", y_array.shape)
+    return x_array, y_array, x_key_array, y_key_array
+
+
 #Take in a dataset object, create it, and save it. 
 #Takes in a dataset object, returns 
 def create_dataset_from_dataset_object(dataset_object):
     #1. Creates the merged dataset with the necessary fields 
     df = create_merged_df(dataset_object)
     #2. Drop or fill N/A data
-    #CHANGE here 
-    df.describe()
     df = deal_with_missing_data(df, dataset_object)
     # print(df.describe())
     # print(list(df.columns))
@@ -377,6 +420,16 @@ def create_dataset_from_dataset_object(dataset_object):
     #4. Save. 
     save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
     return x_vect, y_vect, x_key, y_key, dataset_object
+
+def create_ae_dataset_from_dataset_object(dataset_object):
+    #1. Creates the merged dataset with the necessary fields 
+    df = create_merged_df(dataset_object)
+    #2. Drop or fill N/A data
+    df = deal_with_missing_data(df, dataset_object)
+    x_vect, y_vect, x_key, y_key = ae_format(dataset_object, df)
+    save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
+    return x_vect, y_vect, x_key, y_key, dataset_object
+
 
 
 #create_dataset_from_dataset_object(dataset_1)

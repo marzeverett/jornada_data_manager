@@ -260,6 +260,7 @@ print(f"Successfully saved dataset descriptors to {pathname}")
 #The below for a quick test run. 
 # experiment_1 = {
 #     "model":{
+#         "kind": "LSTM",
 #         "model_type": "Sequential",
 #         #Don't include input, code will figure it out. 
 #         #Don't include output, code will figure it out. 
