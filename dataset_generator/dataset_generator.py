@@ -26,33 +26,7 @@ import pickle
 #https://numpy.org/doc/stable/reference/generated/numpy.load.html
 #https://sparkbyexamples.com/pandas/pandas-drop-columns-with-nan-none-values/  
 
-#Start with JUST One - NPP 
-sites = ["c_cali", "c_grav", "c_sand", "g_basn", "g_ibpe", "g_summ", "m_nort", "m_rabb", "m_well", "p_coll", "p_smal", "p_tobo", "t_east", "t_tayl", "t_west"]
-data_streams = {
-    "temp_hum": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min'],
-    "rain": ['Ppt_mm_Tot'],
-    "wind_300": ['WS_ms_300cm_Avg', 'WS_ms_300cm_Max', 'WS_ms_300cm_Min'],
-    "wind_150": ['WS_ms_150cm_Avg', 'WS_ms_150cm_Max', 'WS_ms_150cm_Min'],
-    "wind_75": ['WS_ms_75cm_Avg', 'WS_ms_75cm_Max', 'WS_ms_75cm_Min'],
-    "wind_dir": ['WinDir_mean_Resultant', 'WinDir_Std_Dev']
-}
-single_data_streams = {
-    "temp_hum": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min'],
-    "rain": ['Ppt_mm_Tot'],
-    "wind_300": ['WS_ms_300cm_Avg', 'WS_ms_300cm_Max', 'WS_ms_300cm_Min'],
-    "wind_150": ['WS_ms_150cm_Avg', 'WS_ms_150cm_Max', 'WS_ms_150cm_Min'],
-    "wind_75": ['WS_ms_75cm_Avg', 'WS_ms_75cm_Max', 'WS_ms_75cm_Min'],
-    "wind_dir": ['WinDir_mean_Resultant', 'WinDir_Std_Dev'],
-    "site": ["Sitename"],
-    "datetime": ["Date_datetime"]
-}
 
-def get_keep_columns(data_streams):
-    column_list = []
-    for key in list(data_streams.keys()):
-        for item in data_streams[key]:
-            column_list.append(item)
-    return column_list
 
 
 dataset_1 = {
@@ -297,6 +271,11 @@ def deal_with_missing_data(df, dataset_object):
         df = df.reset_index(drop=True)
     elif clean_method == "fill":
         df = df.fillna(method="pad")
+        #Drop columns that you can't pad. 
+        #This shifts data that was missing to the time period it was available. 
+        #Since we filled ahead of time. 
+        df= df.dropna()
+        df = df.reset_index(drop=True)
     return df
 
 #Take a slice and make it a numpy array 
@@ -311,6 +290,7 @@ def slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols, y_cols, input_fie
     x_array = x.to_numpy()
     y_array = y.to_numpy()
     return x_array, y_array
+
 
 #Time Slice! 
 #This also assumes you already have the data columns you want. 
@@ -367,6 +347,8 @@ def time_slice(dataset_object, df):
     y_vect = np.array(y_vect)
     x_key = np.array(x_key)
     y_key = np.array(y_key)
+    #CHANGE
+    # print("Cols ", actual_input)
     # print("Number of x samples", len(x_vect))
     # print("Number of y samples", len(y_vect))
     # print("First x sample", x_vect[0])
@@ -383,11 +365,13 @@ def time_slice(dataset_object, df):
 def create_dataset_from_dataset_object(dataset_object):
     #1. Creates the merged dataset with the necessary fields 
     df = create_merged_df(dataset_object)
-    #2. Drop or fill N/A data 
+    #2. Drop or fill N/A data
+    #CHANGE here 
+    df.describe()
     df = deal_with_missing_data(df, dataset_object)
-    #print(df.describe())
-    #print(list(df.columns))
-    #print("--------------")
+    # print(df.describe())
+    # print(list(df.columns))
+    # print("--------------")
     #3. Time Slice 
     x_vect, y_vect, x_key, y_key = time_slice(dataset_object, df)
     #4. Save. 

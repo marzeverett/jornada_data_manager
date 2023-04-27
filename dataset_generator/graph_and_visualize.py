@@ -192,27 +192,29 @@ def save_to_csv(experiment_descriptor, experiment_result):
     df = pd.DataFrame.from_dict([test_metrics])
     df.to_csv(save_path)
 
-def save_to_main_csv(dataset_descriptor, experiment_descriptor, experiment_result):
+def save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     dict_1 = experiment_result["test_metrics"]
     dict_2 = dataset_descriptor["dataset_class"]
     dict_2.update(dict_1)
+    dict_2["dataset_size"] = len(dataset_result["x"])
     dict_2["training_time"] = experiment_result["training_time"]
     dict_2["experiment_name"] = experiment_descriptor["experiment_name"]
     dict_2["dataset_name"] = dataset_descriptor["dataset_name"]
     path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
     df = pd.DataFrame.from_dict([dict_2])
-    df.to_csv(path_name, mode='a', index=False, header=False)
+    #Change header back to false
+    df.to_csv(path_name, mode='a', index=False, header=True)
 
 
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
     #Later, but not now. 
     #save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
-    save_all_model_history_graphs(experiment_descriptor, experiment_result)
-    save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
+    #save_all_model_history_graphs(experiment_descriptor, experiment_result)
+    #save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
     save_to_csv(experiment_descriptor, experiment_result)
     #Change is here 
-    save_to_main_csv(dataset_descriptor, experiment_descriptor, experiment_result)
+    save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 #experiment_1 = model_generator.return_test_experiment_descriptor()
 #dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.load_in_experiment_files(experiment_1)
