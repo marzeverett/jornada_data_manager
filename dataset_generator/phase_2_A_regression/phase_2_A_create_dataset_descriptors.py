@@ -25,7 +25,7 @@ dataset_1 = {
     "clean_method": "drop",
     "concat_key": "Date_datetime",
     "dataset_name": "test_dataset_1",
-    "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
+    "dataset_folder_path": "generated_files/datasets/"
 }
 
 dataset_generator.create_ae_dataset_from_dataset_object(dataset_1)
@@ -53,9 +53,6 @@ dataset_generator.create_ae_dataset_from_dataset_object(dataset_1)
 # #16 datasets 
 # #One location at a time, all streams
 # #All locations together, all streams 
-
-
-
 
 
 # def create_dataset_name(ds, l, ds_combo, l_combo, idays, odays):

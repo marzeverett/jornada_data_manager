@@ -291,6 +291,16 @@ def slice_to_numpy(df, x_start, y_start, x_end, y_end, input_fields, output_fiel
     y_array = y.to_numpy()
     return x_array, y_array
 
+#x vect is an array of samples. 
+def run_aes_first(dataset_object, x_vect, x_cols_names):
+    #Need to figure out what aes need what data, and put that into the model
+    #Start with the x_vect.
+    #latent spaces
+    latent_space_values = []
+    #Then, load in all models. 
+
+    pass
+
 
 #Time Slice! 
 #This also assumes you already have the data columns you want. 
@@ -337,7 +347,11 @@ def time_slice(dataset_object, df):
         y_vect.append(y_array)
         x_key.append(x_key_array)
         y_key.append(y_key_array)
-        #Increment
+        #If it is nested, this is where we go for it. 
+
+
+
+        #Increment    
         x_start = x_start+1
         x_end = x_end+1
         y_start = y_start+1
@@ -405,6 +419,8 @@ def ae_format(dataset_object, df):
     return x_array, y_array, x_key_array, y_key_array
 
 
+
+
 #Take in a dataset object, create it, and save it. 
 #Takes in a dataset object, returns 
 def create_dataset_from_dataset_object(dataset_object):
@@ -430,6 +446,16 @@ def create_ae_dataset_from_dataset_object(dataset_object):
     save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
     return x_vect, y_vect, x_key, y_key, dataset_object
 
+#This is for creating the models that are eventually time sliced but first
+#Run through an AE 
+def create_dataset_from_ae_input(dataset_object):
+    #1. Creates the merged dataset with the necessary fields 
+    df = create_merged_df(dataset_object)
+    #2. Drop or fill N/A data
+    df = deal_with_missing_data(df, dataset_object)
+    x_vect, y_vect, x_key, y_key = ae_format(dataset_object, df)
+    save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
+    return x_vect, y_vect, x_key, y_key, dataset_object
 
 
 #create_dataset_from_dataset_object(dataset_1)

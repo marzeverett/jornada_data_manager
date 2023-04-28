@@ -13,6 +13,8 @@ import graph_and_visualize
 
 
 dataset_1 = {
+    "target_model": "nested",
+    "ae_paths": ["generated_files/experiments/ae_test_experiment_1/test_dataset_1/"]
     "datasets": ["npp_c_cali", "npp_c_grav"],
     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
@@ -28,6 +30,24 @@ dataset_1 = {
     "dataset_folder_path": "generated_files/datasets/",
     "dataset_class": {},
 }
+
+
+# dataset_1 = {
+#     "datasets": ["npp_c_cali", "npp_c_grav"],
+#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
+#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
+#     "categorical": ["Sitename"],
+#     "normalize": True,
+#     "input_slices_days": 200,
+#     "output_slices_days": 1, 
+#     "output_offset_days": 1,
+#     "task_type": "regression",
+#     "clean_method": "drop",
+#     "concat_key": "Date_datetime",
+#     "dataset_name": "test_dataset_1",
+#     "dataset_folder_path": "generated_files/datasets/",
+#     "dataset_class": {},
+# }
 
 experiment_1 = {
     "model":{

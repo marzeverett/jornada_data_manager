@@ -12,6 +12,7 @@
 #Getting numpy column help from here: https://stackoverflow.com/questions/4455076/how-do-i-access-the-ith-column-of-a-numpy-multidimensional-array 
 #Pickle help here: https://www.pythonlikeyoumeanit.com/Module5_OddsAndEnds/WorkingWithFiles.html 
 #Use this info for per-feature error: https://neptune.ai/blog/keras-loss-functions
+#Helpful for intermediate model layer: https://androidkt.com/get-output-of-intermediate-layers-keras/  
 
 import pickle
 import os
