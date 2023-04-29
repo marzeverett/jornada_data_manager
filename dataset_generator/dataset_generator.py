@@ -246,12 +246,33 @@ def build_ae_tree(ae_paths):
     #For each ae, load it in, as well as it's descriptor
     for path in ae_paths:
         ae_model_dict load_in_ae_and_add(path, ae_model_dict)
+    
+    first_execute_list = []
     for ae_model in aes_left:
         dataset_descriptor = ae_model_dict[ae_model]["dataset_descriptor"]
-        if "ae_paths" in dataset_descriptor.keys():
+        #If this also depends on aes, load 'em in. Otherwise, it's a first tier execution and 
+        #We can pop off. 
+        if "ae_paths" in list(dataset_descriptor.keys()):
             for sub_path in dataset_descriptor["ae_paths"]:
                 if sub_path not in aes_left:
                     ae_dict = load_in_ae_and_add(ae_paths, ae_model_dict)
+        else:
+            first_execute_list.append(ae_model)
+    execute_list.append(first_execute_list)
+    #Pop off all the ones we dealt with 
+    for model in execute_list:
+        aes_left.remove(execute_list)
+    #For the rest, we can execute it next if:
+    #1. It doesn't have any ae's we depend on 
+    while aes_left != []
+        next_execute_list = []
+        new_list = []
+        for ae_model in aes_left:
+            dataset_descriptor = ae_model_dict[ae_model]["dataset_descriptor"]
+            if "ae_paths" not in list(dataset_descriptor.keys()):
+                next_execute_list.append(ae_model)
+                new_list.append(ae_model)
+            
 
 
     
