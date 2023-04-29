@@ -13,8 +13,8 @@ import graph_and_visualize
 
 
 dataset_1 = {
-    "target_model": "nested",
-    "ae_paths": ["generated_files/experiments/ae_test_experiment_1/test_dataset_1/"]
+    "target_model": "time_regression",
+    "ae_paths": ["generated_files/experiments/ae_test_experiment_2/test_dataset_1/"],
     "datasets": ["npp_c_cali", "npp_c_grav"],
     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
@@ -30,6 +30,25 @@ dataset_1 = {
     "dataset_folder_path": "generated_files/datasets/",
     "dataset_class": {},
 }
+
+
+# dataset_1 = {
+#     "target_model": "time_regression",
+#     "datasets": ["npp_c_cali", "npp_c_grav"],
+#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
+#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
+#     "categorical": ["Sitename"],
+#     "normalize": True,
+#     "input_slices_days": 200,
+#     "output_slices_days": 7, 
+#     "output_offset_days": 1,
+#     "task_type": "regression",
+#     "clean_method": "drop",
+#     "concat_key": "Date_datetime",
+#     "dataset_name": "test_dataset_1",
+#     "dataset_folder_path": "generated_files/datasets",
+#     "dataset_class": {}
+# }
 
 
 # dataset_1 = {
@@ -49,17 +68,53 @@ dataset_1 = {
 #     "dataset_class": {},
 # }
 
+#AE
+# experiment_1 = {
+#     "model":{
+#         "kind": "AE",
+#         "model_type": "Sequential",
+#         "layers": 
+#             [
+#                 {
+#                     "type": "Dense",
+#                     "num_nodes": 6,
+#                     "activation": "relu",
+#                     "name": "latent_space"
+#                 },
+#             ],
+#         "final_activation": "relu",
+#         "loss": "mse",
+#         #"loss_function": "mean_square_error",
+#         "optimizer": "adam",
+#         "batch_size": 32,
+#         "epochs": 2,
+#         "test_split": 0.1,
+#         "validation_split": 0.2,
+#         "use_multiprocessing": True,
+#         #"metrics": ["mse"]
+#         "metrics": ["mse"],
+#     },
+#     "experiment_folder_path": "generated_files/experiments/",
+#     "dataset_name": "test_dataset_1",
+#     "experiment_name": "ae_test_experiment_2"
+# }
+
+
 experiment_1 = {
     "model":{
-        "kind": "AE",
+        "kind": "LSTM",
         "model_type": "Sequential",
+        #Don't include input, code will figure it out. 
+        #Don't include output, code will figure it out. 
         "layers": 
             [
                 {
-                    "type": "Dense",
-                    "num_nodes": 6,
-                    "activation": "relu",
-                    "name": "latent_space"
+                    "type": "LSTM",
+                    "num_nodes": 31
+                },
+                {
+                    "type": "Dropout",
+                    "percent": 0.2,
                 },
             ],
         "final_activation": "relu",
@@ -72,16 +127,16 @@ experiment_1 = {
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]
-        "metrics": ["mse"],
+        "metrics": ["mse", "mape", "mae"],
     },
     "experiment_folder_path": "generated_files/experiments/",
     "dataset_name": "test_dataset_1",
-    "experiment_name": "ae_test_experiment_1"
+    "experiment_name": "test_refactor_1"
 }
 
-dataset_generator.create_ae_dataset_from_dataset_object(dataset_1)
-dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(dataset_1, experiment_1)
-graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
+dataset_generator.create_dataset_from_dataset_object(dataset_1)
+#dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(dataset_1, experiment_1)
+#graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 # #A. 
 # #Figure out i_days and o_days here 

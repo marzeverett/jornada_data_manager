@@ -5,6 +5,10 @@ from datetime import datetime, timedelta
 import os
 import json 
 import pickle 
+os.environ['TF_CPP_MIN_LOG_LEVEL']  = '3'
+import tensorflow as tf
+tf.get_logger().setLevel('ERROR')
+from tensorflow.keras import datasets, layers, models
 
 #Reverse_mapping help here: 
 #https://www.techiedelight.com/build-dictionary-from-list-of-keys-values-python/
@@ -29,58 +33,6 @@ import pickle
 
 
 
-dataset_1 = {
-    "datasets": ["npp_c_cali", "npp_c_grav"],
-    "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
-    "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
-    "categorical": ["Sitename"],
-    "normalize": True,
-    "input_slices_days": 200,
-    "output_slices_days": 1, 
-    "output_offset_days": 1,
-    "task_type": "regression",
-    "clean_method": "drop",
-    "concat_key": "Date_datetime",
-    "dataset_name": "test_dataset_1",
-    "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
-}
-
-
-# #Note the same column can't be mapped to 2 different names!!! 
-# dataset_1 = {
-#     "datasets": ["npp_c_cali", "npp_c_grav"],
-#     "input_fields": {
-#         "npp_c_cali": {
-#             "Air_TempC_Avg": "Air_TempC_Avg",
-#             "Air_TempC_Max": "Air_TempC_Max"
-#         },
-#         "npp_c_grav": {
-#             "Relative_Humidity_Avg": "Relative_Humidity_Avg",
-#             "Relative_Humidity_Max": "Relative_Humidity_Max"
-#         },
-#     },
-#     "output_fields": {
-#         "npp_c_cali": {
-#             "Air_TempC_Avg": "Air_TempC_Avg",
-#             "Air_TempC_Max": "Air_TempC_Max"
-#         },
-#         "npp_c_grav": {
-#             "Relative_Humidity_Avg": "Relative_Humidity_Avg",
-#             "Relative_Humidity_Max": "Relative_Humidity_Max",
-#         },
-#     },
-#     "categorical": ["Sitename"],
-#     "normalize": True,
-#     "input_slices_days": 200,
-#     "output_slices_days": 1,
-#     "output_offset_days": 1,
-#     "task_type": "regression",
-#     #"clean_method": "drop",
-#     "clean_method": "fill",
-#     "concat_key": "Date_datetime",
-#     "dataset_name": "test_dataset_1",
-#     "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
-# }
 
 
 
@@ -237,12 +189,8 @@ def create_merged_df(dataset_object):
         prefix_concat = prefix_string+concat_key
         #Import the appropriate module 
         save_name = "pickled_datasets/"+dataset+".pkl"
-        #module = importlib.import_module(dataset, package=None)
-        #Get the dataframe from the module
-        #df = module.return_data()
         df = pd.read_pickle(save_name)
         #Drop any columns that are all NaN
-        # Drop columns that have all NaN values
         #Reduce where we can 
         df = create_reduced_dataframe(dataset, df, dataset_object)
         #Rename 
@@ -278,79 +226,79 @@ def deal_with_missing_data(df, dataset_object):
         df = df.reset_index(drop=True)
     return df
 
-#Take a slice and make it a numpy array 
-def slice_to_numpy(df, x_start, y_start, x_end, y_end, input_fields, output_fields):
-    #Get the proper slice 
-    x = df.loc[x_start:x_end, :]
-    y = df.loc[y_start:y_end, :]
-    #Restrict to only the input and output fields we are using 
-    x = x[input_fields]
-    y = y[output_fields]
-    #Change from a dataframe to the vector we want 
-    x_array = x.to_numpy()
-    y_array = y.to_numpy()
-    return x_array, y_array
+def load_in_ae_and_add(ae_paths, ae_model_dict):
+    full_model_path = path + "latent_model"
+    ae_model = models.load_model(full_model_path)
+    full_dd_path = path+"dataset_descriptor.pickle"
+    with open(full_dd_path, "rb") as f:
+        dataset_object = pickle.load(f)
+    ae_model_dict[ae_path] = {
+        "name": ae_path,
+        "dataset_descriptor": dataset_object,
+        "model": ae_model
+    }
+    return ae_model_dict
 
-#x vect is an array of samples. 
-def run_aes_first(dataset_object, x_vect, x_cols_names):
-    #Need to figure out what aes need what data, and put that into the model
-    #Start with the x_vect.
-    #latent spaces
-    latent_space_values = []
-    #Then, load in all models. 
+def build_ae_tree(ae_paths):
+    aes_left = ae_paths.copy()
+    ae_model_dict = {}
+    execute_list = []
+    #For each ae, load it in, as well as it's descriptor
+    for path in ae_paths:
+        ae_model_dict load_in_ae_and_add(path, ae_model_dict)
+    for ae_model in aes_left:
+        dataset_descriptor = ae_model_dict[ae_model]["dataset_descriptor"]
+        if "ae_paths" in dataset_descriptor.keys():
+            for sub_path in dataset_descriptor["ae_paths"]:
+                if sub_path not in aes_left:
+                    ae_dict = load_in_ae_and_add(ae_paths, ae_model_dict)
 
-    pass
 
+    
+def process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect):
+    ae_paths = dataset_object["ae_paths"]
+    execute_list = build_ae_tree(ae_paths)
+
+
+
+#This makes sure only columns present both in the spec and the dataset make it in. 
+def get_actual_input_output_columns(dataset_object, df):
+    input_fields = get_input_output_fields(dataset_object, "input_fields")
+    output_fields = get_input_output_fields(dataset_object, "output_fields")
+    actual_cols = list(df.columns)
+    actual_input = list(set(input_fields)&set(actual_cols))
+    actual_output = list(set(output_fields)&set(actual_cols))
+    return actual_input, actual_output
 
 #Time Slice! 
 #This also assumes you already have the data columns you want. 
 #This time slice function assumes there are no day gaps - I think this works for 
 #this dataset, but is probably not broadly applicable 
-def time_slice(dataset_object, df):
+def time_slice(df, dataset_object, x, y, x_key, y_key):
     input_slices_days = dataset_object["input_slices_days"]
     output_slices_days = dataset_object["output_slices_days"]
     output_offset_days = dataset_object["output_offset_days"]
-    input_fields = get_input_output_fields(dataset_object, "input_fields")
-    output_fields = get_input_output_fields(dataset_object, "output_fields")
-    concat_key_fields = [dataset_object["concat_key"]]
-    #Handle any missing cols
-    actual_cols = list(df.columns)
-    actual_input = list(set(input_fields)&set(actual_cols))
-    actual_output = list(set(output_fields)&set(actual_cols))
-    # x_cols = df[input_fields]
-    # y_cols = df[output_fields]
-    x_cols = df[actual_input]
-    y_cols = df[actual_output]
-    x_cols_names = list(x_cols.columns)
-    y_cols_names = list(y_cols.columns)
-    dataset_object["x_columns"] = x_cols_names
-    dataset_object["y_columns"] = y_cols_names
-    #print("Dataset object ", dataset_object)
     num_rows = len(df)
-    x_vect = []
-    y_vect = []
-    x_key = []
-    y_key = []
+    x_vect, y_vect, x_key_vect, y_key_vect = [], [], [], []
     x_start = 0
     x_end = input_slices_days-1
     y_start = x_end+output_offset_days
     y_end = y_start+output_slices_days-1
     #Get x and y values indexed properly. 
     while y_end < num_rows-1:
-        x_array, y_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, x_cols_names, y_cols_names)
-        x_key_array, y_key_array = slice_to_numpy(df, x_start, y_start, x_end, y_end, concat_key_fields, concat_key_fields)
-        if output_slices_days <= 1:
-            y_array = y_array[0]
-            y_key_array = y_key_array[0]
-        #Add to our samples
+        x_array = x[x_start:x_end+1]
+        x_key_array = x_key[x_start:x_end+1]
+        if y_start == y_end:
+            y_array = y[y_start]
+            y_key_array = y_key[y_start]
+        else:
+            y_array = y[y_start:y_end+1]
+            y_key_array = y_key[y_start:y_end+1]
         x_vect.append(x_array)
         y_vect.append(y_array)
-        x_key.append(x_key_array)
-        y_key.append(y_key_array)
+        x_key_vect.append(x_key_array)
+        y_key_vect.append(y_key_array)
         #If it is nested, this is where we go for it. 
-
-
-
         #Increment    
         x_start = x_start+1
         x_end = x_end+1
@@ -359,67 +307,58 @@ def time_slice(dataset_object, df):
     #Finally, convert to a numpy array 
     x_vect = np.array(x_vect)
     y_vect = np.array(y_vect)
-    x_key = np.array(x_key)
-    y_key = np.array(y_key)
-    #CHANGE
-    # print("Cols ", actual_input)
-    # print("Number of x samples", len(x_vect))
-    # print("Number of y samples", len(y_vect))
-    # print("First x sample", x_vect[0])
-    # print("First y sample", y_vect[0])
-    # # print("First x key", x_key[0])
-    # # print("First y key", y_key[0])
-    # print("X shape:", x_vect.shape)
-    # print("Y shape:", y_vect.shape)
-    return x_vect, y_vect, x_key, y_key
+    x_key_vect = np.array(x_key_vect)
+    y_key_vect = np.array(y_key_vect)
+    return x_vect, y_vect, x_key_vect, y_key_vect
 
+#Prints stuff. Kinda useful for debugging. 
+def print_output_data_info(actual_input, x_vect, y_vect, x_key, y_key):
+    print("Cols ", actual_input)
+    print("Number of x samples", len(x_vect))
+    print("Number of y samples", len(y_vect))
+    print("First x sample", x_vect[0])
+    print("First y sample", y_vect[0])
+    print("x_key_shape", x_key.shape)
+    print("y_key shape", y_key.shape)
+    #print("First x key", x_key[0])
+    #print("First y key", y_key[0])
+    print("X shape:", x_vect.shape)
+    print("Y shape:", y_vect.shape)
 
-def ae_format(dataset_object, df):
-    input_slices_days = dataset_object["input_slices_days"]
-    output_slices_days = dataset_object["output_slices_days"]
-    output_offset_days = dataset_object["output_offset_days"]
-    input_fields = get_input_output_fields(dataset_object, "input_fields")
-    output_fields = get_input_output_fields(dataset_object, "output_fields")
+#Formats the data so the model can accept it
+#Takes care of autoencoders preprocessing and time-slicing, too. 
+def format_data_model_ready(dataset_object, df):
+    target_model = dataset_object["target_model"]
     concat_key_fields = [dataset_object["concat_key"]]
-   
-    #Handle any missing cols
-    actual_cols = list(df.columns)
-    actual_input = list(set(input_fields)&set(actual_cols))
-    actual_output = list(set(output_fields)&set(actual_cols))
+    #Handles any missing columns 
+    actual_input, actual_output = get_actual_input_output_columns(dataset_object, df)
+    #Slice x and y, and x and y keys. Add this info to the dataset descriptor
     x_cols = df[actual_input]
     y_cols = df[actual_output]
+    key_cols = df[concat_key_fields]
     x_cols_names = list(x_cols.columns)
     y_cols_names = list(y_cols.columns)
     dataset_object["x_columns"] = x_cols_names
     dataset_object["y_columns"] = y_cols_names
-
-    x = df[x_cols_names]
-    y = df[y_cols_names]
-    #Change from a dataframe to the vector we want 
-    x_array = x.to_numpy()
-    y_array = y.to_numpy()
-
-    x_key = df[concat_key_fields]
-    y_key = df[concat_key_fields]
-
-    x_key_array = x_key.to_numpy()
-    y_key_array = y_key.to_numpy()
-
-    #CHANGE
-    # print("Cols ", actual_input)
-    # print(len(actual_input))
-    # print("Number of x samples", len(x_array))
-    # print("Number of y samples", len(y_array))
-    # print("First x sample", x_array[0])
-    # print("First y sample", y_array[0])
-    # # print("First x key", x_key[0])
-    # # print("First y key", y_key[0])
-    # print("X shape:", x_array.shape)
-    # print("Y shape:", y_array.shape)
-    return x_array, y_array, x_key_array, y_key_array
+    #Convert to numpy array
+    x_vect = x_cols.to_numpy()
+    y_vect = y_cols.to_numpy()
+    x_key_vect = key_cols.to_numpy()
+    y_key_vect = key_cols.to_numpy()
+    #If this model needs to be preprocessed through an ae, do that first
+    if "ae_paths" in list(dataset_object.keys()):
+        process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
+    #If this is a time regression model, we need to slice it up. 
+    if target_model == "time_regression":
+        x_vect, y_vect, x_key_vect, y_key_vect = time_slice(df, dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
+    print_output_data_info(actual_input, x_vect, y_vect, x_key_vect, y_key_vect)
+    return x_vect, y_vect, x_key_vect, y_key_vect
 
 
-
+def print_dataset_info(df):
+    print(df.describe())
+    print(list(df.columns))
+    print("--------------")
 
 #Take in a dataset object, create it, and save it. 
 #Takes in a dataset object, returns 
@@ -428,40 +367,13 @@ def create_dataset_from_dataset_object(dataset_object):
     df = create_merged_df(dataset_object)
     #2. Drop or fill N/A data
     df = deal_with_missing_data(df, dataset_object)
-    # print(df.describe())
-    # print(list(df.columns))
-    # print("--------------")
-    #3. Time Slice 
-    x_vect, y_vect, x_key, y_key = time_slice(dataset_object, df)
+    #print_dataset_info(df)
+    #3. Format for Keras model - this handles LSTM, AE, and (soon) Nested
+    x_vect, y_vect, x_key, y_key = format_data_model_ready(dataset_object, df)
     #4. Save. 
     save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
     return x_vect, y_vect, x_key, y_key, dataset_object
 
-def create_ae_dataset_from_dataset_object(dataset_object):
-    #1. Creates the merged dataset with the necessary fields 
-    df = create_merged_df(dataset_object)
-    #2. Drop or fill N/A data
-    df = deal_with_missing_data(df, dataset_object)
-    x_vect, y_vect, x_key, y_key = ae_format(dataset_object, df)
-    save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
-    return x_vect, y_vect, x_key, y_key, dataset_object
-
-#This is for creating the models that are eventually time sliced but first
-#Run through an AE 
-def create_dataset_from_ae_input(dataset_object):
-    #1. Creates the merged dataset with the necessary fields 
-    df = create_merged_df(dataset_object)
-    #2. Drop or fill N/A data
-    df = deal_with_missing_data(df, dataset_object)
-    x_vect, y_vect, x_key, y_key = ae_format(dataset_object, df)
-    save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
-    return x_vect, y_vect, x_key, y_key, dataset_object
-
-
-#create_dataset_from_dataset_object(dataset_1)
-
-#dataset_result, dataset_descriptor = load_in_data(dataset_1)
-#print(dataset_result, dataset_descriptor)
 
 
 def return_test_dataset():
@@ -470,3 +382,57 @@ def return_test_dataset():
 
 
 
+
+# dataset_1 = {
+#     "target_model": "time_regression",
+#     "datasets": ["npp_c_cali", "npp_c_grav"],
+#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
+#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
+#     "categorical": ["Sitename"],
+#     "normalize": True,
+#     "input_slices_days": 200,
+#     "output_slices_days": 1, 
+#     "output_offset_days": 1,
+#     "task_type": "regression",
+#     "clean_method": "drop",
+#     "concat_key": "Date_datetime",
+#     "dataset_name": "test_dataset_1",
+#     "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
+# }
+
+
+# #Note the same column can't be mapped to 2 different names!!! 
+# dataset_1 = {
+#     "datasets": ["npp_c_cali", "npp_c_grav"],
+#     "input_fields": {
+#         "npp_c_cali": {
+#             "Air_TempC_Avg": "Air_TempC_Avg",
+#             "Air_TempC_Max": "Air_TempC_Max"
+#         },
+#         "npp_c_grav": {
+#             "Relative_Humidity_Avg": "Relative_Humidity_Avg",
+#             "Relative_Humidity_Max": "Relative_Humidity_Max"
+#         },
+#     },
+#     "output_fields": {
+#         "npp_c_cali": {
+#             "Air_TempC_Avg": "Air_TempC_Avg",
+#             "Air_TempC_Max": "Air_TempC_Max"
+#         },
+#         "npp_c_grav": {
+#             "Relative_Humidity_Avg": "Relative_Humidity_Avg",
+#             "Relative_Humidity_Max": "Relative_Humidity_Max",
+#         },
+#     },
+#     "categorical": ["Sitename"],
+#     "normalize": True,
+#     "input_slices_days": 200,
+#     "output_slices_days": 1,
+#     "output_offset_days": 1,
+#     "task_type": "regression",
+#     #"clean_method": "drop",
+#     "clean_method": "fill",
+#     "concat_key": "Date_datetime",
+#     "dataset_name": "test_dataset_1",
+#     "dataset_folder_path": "/home/marz/Documents/ai_research/jornada/datasets/"
+# }
