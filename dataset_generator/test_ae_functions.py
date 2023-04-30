@@ -11,9 +11,11 @@ import dataset_generator
 import model_generator
 import graph_and_visualize 
 
+#Need to re-run without AE_paths keyword on dataset 
 
 dataset_1 = {
     "target_model": "time_regression",
+    #"target_model": "nested",
     "ae_paths": ["generated_files/experiments/ae_test_experiment_2/test_dataset_1/"],
     "datasets": ["npp_c_cali", "npp_c_grav"],
     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
@@ -68,7 +70,7 @@ dataset_1 = {
 #     "dataset_class": {},
 # }
 
-#AE
+# #AE
 # experiment_1 = {
 #     "model":{
 #         "kind": "AE",
@@ -135,8 +137,8 @@ experiment_1 = {
 }
 
 dataset_generator.create_dataset_from_dataset_object(dataset_1)
-#dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(dataset_1, experiment_1)
-#graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
+dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(dataset_1, experiment_1)
+graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 # #A. 
 # #Figure out i_days and o_days here 

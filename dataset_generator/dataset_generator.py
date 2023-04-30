@@ -29,7 +29,7 @@ from tensorflow.keras import datasets, layers, models
 #https://www.w3schools.com/python/python_howto_remove_duplicates.asp 
 #https://numpy.org/doc/stable/reference/generated/numpy.load.html
 #https://sparkbyexamples.com/pandas/pandas-drop-columns-with-nan-none-values/  
-
+#https://www.techbeamers.com/program-python-list-contains-elements/ 
 
 
 
@@ -226,59 +226,116 @@ def deal_with_missing_data(df, dataset_object):
         df = df.reset_index(drop=True)
     return df
 
-def load_in_ae_and_add(ae_paths, ae_model_dict):
+def load_in_ae_and_add(path, ae_model_dict):
     full_model_path = path + "latent_model"
     ae_model = models.load_model(full_model_path)
     full_dd_path = path+"dataset_descriptor.pickle"
     with open(full_dd_path, "rb") as f:
         dataset_object = pickle.load(f)
-    ae_model_dict[ae_path] = {
-        "name": ae_path,
+    ae_model_dict[path] = {
+        "name": path,
         "dataset_descriptor": dataset_object,
         "model": ae_model
     }
     return ae_model_dict
 
+#Eventually need to kill the print statements here 
 def build_ae_tree(ae_paths):
     aes_left = ae_paths.copy()
     ae_model_dict = {}
     execute_list = []
+    all_list = []
     #For each ae, load it in, as well as it's descriptor
     for path in ae_paths:
-        ae_model_dict load_in_ae_and_add(path, ae_model_dict)
-    
+        ae_model_dict = load_in_ae_and_add(path, ae_model_dict)
     first_execute_list = []
     for ae_model in aes_left:
+        print("MODEL", ae_model)
         dataset_descriptor = ae_model_dict[ae_model]["dataset_descriptor"]
         #If this also depends on aes, load 'em in. Otherwise, it's a first tier execution and 
         #We can pop off. 
         if "ae_paths" in list(dataset_descriptor.keys()):
+            print("HERE")
             for sub_path in dataset_descriptor["ae_paths"]:
                 if sub_path not in aes_left:
-                    ae_dict = load_in_ae_and_add(ae_paths, ae_model_dict)
+                    ae_model_dict = load_in_ae_and_add(sub_path, ae_model_dict)
         else:
             first_execute_list.append(ae_model)
+            all_list.append(ae_model)
+    print("AE dict", ae_model_dict)
+    print("First execute list", first_execute_list)
     execute_list.append(first_execute_list)
     #Pop off all the ones we dealt with 
-    for model in execute_list:
-        aes_left.remove(execute_list)
+    for model in first_execute_list:
+        aes_left.remove(model)
     #For the rest, we can execute it next if:
     #1. It doesn't have any ae's we depend on 
-    while aes_left != []
-        next_execute_list = []
+    while aes_left != []:
         new_list = []
         for ae_model in aes_left:
             dataset_descriptor = ae_model_dict[ae_model]["dataset_descriptor"]
             if "ae_paths" not in list(dataset_descriptor.keys()):
                 next_execute_list.append(ae_model)
                 new_list.append(ae_model)
-            
+                all_list.append(ae_model)
+            else:
+                current_list = dataset_descriptor["ae_paths"]
+                check_new = all(item in all_list for item in current_list)
+                #This means all aes have already been loaded in 
+                if check_new:            
+                    new_list.append(ae_model)
+                    all_list.append(ae_model)
+                else:
+                    for item in current_list:
+                        if item not in all_list:
+                            ae_model_dict = load_in_ae_and_add(item, ae_model_dict)
+
+        #Pop off the ones we have dealt with 
+        print("New list", new_list)
+        if new_list != []:
+            execute_list.append(new_list)
+            for model in new_list:
+                aes_left.remove(model)
+        print(aes_left)
+
+    #CHANGE
+    print(execute_list)
+    print(ae_model_dict)
+    return execute_list, ae_model_dict
+
 
 
     
 def process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect):
     ae_paths = dataset_object["ae_paths"]
-    execute_list = build_ae_tree(ae_paths)
+    execute_list, ae_dict = build_ae_tree(ae_paths)
+    x_columns = dataset_object["x_columns"]
+    #For each identified autoencoder, in each stage. 
+    #CHECK
+    latent_space = []
+    #latent_space = []
+    for stage_aes in execute_list:
+        for model in stage_aes:
+            #Get the input for the model
+            model_dict = ae_dict[model]
+            new_model = model_dict["model"]
+            model_dd = model_dict["dataset_descriptor"]
+            model_inputs = model_dd["x_columns"]
+            #CHECK THIS!!!!!
+            relevant_indexes = []
+            for input_col in model_inputs:
+                relevant_indexes.append(x_columns.index(input_col))
+            ae_input = x_vect[:, relevant_indexes]
+            ae_output = new_model.predict(ae_input)
+            #CHECK - This probably won't work for more than 2 ae's. 
+            if latent_space == []:
+                latent_space = ae_output
+            else:
+                #This should actually work, but should definitely check. 
+                latent_space = np.hstack((latent_space, ae_output))
+    print(latent_space.shape)
+    print(latent_space[0])
+    return latent_space, y_vect, x_key_vect, y_key_vect 
 
 
 
@@ -368,7 +425,7 @@ def format_data_model_ready(dataset_object, df):
     y_key_vect = key_cols.to_numpy()
     #If this model needs to be preprocessed through an ae, do that first
     if "ae_paths" in list(dataset_object.keys()):
-        process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
+        x_vect, y_vect, x_key_vect, y_key_vect = process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
     #If this is a time regression model, we need to slice it up. 
     if target_model == "time_regression":
         x_vect, y_vect, x_key_vect, y_key_vect = time_slice(df, dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
