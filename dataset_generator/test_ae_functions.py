@@ -13,7 +13,7 @@ import graph_and_visualize
 
 #Need to re-run without AE_paths keyword on dataset 
 
-# dataset_1 = {
+# dataset_0 = {
 #     "target_model": "time_regression",
 #     #"target_model": "nested",
 #     "ae_paths": ["generated_files/experiments/ae_test_experiment_2/test_dataset_1/"],
@@ -34,51 +34,11 @@ import graph_and_visualize
 # }
 
 
-# dataset_1 = {
-#     "target_model": "ae",
-#     #"target_model": "nested",
-#     "datasets": ["npp_c_cali"],
-#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
-#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
-#     "categorical": ["Sitename"],
-#     "normalize": True,
-#     "input_slices_days": 30,
-#     "output_slices_days": 1, 
-#     "output_offset_days": 1,
-#     "task_type": "regression",
-#     "clean_method": "drop",
-#     "concat_key": "Date_datetime",
-#     "dataset_name": "single_1",
-#     "dataset_folder_path": "generated_files/datasets/",
-#     "dataset_class": {},
-# }
 
-
-# dataset_2 = {
-#     "target_model": "ae",
-#     #"target_model": "nested",
-#     "datasets": ["npp_c_grav"],
-#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
-#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
-#     "categorical": ["Sitename"],
-#     "normalize": True,
-#     "input_slices_days": 30,
-#     "output_slices_days": 1, 
-#     "output_offset_days": 1,
-#     "task_type": "regression",
-#     "clean_method": "drop",
-#     "concat_key": "Date_datetime",
-#     "dataset_name": "single_2",
-#     "dataset_folder_path": "generated_files/datasets/",
-#     "dataset_class": {},
-# }
-
-
-dataset_5 = {
-    "target_model": "time_regression",
+dataset_1 = {
+    "target_model": "ae",
     #"target_model": "nested",
-    "ae_paths": ["generated_files/experiments/aes_to_ae_experiment_1/aes_to_ae_1/"],
-    "datasets": ["npp_c_cali", "npp_c_grav"],
+    "datasets": ["npp_c_cali"],
     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
     "categorical": ["Sitename"],
@@ -89,161 +49,23 @@ dataset_5 = {
     "task_type": "regression",
     "clean_method": "drop",
     "concat_key": "Date_datetime",
-    "dataset_name": "aes_to_ae_to_lstm_1",
+    "dataset_name": "single_1",
     "dataset_folder_path": "generated_files/datasets/",
     "dataset_class": {},
 }
 
 
-# dataset_1 = {
-#     "target_model": "time_regression",
-#     "datasets": ["npp_c_cali", "npp_c_grav"],
-#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
-#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
-#     "categorical": ["Sitename"],
-#     "normalize": True,
-#     "input_slices_days": 200,
-#     "output_slices_days": 7, 
-#     "output_offset_days": 1,
-#     "task_type": "regression",
-#     "clean_method": "drop",
-#     "concat_key": "Date_datetime",
-#     "dataset_name": "test_dataset_1",
-#     "dataset_folder_path": "generated_files/datasets",
-#     "dataset_class": {}
-# }
-
-
-# dataset_1 = {
-#     "datasets": ["npp_c_cali", "npp_c_grav"],
-#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
-#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
-#     "categorical": ["Sitename"],
-#     "normalize": True,
-#     "input_slices_days": 200,
-#     "output_slices_days": 1, 
-#     "output_offset_days": 1,
-#     "task_type": "regression",
-#     "clean_method": "drop",
-#     "concat_key": "Date_datetime",
-#     "dataset_name": "test_dataset_1",
-#     "dataset_folder_path": "generated_files/datasets/",
-#     "dataset_class": {},
-# }
-
-# # #AE
-# experiment_1 = {
-#     "model":{
-#         "kind": "AE",
-#         "model_type": "Sequential",
-#         "layers": 
-#             [
-#                 {
-#                     "type": "Dense",
-#                     "num_nodes": 6,
-#                     "activation": "relu",
-#                     "name": "latent_space"
-#                 },
-#             ],
-#         "final_activation": "relu",
-#         "loss": "mse",
-#         #"loss_function": "mean_square_error",
-#         "optimizer": "adam",
-#         "batch_size": 32,
-#         "epochs": 2,
-#         "test_split": 0.1,
-#         "validation_split": 0.2,
-#         "use_multiprocessing": True,
-#         #"metrics": ["mse"]
-#         "metrics": ["mse"],
-#     },
-#     "experiment_folder_path": "generated_files/experiments/",
-#     "dataset_name": "single_1",
-#     "experiment_name": "single_experiment_1"
-# }
-
-
-# # # #AE
-# experiment_4 = {
-#     "model":{
-#         "kind": "AE",
-#         "model_type": "Sequential",
-#         "layers": 
-#             [
-#                 {
-#                     "type": "Dense",
-#                     "num_nodes": 6,
-#                     "activation": "relu",
-#                     "name": "latent_space"
-#                 },
-#             ],
-#         "final_activation": "relu",
-#         "loss": "mse",
-#         #"loss_function": "mean_square_error",
-#         "optimizer": "adam",
-#         "batch_size": 32,
-#         "epochs": 2,
-#         "test_split": 0.1,
-#         "validation_split": 0.2,
-#         "use_multiprocessing": True,
-#         #"metrics": ["mse"]
-#         "metrics": ["mse"],
-#     },
-#     "experiment_folder_path": "generated_files/experiments/",
-#     "dataset_name": "aes_to_ae_1",
-#     "experiment_name": "aes_to_ae_experiment_1"
-# }
-
-
-# experiment_1 = {
-#     "model":{
-#         "kind": "LSTM",
-#         "model_type": "Sequential",
-#         #Don't include input, code will figure it out. 
-#         #Don't include output, code will figure it out. 
-#         "layers": 
-#             [
-#                 {
-#                     "type": "LSTM",
-#                     "num_nodes": 31
-#                 },
-#                 {
-#                     "type": "Dropout",
-#                     "percent": 0.2,
-#                 },
-#             ],
-#         "final_activation": "relu",
-#         "loss": "mse",
-#         #"loss_function": "mean_square_error",
-#         "optimizer": "adam",
-#         "batch_size": 32,
-#         "epochs": 2,
-#         "test_split": 0.1,
-#         "validation_split": 0.2,
-#         "use_multiprocessing": True,
-#         #"metrics": ["mse"]
-#         "metrics": ["mse", "mape", "mae"],
-#     },
-#     "experiment_folder_path": "generated_files/experiments/",
-#     "dataset_name": "test_dataset_1",
-#     "experiment_name": "test_refactor_1"
-# }
-
-experiment_5 = {
+experiment_1 = {
     "model":{
-        "kind": "LSTM",
+        "kind": "AE",
         "model_type": "Sequential",
-        #Don't include input, code will figure it out. 
-        #Don't include output, code will figure it out. 
         "layers": 
             [
                 {
-                    "type": "LSTM",
-                    "num_nodes": 31
-                },
-                {
-                    "type": "Dropout",
-                    "percent": 0.2,
+                    "type": "Dense",
+                    "num_nodes": 6,
+                    "activation": "relu",
+                    "name": "latent_space"
                 },
             ],
         "final_activation": "relu",
@@ -256,15 +78,17 @@ experiment_5 = {
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]
-        "metrics": ["mse", "mape", "mae"],
+        "metrics": ["mse"],
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "dataset_name": "aes_to_ae_to_lstm_1",
-    "experiment_name": "aes_to_ae_to_lstm_experiment_1"
+    "dataset_name": "single_1",
+    "experiment_name": "single_experiment_1"
 }
 
-dataset_generator.create_dataset_from_dataset_object(dataset_5)
-dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(dataset_5, experiment_5)
+
+
+dataset_generator.create_dataset_from_dataset_object(dataset_1)
+dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(dataset_1, experiment_1)
 graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 #Next step - really need to try it with more than one AE! 
@@ -786,4 +610,60 @@ graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, ex
 #     "experiment_folder_path": "generated_files/experiments/",
 #     "dataset_name": "aes_to_ae_1",
 #     "experiment_name": "aes_to_ae_experiment_1"
+# }
+
+
+# dataset_5 = {
+#     "target_model": "time_regression",
+#     #"target_model": "nested",
+#     "ae_paths": ["generated_files/experiments/aes_to_ae_experiment_1/aes_to_ae_1/"],
+#     "datasets": ["npp_c_cali", "npp_c_grav"],
+#     "input_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', "Sitename"],
+#     "output_fields": ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min',"Sitename"],
+#     "categorical": ["Sitename"],
+#     "normalize": True,
+#     "input_slices_days": 30,
+#     "output_slices_days": 1, 
+#     "output_offset_days": 1,
+#     "task_type": "regression",
+#     "clean_method": "drop",
+#     "concat_key": "Date_datetime",
+#     "dataset_name": "aes_to_ae_to_lstm_1",
+#     "dataset_folder_path": "generated_files/datasets/",
+#     "dataset_class": {},
+# }
+
+
+# experiment_5 = {
+#     "model":{
+#         "kind": "LSTM",
+#         "model_type": "Sequential",
+#         #Don't include input, code will figure it out. 
+#         #Don't include output, code will figure it out. 
+#         "layers": 
+#             [
+#                 {
+#                     "type": "LSTM",
+#                     "num_nodes": 31
+#                 },
+#                 {
+#                     "type": "Dropout",
+#                     "percent": 0.2,
+#                 },
+#             ],
+#         "final_activation": "relu",
+#         "loss": "mse",
+#         #"loss_function": "mean_square_error",
+#         "optimizer": "adam",
+#         "batch_size": 32,
+#         "epochs": 2,
+#         "test_split": 0.1,
+#         "validation_split": 0.2,
+#         "use_multiprocessing": True,
+#         #"metrics": ["mse"]
+#         "metrics": ["mse", "mape", "mae"],
+#     },
+#     "experiment_folder_path": "generated_files/experiments/",
+#     "dataset_name": "aes_to_ae_to_lstm_1",
+#     "experiment_name": "aes_to_ae_to_lstm_experiment_1"
 # }
