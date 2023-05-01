@@ -185,7 +185,10 @@ The experiment descriptor object contains the following keys:
 
 
 #### Model Object
-The model object is a dictionary containing the following keys: 
+The model object is a dictionary containing the following keys:
+
+"kind": "LSTM", or "AE" for Autoencoder 
+
 "model_type": The type of model (for instance, Sequential)
 
 "layers" -  a list of layer objects, see below. You won't bother with defining the input and output layer in this case
@@ -209,7 +212,7 @@ The model object is a dictionary containing the following keys:
 "metrics": A list of metric names to use in evaluating and tracking the model and its history 
 
 #### Model layer object
-A model layer objectwill always have one key:
+A model layer object will always have one key:
 
 "type" - for instance, "LSTM", "Dropout"
 
@@ -310,6 +313,7 @@ Experiment Descriptor 1
 ```bash
 experiment_1 = {
     "model":{
+        "kind": "LSTM",
         "model_type": "Sequential",
         #Don't include input, code will figure it out. 
         #Don't include output, code will figure it out. 
