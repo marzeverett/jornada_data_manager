@@ -256,7 +256,6 @@ if not os.path.exists(pathname):
     os.makedirs(pathname)
 with open(pathname, "wb") as f:
     pickle.dump(global_data_descriptors_list, f)
-
 print(f"Successfully saved dataset descriptors to {pathname}")
 
 
