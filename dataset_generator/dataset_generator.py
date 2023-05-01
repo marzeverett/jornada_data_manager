@@ -264,18 +264,20 @@ def build_ae_tree(ae_paths):
             all_list.append(ae_model)
     print("AE dict", ae_model_dict)
     print("First execute list", first_execute_list)
-    execute_list.append(first_execute_list)
+    if first_execute_list != []:
+        execute_list.append(first_execute_list)
     #Pop off all the ones we dealt with 
     for model in first_execute_list:
         aes_left.remove(model)
     #For the rest, we can execute it next if:
     #1. It doesn't have any ae's we depend on 
+    print("AEs LEft", aes_left)
     while aes_left != []:
         new_list = []
         for ae_model in aes_left:
             dataset_descriptor = ae_model_dict[ae_model]["dataset_descriptor"]
             if "ae_paths" not in list(dataset_descriptor.keys()):
-                next_execute_list.append(ae_model)
+                #next_execute_list.append(ae_model)
                 new_list.append(ae_model)
                 all_list.append(ae_model)
             else:
@@ -289,7 +291,10 @@ def build_ae_tree(ae_paths):
                     for item in current_list:
                         if item not in all_list:
                             ae_model_dict = load_in_ae_and_add(item, ae_model_dict)
-
+                            aes_left.append(item)
+                    #new_list.append(ae_model)
+                    #all_list.append(ae_model)
+                            
         #Pop off the ones we have dealt with 
         print("New list", new_list)
         if new_list != []:
@@ -304,8 +309,7 @@ def build_ae_tree(ae_paths):
     return execute_list, ae_model_dict
 
 
-
-    
+ #This function could use a LOT better documentation    
 def process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect):
     ae_paths = dataset_object["ae_paths"]
     execute_list, ae_dict = build_ae_tree(ae_paths)
