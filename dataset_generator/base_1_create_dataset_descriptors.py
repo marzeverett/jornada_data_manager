@@ -94,6 +94,7 @@ def make_single_fields_dict(datasets, fields):
 #Data all together, all sites predict all weather for all sites. 
 def return_non_varying_data_descriptor():
     main_dict = {}
+    main_dict["target_model"] = "time_regression"
     main_dict["normalize"]= True
     main_dict["task_type"]= "regression"
     main_dict["clean_method"] = "fill"
@@ -252,8 +253,8 @@ print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
 
 #Save base dataset descriptors
 pathname = phase_path + "phase1_dataset_descriptors.pickle"
-if not os.path.exists(pathname):
-    os.makedirs(pathname)
+if not os.path.exists(phase_path):
+    os.makedirs(phase_path)
 with open(pathname, "wb") as f:
     pickle.dump(global_data_descriptors_list, f)
 print(f"Successfully saved dataset descriptors to {pathname}")

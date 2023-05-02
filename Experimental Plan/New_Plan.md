@@ -121,6 +121,8 @@ A Dataset a dictionary with the following keys:
 
 "reverse_mapping": A dictionary, where the new value of a merged column (after being renamed with it's prefix dataset) corresponds to its original field name. 
 
+"dataset_folder_path": the parent folder of the dataset
+
 "dataset_class": A dictionary, which could have the following keys:
     "location_scheme": the index the location level scheme (0-4) being used 
     "datastream_scheme" the index of the data stream level scheme (0-4) being used

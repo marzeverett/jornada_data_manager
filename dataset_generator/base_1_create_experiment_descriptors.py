@@ -18,10 +18,11 @@ experiments_base_path = "generated_files/experiments/"
 base_name = "lstm_nodes"
 
 def determine_lstm_nodes_from_dataset_object(dataset_object, scaling_factor):
-    input_nodes = len(dataset_object["x"[-1]])
-    output_nodes = len(dataset_object["y"[-1]])
+    input_nodes = dataset_object["x"].shape[-1]
+    output_nodes = dataset_object["y"].shape[-1]
     #(this is approximate)
-    num_samples = len(dataset_object["x"[0]])*0.78
+    #num_samples = len(dataset_object["y"])*0.78
+    num_samples = len(dataset_object["y"])
     nodes = num_samples / (scaling_factor * (input_nodes + output_nodes))
     nodes = math.ceil(nodes)
     return nodes 
@@ -58,6 +59,7 @@ def create_basic_lstm_model_object(num_nodes):
             "validation_split": 0.2,
             "use_multiprocessing": True,
             "metrics": ["mse", "mape", "mae"],
+            "verbose": False,
         }
     return model 
 
@@ -85,13 +87,14 @@ def create_basic_ae_model_object(num_nodes):
         "use_multiprocessing": True,
         #"metrics": ["mse"]
         "metrics": ["mse"],
+        "verbose": False,
     }
     return model 
 
 def create_experiment(num_nodes, dataset_name, kind):
-    if "kind" == "base_lstm":
+    if kind == "base_lstm":
         model = create_basic_lstm_model_object(num_nodes)
-    elif "kind" == "base_ae":
+    elif kind == "base_ae":
         model = create_basic_ae_model_object(num_nodes)
     experiment_1 = {
         "model": model,
@@ -101,11 +104,19 @@ def create_experiment(num_nodes, dataset_name, kind):
     }
     return experiment_1
 
+def load_dataset_result_from_dataset_descriptor(dataset_descriptor):
+    dataset_base_path = dataset_descriptor["dataset_folder_path"]
+    full_path = dataset_base_path + dataset_descriptor["dataset_name"]+"/dataset_result.pickle"
+    with open(full_path, "rb") as f:
+        dataset_result = pickle.load(f)
+    return dataset_result
 #Name HAS to include dataset or it won't work. 
 #nodes = [8, 32, 64]
 #nodes = [8]
 #These are now scaling factors 
-scaling_factors = [2, 5, 8]
+#scaling_factors = [2, 5, 8]
+#scaling_factors = [0.1, 0.2, 0.5]
+scaling_factors = [8, 32, 64]
 
 
 d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
@@ -115,15 +126,17 @@ with open(d_pathname, "rb") as f:
 experiments = []
 for scaling_factor in scaling_factors:
     for dataset in dataset_descriptors: 
-        node_count = determine_lstm_nodes_from_dataset_object(dataset, scaling_factor)
+        #d_result = load_dataset_result_from_dataset_descriptor(dataset)
+        #node_count = determine_lstm_nodes_from_dataset_object(d_result, scaling_factor)
         #This is where we will generate an experiment for a particular node code stream.
-        experiments.append(create_experiment(node_count, dataset["dataset_name"], "base_lstm"))
-
+        experiments.append(create_experiment(scaling_factor, dataset["dataset_name"], "base_lstm"))
 e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
-if not os.path.exists(e_pathname):
-    os.makedirs(e_pathname)
+if not os.path.exists(phase_path):
+    os.makedirs(phase_path)
 with open(e_pathname, "wb") as f:
     pickle.dump(experiments, f)
+
+
 
 
 # experiments = []

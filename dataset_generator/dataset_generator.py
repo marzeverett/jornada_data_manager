@@ -366,7 +366,7 @@ def format_data_model_ready(dataset_object, df):
     #If this is a time regression model, we need to slice it up. 
     if target_model == "time_regression":
         x_vect, y_vect, x_key_vect, y_key_vect = time_slice(df, dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
-    print_output_data_info(actual_input, x_vect, y_vect, x_key_vect, y_key_vect)
+    #print_output_data_info(actual_input, x_vect, y_vect, x_key_vect, y_key_vect)
     return x_vect, y_vect, x_key_vect, y_key_vect
 
 
