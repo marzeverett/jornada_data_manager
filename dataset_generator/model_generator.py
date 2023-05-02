@@ -103,9 +103,7 @@ def split_training_test(prepared_dataset, experiment_object):
 
 
 def build_layer(model, layer_object):
-    print("Building a layer")
     layer_type = layer_object["type"]
-    print(layer_type)
     #LSTM layer 
     if layer_type == "LSTM":
         if "num_nodes" in list(layer_object.keys()):
@@ -122,7 +120,6 @@ def build_layer(model, layer_object):
         model.add(layers.Dropout(percent))
     #Dense Layer 
     if layer_type == "Dense":
-        print("adding a dense layer ---------------")
         activation = None
         use_bias = True
         name = None
@@ -477,7 +474,7 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     #Build the model
     model = build_model(prepared_dataset, experiment_object)
     #Change here 
-    print(model.summary())
+    #print(model.summary())
     history, total_time = fit_model(model, prepared_dataset, experiment_object)
     save_model(model, experiment_object)
     experiment_result = create_experiment_result_object(history, total_time, model, prepared_dataset, experiment_object)
