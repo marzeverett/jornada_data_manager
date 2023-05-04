@@ -16,7 +16,7 @@ import graph_and_visualize
 #vary the number of nodes
 #"generated_files/phase1_experiment_descriptors.pickle"
 #To start, let's just run one experiment descriptor. 
-phase_path = "generated_files/base_1_regression/"
+phase_path = "generated_files/phase_1_ae_together/"
 dataset_base_path = "generated_files/datasets/"
 e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
 d_pathname = phase_path + "phase1_dataset_descriptors.pickle"

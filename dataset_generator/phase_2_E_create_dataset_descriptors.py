@@ -11,9 +11,36 @@ import dataset_generator
 import model_generator
 import graph_and_visualize 
 
+
+
+# #A. 
+# #Figure out i_days and o_days here 
+# #What datasets will we be using here? 
+# #Individual data streams 
+# #One per location 
+# #l - 2
+# #ds - 2 
+# #l_combo - 0- 14
+# #ds_combo - 0 - 3 
+# #One all together 
+# #l - 3 
+# #ds - 3 
+# #l_combo - 0
+# #ds_combo - 0 - 3 
+
+
+# #A.0 - maybe single stream? 
+# #A.1 - maybe LSTM AE? 
+# #B. LSTM on top is on ALL streams 
+# #Have to generate this dataset by saving model outputs 
+# #16 datasets 
+# #One location at a time, all streams
+# #All locations together, all streams 
+
+
 #Let's take out min Wind, since it is almost always 0. 
 #datasets_base_path = "/home/maryeverett/Documents/ai_research/jornada_data_manager/experiments/generated_files/datasets/"
-phase_path = "generated_files/base_1_regression/"
+phase_path = "generated_files/phase_1_ae_together/"
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
 
@@ -94,7 +121,9 @@ def make_single_fields_dict(datasets, fields):
 #Data all together, all sites predict all weather for all sites. 
 def return_non_varying_data_descriptor():
     main_dict = {}
-    main_dict["target_model"] = "time_regression"
+    #main_dict["target_model"] = "time_regression"
+    #this is the change from base 1!
+    main_dict["target_model"] = "ae"
     main_dict["normalize"]= True
     main_dict["task_type"]= "regression"
     main_dict["clean_method"] = "fill"
@@ -244,38 +273,34 @@ def generate_base_4():
 def generate_base_datasets():
     generate_base_1()
     generate_base_2()
-    generate_base_3()
-    generate_base_4()
 
 #Generated base dataset descriptors
 generate_base_datasets()
 print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
+print(global_data_descriptors_list[0])
 
-#Save base dataset descriptors
-pathname = phase_path + "phase1_dataset_descriptors.pickle"
-if not os.path.exists(phase_path):
-    os.makedirs(phase_path)
-with open(pathname, "wb") as f:
-    pickle.dump(global_data_descriptors_list, f)
-print(f"Successfully saved dataset descriptors to {pathname}")
+# #Save base dataset descriptors
+# pathname = phase_path + "phase1_dataset_descriptors.pickle"
+# if not os.path.exists(phase_path):
+#     os.makedirs(phase_path)
+# #Write out the dataset descriptors     
+# with open(pathname, "wb") as f:
+#     pickle.dump(global_data_descriptors_list, f)
+# print(f"Successfully saved dataset descriptors to {pathname}")
 
 
-#The below for a quick test run. 
+# #The below for a quick test run. 
 # experiment_1 = {
-#     "model":{
-#         "kind": "LSTM",
+#     "model": {
+#         "kind": "AE",
 #         "model_type": "Sequential",
-#         #Don't include input, code will figure it out. 
-#         #Don't include output, code will figure it out. 
 #         "layers": 
 #             [
 #                 {
-#                     "type": "LSTM",
-#                     "num_nodes": 8
-#                 },
-#                 {
-#                     "type": "Dropout",
-#                     "percent": 0.2,
+#                     "type": "Dense",
+#                     "num_nodes": 1,
+#                     "activation": "relu",
+#                     "name": "latent_space"
 #                 },
 #             ],
 #         "final_activation": "relu",
@@ -283,20 +308,21 @@ print(f"Successfully saved dataset descriptors to {pathname}")
 #         #"loss_function": "mean_square_error",
 #         "optimizer": "adam",
 #         "batch_size": 32,
-#         "epochs": 100,
+#         "epochs": 10,
 #         "test_split": 0.1,
 #         "validation_split": 0.2,
 #         "use_multiprocessing": True,
 #         #"metrics": ["mse"]
-#         "metrics": ["mse", "mape", "mae"],
+#         "metrics": ["mse"],
+#         "verbose": True,
 #     },
 #     "experiment_folder_path": "generated_files/experiments/",
-#     "experiment_name": "test_experiment_5"
+#     "experiment_name": "test_experiment_6"
 # }
 
-# #149 is a failing model - no longer!
 # index = 68
-# indexes = [0, 68, 149, 800, 1198]
+# indexes = [0]
+# #indexes = [0, 68, 149, 800, 1198]
 # #indexes = [68]
 # #print(global_data_descriptors_list[index])
 # for index in indexes:

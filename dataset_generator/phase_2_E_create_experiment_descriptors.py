@@ -7,7 +7,7 @@ import json
 import pickle 
 import math 
 
-phase_path = "generated_files/base_1_regression/"
+phase_path = "generated_files/phase_1_ae_together/"
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
  
@@ -15,7 +15,7 @@ experiments_base_path = "generated_files/experiments/"
 # with open(pathname, "rb") as f:
 #     dataset_descriptors = pickle.load(f)
 
-base_name = "lstm_nodes"
+base_name = "ae_together"
 
 def determine_lstm_nodes_from_dataset_object(dataset_object, scaling_factor):
     input_nodes = dataset_object["x"].shape[-1]
@@ -26,6 +26,13 @@ def determine_lstm_nodes_from_dataset_object(dataset_object, scaling_factor):
     nodes = num_samples / (scaling_factor * (input_nodes + output_nodes))
     nodes = math.ceil(nodes)
     return nodes 
+
+def determine_ae_nodes_from_dataset_object(dataset_object, scaling_factor):
+    input_nodes = dataset_object["x"].shape[-1]
+    num_ae_nodes = input_nodes * scaling_factor
+    nodes = math.ceil(num_ae_nodes)
+    return nodes 
+
 
 def determine_ae_nodes_from_dataset_object(dataset_object, compression):
     input_nodes = len(dataset_object["x"[-1]])
@@ -81,7 +88,7 @@ def create_basic_ae_model_object(num_nodes):
         #"loss_function": "mean_square_error",
         "optimizer": "adam",
         "batch_size": 32,
-        "epochs": 2,
+        "epochs": 100,
         "test_split": 0.1,
         "validation_split": 0.2,
         "use_multiprocessing": True,
@@ -116,7 +123,7 @@ def load_dataset_result_from_dataset_descriptor(dataset_descriptor):
 #These are now scaling factors 
 #scaling_factors = [2, 5, 8]
 #scaling_factors = [0.1, 0.2, 0.5]
-scaling_factors = [8, 32, 64]
+scaling_factors = [0.3, 0.5, 0.7, 0.9]
 
 
 d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
@@ -126,23 +133,18 @@ with open(d_pathname, "rb") as f:
 experiments = []
 for scaling_factor in scaling_factors:
     for dataset in dataset_descriptors: 
-        #d_result = load_dataset_result_from_dataset_descriptor(dataset)
-        #node_count = determine_lstm_nodes_from_dataset_object(d_result, scaling_factor)
+        d_result = load_dataset_result_from_dataset_descriptor(dataset)
+        node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
         #This is where we will generate an experiment for a particular node code stream.
-        experiments.append(create_experiment(scaling_factor, dataset["dataset_name"], "base_lstm"))
+        experiments.append(create_experiment(scaling_factor, dataset["dataset_name"], "base_ae"))
 e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
-if not os.path.exists(phase_path):
-    os.makedirs(phase_path)
-with open(e_pathname, "wb") as f:
-    pickle.dump(experiments, f)
 
 
+#Save (make sure you uncomment)
 
-
-# experiments = []
-# for node_count in nodes:
-#     for dataset in dataset_descriptors: 
-#         #This is where we will generate an experiment for a particular node code stream.
-#         experiments.append(create_experiment(node_count, dataset["dataset_name"], "base_lstm"))
+# if not os.path.exists(phase_path):
+#     os.makedirs(phase_path)
+# with open(e_pathname, "wb") as f:
+#     pickle.dump(experiments, f)
 
 

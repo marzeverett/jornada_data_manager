@@ -9,7 +9,7 @@ import sys
 sys.path.append("..")
 import dataset_generator
 
-phase_path = "generated_files/base_1_regression/"
+phase_path = "generated_files/phase_1_ae_together/"
 
 
 

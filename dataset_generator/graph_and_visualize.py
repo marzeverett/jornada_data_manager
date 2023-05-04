@@ -200,6 +200,12 @@ def save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, 
     dict_2["training_time"] = experiment_result["training_time"]
     dict_2["experiment_name"] = experiment_descriptor["experiment_name"]
     dict_2["dataset_name"] = dataset_descriptor["dataset_name"]
+   
+    model_descriptor = experiment_descriptor["model"]
+    metrics = model_descriptor["metrics"]
+    num_epochs = len(metrics[0])
+    dict_2["num_epochs"] = num_epochs
+   
     path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
     df = pd.DataFrame.from_dict([dict_2])
     #Change header back to false
@@ -210,8 +216,8 @@ def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descrip
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
     #Later, but not now. 
     #save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
-    #save_all_model_history_graphs(experiment_descriptor, experiment_result)
-    #save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
+    save_all_model_history_graphs(experiment_descriptor, experiment_result)
+    save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
     save_to_csv(experiment_descriptor, experiment_result)
     save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
