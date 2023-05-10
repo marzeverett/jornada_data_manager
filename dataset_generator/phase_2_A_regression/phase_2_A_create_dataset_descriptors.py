@@ -60,8 +60,8 @@ l = ["ALL_TO_ALL", "ONE_TO_ONE", "ALL_TO_ONE", "ONE_TO_ALL"]
 ds = ["ALL_TO_ALL", "ONE_TO_ONE", "ALL_TO_ONE", "ONE_TO_ALL"]
 separate_stream_headers = ["temp_hum", "rain", "wind_speed", "wind_direction"]
 all_data_streams = ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', 'Ppt_mm_Tot', 'WS_ms_300cm_Avg', 'WS_ms_300cm_Max', 'WS_ms_150cm_Avg', 'WS_ms_150cm_Max', 'WS_ms_75cm_Avg', 'WS_ms_75cm_Max', 'WinDir_mean_Resultant', 'WinDir_Std_Dev']
-input_days = [7, 30, 60, 90, 365]
-output_days = [1, 7, 30]
+input_days = [30, 60]
+output_days = [1, 7]
 global_data_descriptors_list = []
 
 #Also run a basic experiment. 
