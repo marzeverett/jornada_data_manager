@@ -279,8 +279,8 @@ def fit_model(model, prepared_dataset, experiment_object):
     batch_size=None
     epochs=1
     #CHANGE
-    #verbose=False
-    verbose=True
+    verbose=False
+    #verbose=True
     callbacks = build_callbacks(experiment_object)
     validation_split=0.0
     validation_data=None
