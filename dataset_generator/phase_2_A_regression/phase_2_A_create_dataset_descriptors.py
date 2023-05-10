@@ -135,7 +135,8 @@ def return_non_varying_data_descriptor():
 
 def create_dataset_name(ds, l, ds_combo, l_combo, idays, odays):
     version = 1
-    name = "simple_reg_weather.v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
+    #Change here 
+    name = "simple_reg_weather_ae.v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
     return name
 
 def create_dataset_class(ds, l, ds_combo, l_combo, idays, odays):
@@ -277,16 +278,16 @@ def generate_base_datasets():
 #Generated base dataset descriptors
 generate_base_datasets()
 print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
-print(global_data_descriptors_list[0])
+#print(global_data_descriptors_list[0])
 
-# #Save base dataset descriptors
-# pathname = phase_path + "phase1_dataset_descriptors.pickle"
-# if not os.path.exists(phase_path):
-#     os.makedirs(phase_path)
-# #Write out the dataset descriptors     
-# with open(pathname, "wb") as f:
-#     pickle.dump(global_data_descriptors_list, f)
-# print(f"Successfully saved dataset descriptors to {pathname}")
+#Save base dataset descriptors
+pathname = phase_path + "phase1_dataset_descriptors.pickle"
+if not os.path.exists(phase_path):
+    os.makedirs(phase_path)
+#Write out the dataset descriptors     
+with open(pathname, "wb") as f:
+    pickle.dump(global_data_descriptors_list, f)
+print(f"Successfully saved dataset descriptors to {pathname}")
 
 
 # #The below for a quick test run. 

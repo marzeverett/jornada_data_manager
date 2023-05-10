@@ -40,7 +40,7 @@ import graph_and_visualize
 
 #Let's take out min Wind, since it is almost always 0. 
 #datasets_base_path = "/home/maryeverett/Documents/ai_research/jornada_data_manager/experiments/generated_files/datasets/"
-phase_path = "generated_files/phase_1_ae_individual/"
+phase_path = "generated_files/phase_1_ae_together/"
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
 
@@ -133,10 +133,10 @@ def return_non_varying_data_descriptor():
     main_dict["categorical"]= []
     return main_dict
 
+#Changed name here 
 def create_dataset_name(ds, l, ds_combo, l_combo, idays, odays):
     version = 1
-    #Change here 
-    name = "simple_reg_weather_ae.v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
+    name = "simple_reg_weather_ae_together.v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
     return name
 
 def create_dataset_class(ds, l, ds_combo, l_combo, idays, odays):
@@ -272,22 +272,22 @@ def generate_base_4():
 
 
 def generate_base_datasets():
-    generate_base_3()
-    generate_base_4()
+    generate_base_1()
+    generate_base_2()
 
 #Generated base dataset descriptors
 generate_base_datasets()
 print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
-#print(global_data_descriptors_list[0])
+print(global_data_descriptors_list[0])
 
-#Save base dataset descriptors
-pathname = phase_path + "phase1_dataset_descriptors.pickle"
-if not os.path.exists(phase_path):
-    os.makedirs(phase_path)
-#Write out the dataset descriptors     
-with open(pathname, "wb") as f:
-    pickle.dump(global_data_descriptors_list, f)
-print(f"Successfully saved dataset descriptors to {pathname}")
+# #Save base dataset descriptors
+# pathname = phase_path + "phase1_dataset_descriptors.pickle"
+# if not os.path.exists(phase_path):
+#     os.makedirs(phase_path)
+# #Write out the dataset descriptors     
+# with open(pathname, "wb") as f:
+#     pickle.dump(global_data_descriptors_list, f)
+# print(f"Successfully saved dataset descriptors to {pathname}")
 
 
 # #The below for a quick test run. 

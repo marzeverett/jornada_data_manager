@@ -7,7 +7,7 @@ import json
 import pickle 
 import math 
 
-phase_path = "generated_files/phase_1_ae_individual/"
+phase_path = "generated_files/phase_1_ae_together/"
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
  
@@ -15,7 +15,7 @@ experiments_base_path = "generated_files/experiments/"
 # with open(pathname, "rb") as f:
 #     dataset_descriptors = pickle.load(f)
 
-base_name = "ae_individual"
+base_name = "ae_together"
 
 def determine_lstm_nodes_from_dataset_object(dataset_object, scaling_factor):
     input_nodes = dataset_object["x"].shape[-1]
@@ -142,9 +142,9 @@ e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
 
 #Save (make sure you uncomment)
 
-if not os.path.exists(phase_path):
-    os.makedirs(phase_path)
-with open(e_pathname, "wb") as f:
-    pickle.dump(experiments, f)
+# if not os.path.exists(phase_path):
+#     os.makedirs(phase_path)
+# with open(e_pathname, "wb") as f:
+#     pickle.dump(experiments, f)
 
 
