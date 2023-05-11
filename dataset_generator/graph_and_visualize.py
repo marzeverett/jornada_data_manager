@@ -203,7 +203,7 @@ def save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, 
    
     model_descriptor = experiment_descriptor["model"]
     metrics = experiment_result["model_history"]
-    num_epochs = len(metrics[0])
+    num_epochs = len(metrics["loss"])
     dict_2["num_epochs"] = num_epochs
    
     path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
