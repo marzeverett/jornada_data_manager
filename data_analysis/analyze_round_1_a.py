@@ -24,10 +24,11 @@ cols = [
     "dataset_size",
     "training_time",
     "experiment_name",
-    "dataset_name"
+    "dataset_name",
+    "dummy"
 ]
 
-data = pd.read_csv('1_main_metrics.csv', names=cols)
+data = pd.read_csv('phase_1_A_main_metrics.csv', names=cols)
 
 print(data.head())
 
@@ -40,13 +41,17 @@ print(data.head())
 #https://www.geeksforgeeks.org/pandas-groupby-multiple-values-and-plotting-results/ 
 #df = data.groupby(["input_days", "output_days"]).mean()["mse"]
 
-df = data.groupby(["input_days", "output_days"]).mean()
+#df = data.groupby(["dataset_name", "experiment_name"]).mean()
 #df = data.groupby(["input_days", "output_days"])
 
+#df = data.groupby("experiment_name").mean()
+df = data
 #df.plot(y="mse")
 df.plot(kind="bar", y="mse")
-plt.xticks(rotation=30)
+#plt.xticks(rotation=30)
 plt.show()
+
+#Might need to re-run these with a patience of 30. 
 
 # # plot the dataframe
 # df.plot(x="Name", y=["Price", "User Rating"], kind="bar", figsize=(9, 8))

@@ -264,7 +264,8 @@ def build_callbacks(experiment_object):
 
     early_stop = tf.keras.callbacks.EarlyStopping(
         monitor="val_loss",
-        patience=10,
+        #Change is here!
+        patience=30,
         mode="min",
         restore_best_weights=True,
     )
