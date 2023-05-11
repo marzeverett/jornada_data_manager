@@ -278,16 +278,16 @@ def generate_base_datasets():
 #Generated base dataset descriptors
 generate_base_datasets()
 print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
-print(global_data_descriptors_list[0])
+#print(global_data_descriptors_list[0])
 
-# #Save base dataset descriptors
-# pathname = phase_path + "phase1_dataset_descriptors.pickle"
-# if not os.path.exists(phase_path):
-#     os.makedirs(phase_path)
-# #Write out the dataset descriptors     
-# with open(pathname, "wb") as f:
-#     pickle.dump(global_data_descriptors_list, f)
-# print(f"Successfully saved dataset descriptors to {pathname}")
+#Save base dataset descriptors
+pathname = phase_path + "phase1_dataset_descriptors.pickle"
+if not os.path.exists(phase_path):
+    os.makedirs(phase_path)
+#Write out the dataset descriptors     
+with open(pathname, "wb") as f:
+    pickle.dump(global_data_descriptors_list, f)
+print(f"Successfully saved dataset descriptors to {pathname}")
 
 
 # #The below for a quick test run. 
