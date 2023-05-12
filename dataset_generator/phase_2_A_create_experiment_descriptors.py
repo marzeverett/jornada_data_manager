@@ -7,7 +7,7 @@ import json
 import pickle 
 import math 
 
-phase_path = "generated_files/phase_1_ae_together/"
+phase_path = "generated_files/phase_1_ae_individual/"
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
  
@@ -15,7 +15,7 @@ experiments_base_path = "generated_files/experiments/"
 # with open(pathname, "rb") as f:
 #     dataset_descriptors = pickle.load(f)
 
-base_name = "ae_together"
+base_name = "ae_individual"
 
 def determine_lstm_nodes_from_dataset_object(dataset_object, scaling_factor):
     input_nodes = dataset_object["x"].shape[-1]

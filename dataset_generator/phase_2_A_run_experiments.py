@@ -10,14 +10,13 @@ sys.path.append("..")
 import dataset_generator
 import model_generator
 import graph_and_visualize 
-import traceback
 
 
 #make a list of our experiments. In this case, we will just have three, and the will only
 #vary the number of nodes
 #"generated_files/phase1_experiment_descriptors.pickle"
 #To start, let's just run one experiment descriptor. 
-phase_path = "generated_files/phase_1_ae_together/"
+phase_path = "generated_files/phase_1_ae_individual/"
 dataset_base_path = "generated_files/datasets/"
 e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
 d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
@@ -44,7 +43,6 @@ for i in range(start_index, end):
             graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
     except Exception as e:
         print(f"Error running experiment {i} for reason {e}")
-        traceback.print_exc()
         # message = f"Error on experiment index {i} for reason {e}"
         # alert(message) 
 

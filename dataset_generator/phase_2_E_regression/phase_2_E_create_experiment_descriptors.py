@@ -142,9 +142,9 @@ e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
 
 #Save (make sure you uncomment)
 
-# if not os.path.exists(phase_path):
-#     os.makedirs(phase_path)
-# with open(e_pathname, "wb") as f:
-#     pickle.dump(experiments, f)
+if not os.path.exists(phase_path):
+    os.makedirs(phase_path)
+with open(e_pathname, "wb") as f:
+    pickle.dump(experiments, f)
 
 

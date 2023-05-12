@@ -40,7 +40,7 @@ import graph_and_visualize
 
 #Let's take out min Wind, since it is almost always 0. 
 #datasets_base_path = "/home/maryeverett/Documents/ai_research/jornada_data_manager/experiments/generated_files/datasets/"
-phase_path = "generated_files/phase_1_ae_together/"
+phase_path = "generated_files/phase_1_ae_individual/"
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
 
@@ -133,10 +133,10 @@ def return_non_varying_data_descriptor():
     main_dict["categorical"]= []
     return main_dict
 
-#Changed name here 
 def create_dataset_name(ds, l, ds_combo, l_combo, idays, odays):
     version = 1
-    name = "simple_reg_weather_ae_together.v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
+    #Change here 
+    name = "simple_reg_weather_ae.v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
     return name
 
 def create_dataset_class(ds, l, ds_combo, l_combo, idays, odays):
@@ -272,8 +272,8 @@ def generate_base_4():
 
 
 def generate_base_datasets():
-    generate_base_1()
-    generate_base_2()
+    generate_base_3()
+    generate_base_4()
 
 #Generated base dataset descriptors
 generate_base_datasets()
