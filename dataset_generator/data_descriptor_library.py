@@ -12,35 +12,22 @@ import model_generator
 import graph_and_visualize 
 
 
-
-# #A. 
-# #Figure out i_days and o_days here 
-# #What datasets will we be using here? 
-# #Individual data streams 
-# #One per location 
-# #l - 2
-# #ds - 2 
-# #l_combo - 0- 14
-# #ds_combo - 0 - 3 
-# #One all together 
-# #l - 3 
-# #ds - 3 
-# #l_combo - 0
-# #ds_combo - 0 - 3 
-
-
-# #A.0 - maybe single stream? 
-# #A.1 - maybe LSTM AE? 
-# #B. LSTM on top is on ALL streams 
-# #Have to generate this dataset by saving model outputs 
-# #16 datasets 
-# #One location at a time, all streams
-# #All locations together, all streams 
-
-
 #Let's take out min Wind, since it is almost always 0. 
 #datasets_base_path = "/home/maryeverett/Documents/ai_research/jornada_data_manager/experiments/generated_files/datasets/"
-phase_path = "generated_files/phase_1_ae_individual/"
+
+#These will be set in the function 
+parameters_dict = {
+    "phase_path": "generated_files/phase_1_ae_individual/",
+    "input_days": [30, 60],
+    "output_days": [1, 7],
+    "target_model": "time_regression",
+    "base_dataset_name": "simple_reg_weather_ae",
+    "list_of_base_sets": [],
+    "ae_models": [],
+    "ae_prev_names": []
+}
+
+
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
 
@@ -60,8 +47,7 @@ l = ["ALL_TO_ALL", "ONE_TO_ONE", "ALL_TO_ONE", "ONE_TO_ALL"]
 ds = ["ALL_TO_ALL", "ONE_TO_ONE", "ALL_TO_ONE", "ONE_TO_ALL"]
 separate_stream_headers = ["temp_hum", "rain", "wind_speed", "wind_direction"]
 all_data_streams = ['Air_TempC_Avg', 'Air_TempC_Max', 'Air_TempC_Min', 'Relative_Humidity_Avg', 'Relative_Humidity_Max', 'Relative_Humidity_Min', 'Ppt_mm_Tot', 'WS_ms_300cm_Avg', 'WS_ms_300cm_Max', 'WS_ms_150cm_Avg', 'WS_ms_150cm_Max', 'WS_ms_75cm_Avg', 'WS_ms_75cm_Max', 'WinDir_mean_Resultant', 'WinDir_Std_Dev']
-input_days = [30, 60]
-output_days = [1, 7]
+
 global_data_descriptors_list = []
 
 #Also run a basic experiment. 
@@ -120,10 +106,12 @@ def make_single_fields_dict(datasets, fields):
 
 #Data all together, all sites predict all weather for all sites. 
 def return_non_varying_data_descriptor():
+    global parameters_dict
     main_dict = {}
     #main_dict["target_model"] = "time_regression"
     #this is the change from base 1!
-    main_dict["target_model"] = "ae"
+    target_model = parameters_dict["target_model"]
+    main_dict["target_model"] = target_model
     main_dict["normalize"]= True
     main_dict["task_type"]= "regression"
     main_dict["clean_method"] = "fill"
@@ -133,10 +121,11 @@ def return_non_varying_data_descriptor():
     main_dict["categorical"]= []
     return main_dict
 
-def create_dataset_name(ds, l, ds_combo, l_combo, idays, odays):
+
+def create_dataset_name(base_name, ds, l, ds_combo, l_combo, idays, odays):
     version = 1
     #Change here 
-    name = "simple_reg_weather_ae.v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
+    name = base_name+".v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
     return name
 
 def create_dataset_class(ds, l, ds_combo, l_combo, idays, odays):
@@ -175,9 +164,19 @@ def return_input_output_dict_combo(kind, loc_or_site):
     return main_dict
 
 
+def return_ae_paths(ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays):
+    ae_paths = []
+    for i in range(0, len(ae_models)):
+        d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
+        first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+        ae_paths.append(first_path)
+        return ae_paths
+
+
 #This can be called outside 
 #l_combo_item is a dictionary of datasets (input/output) 
 def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, odays, odays_index):
+    global parameters_dict
     #global_data_descriptors_list = []
     dataset_dict = return_non_varying_data_descriptor()
     input_list_l = l_combo_item["input"]
@@ -198,7 +197,8 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
         o_streams = output_list_ds
     dataset_dict["input_slices_days"] = idays
     dataset_dict["output_slices_days"] = odays
-    name = create_dataset_name(ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
+    base_dataset_name = parameters_dict["base_dataset_name"]
+    name = create_dataset_name(base_dataset_name, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
     dataset_dict["dataset_name"] = name
     classification = create_dataset_class(ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
     dataset_dict["dataset_class"] = classification
@@ -206,15 +206,25 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     dataset_dict["output_fields"] = make_single_fields_dict(o_dataset, o_streams)
     combo_datasets = i_dataset + o_dataset
     dataset_dict["datasets"] = [*set(combo_datasets)]
+    ae_models = parameters_dict["ae_models"]
+    ae_prev_names = parameters_dict["ae_prev_names"]
+    if ae_models != []:
+        ae_paths = return_ae_paths(ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
+        if ae_paths != []:
+            dataset_dict["ae_paths"] = ae_paths
     global_data_descriptors_list.append(dataset_dict)
 
 
 #Can keep these, probably. 
 def generate_level_odays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index):
+    global parameters_dict
+    output_days = parameters_dict["output_days"]
     for odays_index in range(0, len(output_days)):
         generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, output_days[odays_index], odays_index) 
     
 def generate_level_idays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index):
+    global parameters_dict
+    input_days = parameters_dict["input_days"]
     for idays_index in range(0, len(input_days)):
         generate_level_odays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, input_days[idays_index], idays_index)
 
@@ -269,68 +279,62 @@ def generate_base_4():
     ds_combo_dict = return_input_output_dict_combo(ds, "ds")
     for ds_combo_index in range(0, len(ds_combo_dict["input"])):
         generate_level_idays(l_combo_dict, l_combo_index, l_index, ds_combo_dict, ds_combo_index, ds_index)
+    
+
+def set_parameters_dict(new_dict):
+    global parameters_dict
+    for key in list(new_dict.keys()):
+        parameters_dict[key] = new_dict[key]
 
 
-def generate_base_datasets():
-    generate_base_3()
-    generate_base_4()
+def generate_base_datasets(indexes):
+    for index in indexes:
+        if index == 1:
+            generate_base_1()
+        elif index == 2:
+            generate_base_2()
+        elif index == 3:
+            generate_base_3()
+        elif index == 4:
+            generate_base_4()
+
+
+
+
+##################################################
+#Most likely used by outside 
+def run_generate(new_dict):
+    global parameters_dict
+    global global_data_descriptors_list
+    set_parameters_dict(new_dict)
+    list_of_base_sets = parameters_dict["list_of_base_sets"]
+    generate_base_datasets(list_of_base_sets)
+    print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
+    return global_data_descriptors_list
 
 #Generated base dataset descriptors
-generate_base_datasets()
-print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
 #print(global_data_descriptors_list[0])
+def save_list(new_dict, global_data_descriptors_list):
+    global parameters_dict
+    set_parameters_dict(new_dict)
+    #Save base dataset descriptors
+    phase_path = parameters_dict["phase_path"]
+    pathname = phase_path + "phase1_dataset_descriptors.pickle"
+    if not os.path.exists(phase_path):
+        os.makedirs(phase_path)
+    #Write out the dataset descriptors     
+    with open(pathname, "wb") as f:
+        pickle.dump(global_data_descriptors_list, f)
+    print(f"Successfully saved dataset descriptors to {pathname}")
 
-#Save base dataset descriptors
-pathname = phase_path + "phase1_dataset_descriptors.pickle"
-if not os.path.exists(phase_path):
-    os.makedirs(phase_path)
-#Write out the dataset descriptors     
-with open(pathname, "wb") as f:
-    pickle.dump(global_data_descriptors_list, f)
-print(f"Successfully saved dataset descriptors to {pathname}")
 
-
-# #The below for a quick test run. 
-# experiment_1 = {
-#     "model": {
-#         "kind": "AE",
-#         "model_type": "Sequential",
-#         "layers": 
-#             [
-#                 {
-#                     "type": "Dense",
-#                     "num_nodes": 1,
-#                     "activation": "relu",
-#                     "name": "latent_space"
-#                 },
-#             ],
-#         "final_activation": "relu",
-#         "loss": "mse",
-#         #"loss_function": "mean_square_error",
-#         "optimizer": "adam",
-#         "batch_size": 32,
-#         "epochs": 10,
-#         "test_split": 0.1,
-#         "validation_split": 0.2,
-#         "use_multiprocessing": True,
-#         #"metrics": ["mse"]
-#         "metrics": ["mse"],
-#         "verbose": True,
-#     },
-#     "experiment_folder_path": "generated_files/experiments/",
-#     "experiment_name": "test_experiment_6"
-# }
-
-# index = 68
-# indexes = [0]
-# #indexes = [0, 68, 149, 800, 1198]
-# #indexes = [68]
-# #print(global_data_descriptors_list[index])
-# for index in indexes:
-#     dataset_generator.create_dataset_from_dataset_object(global_data_descriptors_list[index])
-#     experiment_1["dataset_name"] = global_data_descriptors_list[index]["dataset_name"]
-#     dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(global_data_descriptors_list[index], experiment_1.copy())
-#     graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
+def run_test(indexes, experiment_1, global_data_descriptors_list):
+    #print(global_data_descriptors_list[index])
+    for index in indexes:
+        dataset_generator.create_dataset_from_dataset_object(global_data_descriptors_list[index])
+        experiment_1["dataset_name"] = global_data_descriptors_list[index]["dataset_name"]
+        dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(global_data_descriptors_list[index], experiment_1.copy())
+        graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 
 #tensorman run --gpu pip3 install pandas 

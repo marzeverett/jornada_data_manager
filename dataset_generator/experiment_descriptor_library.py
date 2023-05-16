@@ -7,15 +7,15 @@ import json
 import pickle 
 import math 
 
-phase_path = "generated_files/phase_1_ae_individual/"
+parameters_dict = {
+    "base_name": "ae_individual",
+    "phase_path": "generated_files/phase_1_ae_individual/",
+    "scaling_factors": [0.3, 0.5, 0.7, 0.9]
+}
+
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
- 
-# pathname = "generated_files/phase1_dataset_descriptors.pickle"
-# with open(pathname, "rb") as f:
-#     dataset_descriptors = pickle.load(f)
 
-base_name = "ae_individual"
 
 def determine_lstm_nodes_from_dataset_object(dataset_object, scaling_factor):
     input_nodes = dataset_object["x"].shape[-1]
@@ -99,6 +99,8 @@ def create_basic_ae_model_object(num_nodes):
     return model 
 
 def create_experiment(num_nodes, dataset_name, kind):
+    global parameters_dict
+    base_name = parameters_dict["base_name"]
     if kind == "base_lstm":
         model = create_basic_lstm_model_object(num_nodes)
     elif kind == "base_ae":
@@ -117,34 +119,47 @@ def load_dataset_result_from_dataset_descriptor(dataset_descriptor):
     with open(full_path, "rb") as f:
         dataset_result = pickle.load(f)
     return dataset_result
-#Name HAS to include dataset or it won't work. 
-#nodes = [8, 32, 64]
-#nodes = [8]
-#These are now scaling factors 
-#scaling_factors = [2, 5, 8]
-#scaling_factors = [0.1, 0.2, 0.5]
-scaling_factors = [0.3, 0.5, 0.7, 0.9]
 
 
-d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
-with open(d_pathname, "rb") as f:
-    dataset_descriptors = pickle.load(f)
-
-experiments = []
-for scaling_factor in scaling_factors:
-    for dataset in dataset_descriptors: 
-        d_result = load_dataset_result_from_dataset_descriptor(dataset)
-        node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
-        #This is where we will generate an experiment for a particular node code stream.
-        experiments.append(create_experiment(scaling_factor, dataset["dataset_name"], "base_ae"))
-e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
+def set_parameters_dict(new_dict):
+    global parameters_dict
+    for key in list(new_dict.keys()):
+        parameters_dict[key] = new_dict[key]
 
 
-#Save (make sure you uncomment)
 
-if not os.path.exists(phase_path):
-    os.makedirs(phase_path)
-with open(e_pathname, "wb") as f:
-    pickle.dump(experiments, f)
+
+def run_generate(new_dict):
+    global parameters_dict
+    set_parameters_dict(new_dict)
+    phase_path = parameters_dict["phase_dict"]
+    scaling_factors = parameters_dict["scaling_factors"]
+    #Load in dataset descriptors 
+    d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
+    with open(d_pathname, "rb") as f:
+        dataset_descriptors = pickle.load(f)
+    #Create the experiment descriptors 
+    experiments = []
+    for scaling_factor in scaling_factors:
+        for dataset in dataset_descriptors: 
+            d_result = load_dataset_result_from_dataset_descriptor(dataset)
+            node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
+            #This is where we will generate an experiment for a particular node code stream.
+            experiments.append(create_experiment(scaling_factor, dataset["dataset_name"], "base_ae"))
+    return experiments 
+
+
+def save_list(new_dict, experiments):
+    global parameters_dict
+    set_parameters_dict(new_dict)
+    #Save base dataset descriptors
+    phase_path = parameters_dict["phase_path"]
+    e_pathname = phase_path + "phase1_experiment_descriptors.pickle"
+    if not os.path.exists(phase_path):
+        os.makedirs(phase_path)
+    with open(e_pathname, "wb") as f:
+        pickle.dump(experiments, f)
+
+
 
 
