@@ -216,8 +216,8 @@ def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descrip
     unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
     #Later, but not now. 
     #save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
-    save_all_model_history_graphs(experiment_descriptor, experiment_result)
-    save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
+    #save_all_model_history_graphs(experiment_descriptor, experiment_result)
+    #save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
     save_to_csv(experiment_descriptor, experiment_result)
     save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
