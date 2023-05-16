@@ -334,6 +334,8 @@ def run_test(indexes, experiment_1, global_data_descriptors_list):
         dataset_generator.create_dataset_from_dataset_object(global_data_descriptors_list[index])
         experiment_1["dataset_name"] = global_data_descriptors_list[index]["dataset_name"]
         dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.experiment_from_experiment_object(global_data_descriptors_list[index], experiment_1.copy())
+        print("Experiment_Descriptor")
+        print(experiment_descriptor)
         graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 

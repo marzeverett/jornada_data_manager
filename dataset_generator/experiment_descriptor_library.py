@@ -34,11 +34,13 @@ def determine_ae_nodes_from_dataset_object(dataset_object, scaling_factor):
     return nodes 
 
 
-def determine_ae_nodes_from_dataset_object(dataset_object, compression):
-    input_nodes = len(dataset_object["x"[-1]])
-    final_nodes = input_nodes*compression
-    final_nodes = math.ceil(final_nodes)
-    return final_nodes
+# def determine_ae_nodes_from_dataset_object(dataset_object, compression):
+#     input_nodes = len(dataset_object["x"[-1]])
+#     final_nodes = input_nodes*compression
+#     final_nodes = math.ceil(final_nodes)
+#     print("NUM NODES")
+#     print(final_nodes)
+#     return final_nodes
 
 def create_basic_lstm_model_object(num_nodes):
     model = {
@@ -98,18 +100,21 @@ def create_basic_ae_model_object(num_nodes):
     }
     return model 
 
-def create_experiment(num_nodes, dataset_name, kind):
+def create_experiment(num_nodes, scaling_factor, dataset_name, kind):
     global parameters_dict
     base_name = parameters_dict["base_name"]
+    name_append = ""
     if kind == "base_lstm":
         model = create_basic_lstm_model_object(num_nodes)
+        name_append = num_nodes
     elif kind == "base_ae":
         model = create_basic_ae_model_object(num_nodes)
+        name_append = scaling_factor
     experiment_1 = {
         "model": model,
         "dataset_name": dataset_name,
         "experiment_folder_path": experiments_base_path,
-        "experiment_name": base_name+str(num_nodes)
+        "experiment_name": base_name+str(name_append)
     }
     return experiment_1
 
@@ -132,7 +137,7 @@ def set_parameters_dict(new_dict):
 def run_generate(new_dict):
     global parameters_dict
     set_parameters_dict(new_dict)
-    phase_path = parameters_dict["phase_dict"]
+    phase_path = parameters_dict["phase_path"]
     scaling_factors = parameters_dict["scaling_factors"]
     #Load in dataset descriptors 
     d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
@@ -145,7 +150,7 @@ def run_generate(new_dict):
             d_result = load_dataset_result_from_dataset_descriptor(dataset)
             node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
             #This is where we will generate an experiment for a particular node code stream.
-            experiments.append(create_experiment(scaling_factor, dataset["dataset_name"], "base_ae"))
+            experiments.append(create_experiment(node_count, scaling_factor, dataset["dataset_name"], "base_ae"))
     return experiments 
 
 

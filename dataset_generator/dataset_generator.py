@@ -232,6 +232,8 @@ def deal_with_missing_data(df, dataset_object):
 def get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect):
     full_model_path = path + "latent_model"
     ae_model = models.load_model(full_model_path)
+    #print("MODEL SUMMARY")
+    #print(ae_model.summary())
     full_dd_path = path+"dataset_descriptor.pickle"
     latent_space = [] 
     with open(full_dd_path, "rb") as f:
@@ -241,6 +243,10 @@ def get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
         ae_paths = dataset_object["ae_paths"]
         for path in ae_paths:
             ae_output = get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
+            #CHANGE HERE
+            # print("HERE")
+            # print(latent_space)
+            # print(ae_output)
             if latent_space == []:
                  latent_space = ae_output
             else:
@@ -253,7 +259,13 @@ def get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
         for input_col in model_inputs:
             relevant_indexes.append(x_columns.index(input_col))
         ae_input = x_vect[:, relevant_indexes]
+        #CHANGE HERE
+        # print(ae_input)
+        # print(ae_input.shape)
         latent_space = ae_model.predict(ae_input)
+        # print("NOWE HERE")
+        # print(latent_space.shape)
+        # print(latent_space)
     return latent_space
 
  #This function could use a LOT better documentation    
@@ -267,6 +279,9 @@ def process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect):
     #latent_space = []
     for path in ae_paths:
         ae_output = get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
+        #Change here
+        # print("AQUI")
+        # print(ae_output)
         if latent_space == []:
             latent_space = ae_output
         else:
@@ -366,6 +381,7 @@ def format_data_model_ready(dataset_object, df):
     #If this is a time regression model, we need to slice it up. 
     if target_model == "time_regression":
         x_vect, y_vect, x_key_vect, y_key_vect = time_slice(df, dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
+    #Change also here 
     #print_output_data_info(actual_input, x_vect, y_vect, x_key_vect, y_key_vect)
     return x_vect, y_vect, x_key_vect, y_key_vect
 
@@ -382,6 +398,7 @@ def create_dataset_from_dataset_object(dataset_object):
     df = create_merged_df(dataset_object)
     #2. Drop or fill N/A data
     df = deal_with_missing_data(df, dataset_object)
+    #Change here
     #print_dataset_info(df)
     #3. Format for Keras model - this handles LSTM, AE, and (soon) Nested
     x_vect, y_vect, x_key, y_key = format_data_model_ready(dataset_object, df)
