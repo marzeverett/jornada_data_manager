@@ -474,13 +474,13 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     #Load dataset and split it 
     prepared_dataset, dataset_descriptor = dg.load_in_data(dataset_descriptor)
     #Change here:
-    print(prepared_dataset["x"].shape)
-    print(prepared_dataset["y"].shape)
+    #print(prepared_dataset["x"].shape)
+    #print(prepared_dataset["y"].shape)
     prepared_dataset = split_training_test(prepared_dataset, experiment_object)
     #Build the model
     model = build_model(prepared_dataset, experiment_object)
     #Change here 
-    print(model.summary())
+    #print(model.summary())
     history, total_time = fit_model(model, prepared_dataset, experiment_object)
     save_model(model, experiment_object)
     experiment_result = create_experiment_result_object(history, total_time, model, prepared_dataset, experiment_object)
