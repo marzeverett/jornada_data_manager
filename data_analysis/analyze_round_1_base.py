@@ -29,7 +29,7 @@ cols = [
     "dataset_name"
 ]
 
-data = pd.read_csv('1_main_metrics.csv', names=cols)
+data = pd.read_csv('main_metrics/1_main_metrics.csv', names=cols)
 
 print(data.head())
 

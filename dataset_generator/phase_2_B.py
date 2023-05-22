@@ -46,7 +46,7 @@ parameters_dict = {
     "base_dataset_name": "reg_B",
     "list_of_base_sets": [3, 4],
     "ae_models": ["ae_individual0.5"],
-    "ae_prev_names":  ["simple_reg_weather_ae"],
+    "ae_prev_names":  ["AE_A"],
     "base_name": "lstm_B",
     "scaling_factors": [8, 32, 64]
 }

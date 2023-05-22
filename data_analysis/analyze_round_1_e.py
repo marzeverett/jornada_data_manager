@@ -28,7 +28,7 @@ cols = [
     "epochs"
 ]
 
-data = pd.read_csv('main_metrics/phase_1_A.csv', names=cols)
+data = pd.read_csv('main_metrics/phase_1_E.csv', names=cols)
 
 print(data.head())
 

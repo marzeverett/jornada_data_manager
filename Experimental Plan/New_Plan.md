@@ -484,3 +484,87 @@ Prediction Models
 #       - repeat for each input and output day mod
 #       - repeat for each individual site
 #       - Add a zero offset, try and get the same day-weather data as well.  -->
+
+
+
+
+# Plan
+
+Time Estimation for Experiments
+
+Right now, I am running 8970 experiments, at the rate of approximately 96.64 seconds per experiment. At this rate, it will take about 10 days to finish up the experiments. I would like to run two other versions of network structure, which should take about 30 days altogether to finish. 
+
+The amount of experiments is so large because they resulted in a combination of 
+4 potential location schemas, 4 potential data stream combinations, 1 to 15 different input/output combinations for location sources, 1 to 4 different input/output combinations for data streams, 5 input day combinations, and 3 output day combinations .
+
+From these base experiments, I am planning on choosing only 2 input/output days combinations (which perform well). I think I will drop trying to predict data that is not in the existing dataset for now – this would provide some interesting information, and I may revisit this in the future, but I may stick strictly to regression here and worry about prediction for the later MIMIC dataset. Afterward, I will need to run the following experiments: 
+
+A. Auto-encode individual data streams: 
+4 datasets*16 location combinations* 4 model types = 256 experiments
+
+B. LSTM networks on top of auto-encoded data streams:
+16 datasets (one location at a time, all together)* 3 model types * 2 days combos = 96 experiments. 
+
+C. Autoencoder on top of auto-encoded data streams: **** Revisit!! 
+16 (one location at a time, all together) dataset * 4 model types = 64 experiments
+
+D. LSTM on top of autoencoder^2 data streams:
+1 dataset * 3 model types * 2 days combos = 6 experiments 
+
+E. Auto-encode all data streams together 
+16 dataset * 4 model types = 464 experiments
+
+F. LSTM on top of together-auto-encoded data streams
+1 dataset * 3 model types * 2 days combos= 6 experiments. 
+
+(Spatial models only make sense for all data together) 
+G. Spatial models, base experiments
+1 dataset* 3 model types * 2 days combos = 6 experiments
+
+H. Spatial models, Auto-encoded 
+1 dataset * 4 model types = 4 experiments
+
+I. Spatial models, LSTM on top of together-auto-encoded data streams
+1 dataset * 3 models * 2 days combos = 6 experiments 
+
+This totals 460 experiments for this round. This will need to be repeated 8 times to validate data streams in and out of a network (training on top of existing models, and training a new model) for a total of 3680 experiments, which will likely take around 98.75 hours or about 4.11 days. 
+
+A full round of experiments taking 4 days…. Need to revisit again. 
+
+Revisit Base Models: 
+(Worth revisiting tomorrow!) 
+
+All sites together predict all data for all site: 1 dataset (*15 i/o, *3 models) = 15 datasets, 45 experiments 
+
+One site predicts all data for one site: 15 datasets (*15 i/o, * 3 models) = 225 datasets, 675 experiments
+
+One site predicts one data stream for one site – 4*15 datasets (*15 i/o, * 3 models) = 2700 experiments 
+
+All sites predict one data stream for all sites: 4 datasets (*15 i/o, * 3 models) = 180 experiments
+
+So base models should really have 3600 experiments, 96.64 hours or 4.03 days. 
+
+
+So Base + Modifications (for regression) should take about 9 days total. I imagine this will be repeated for prediction models (max 2) for a total of 27 days of running these experiments. (REVISIT – will need slightly more to handle the re-training case) 
+
+
+Then, this whole slate needs to be repeated for the MIMIC-IV dataset. I anticipate this dataset to be slightly more complicated – I would guess another month run. 
+
+We are looking at probably 54 days of runtime total, I think. 
+
+
+#From here: https://androidkt.com/get-output-of-intermediate-layers-keras/ 
+#def visualize_conv_layer(layer_name):
+  
+  layer_output=model.get_layer(layer_name).output
+
+  intermediate_model=tf.keras.models.Model(inputs=model.input,outputs=layer_output)
+
+  intermediate_prediction=intermediate_model.predict(x_train[2].reshape(1,28,28,1))
+  
+  row_size=4
+  col_size=8
+  
+  img_index=0
+
+  print(np.shape(intermediate_prediction))
