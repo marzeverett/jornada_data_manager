@@ -138,6 +138,11 @@ def run_generate(new_dict):
     global parameters_dict
     set_parameters_dict(new_dict)
     phase_path = parameters_dict["phase_path"]
+    target_model = parameters_dict["target_model"]
+    if target_model == "time_regression":
+        kind = "base_lstm"
+    elif target_model == "ae":
+        kind = "base_ae"
     scaling_factors = parameters_dict["scaling_factors"]
     #Load in dataset descriptors 
     d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
@@ -150,7 +155,7 @@ def run_generate(new_dict):
             d_result = load_dataset_result_from_dataset_descriptor(dataset)
             node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
             #This is where we will generate an experiment for a particular node code stream.
-            experiments.append(create_experiment(node_count, scaling_factor, dataset["dataset_name"], "base_ae"))
+            experiments.append(create_experiment(node_count, scaling_factor, dataset["dataset_name"], kind))
     return experiments 
 
 
