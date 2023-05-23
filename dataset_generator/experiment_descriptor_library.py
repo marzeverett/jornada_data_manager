@@ -7,11 +7,11 @@ import json
 import pickle 
 import math 
 
-parameters_dict = {
-    "base_name": "ae_individual",
-    "phase_path": "generated_files/phase_1_ae_individual/",
-    "scaling_factors": [0.3, 0.5, 0.7, 0.9]
-}
+# parameters_dict = {
+#     "base_name": "ae_individual",
+#     "phase_path": "generated_files/phase_1_ae_individual/",
+#     "scaling_factors": [0.3, 0.5, 0.7, 0.9]
+# }
 
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
@@ -153,7 +153,10 @@ def run_generate(new_dict):
     for scaling_factor in scaling_factors:
         for dataset in dataset_descriptors: 
             d_result = load_dataset_result_from_dataset_descriptor(dataset)
-            node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
+            if kind == "base_ae":
+                node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
+            else:
+                node_count = scaling_factor
             #This is where we will generate an experiment for a particular node code stream.
             experiments.append(create_experiment(node_count, scaling_factor, dataset["dataset_name"], kind))
     return experiments 
