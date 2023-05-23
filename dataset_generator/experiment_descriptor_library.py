@@ -7,11 +7,11 @@ import json
 import pickle 
 import math 
 
-# parameters_dict = {
-#     "base_name": "ae_individual",
-#     "phase_path": "generated_files/phase_1_ae_individual/",
-#     "scaling_factors": [0.3, 0.5, 0.7, 0.9]
-# }
+parameters_dict = {
+    "base_name": "ae_individual",
+    "phase_path": "generated_files/phase_1_ae_individual/",
+    "scaling_factors": [0.3, 0.5, 0.7, 0.9]
+}
 
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
