@@ -172,10 +172,23 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
             combo_dict = return_input_output_dict_combo("ONE", synthesize)
             for i in range(0, len(ae_models)):
                 for combo_index in range(0, len(combo_dict["input"])):
+                    #HORRIBLE hack due to very bad choices in code structure
                     if synthesize == "ds":
-                        d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, combo_index, l_combo_index, idays, odays)
+                        if l_index = 1:
+                            new_ds_index = 3
+                            new_l_index = 3
+                        else:
+                            new_ds_index = 2
+                            new_l_index = 2 
+                        d_name = create_dataset_name(ae_prev_names[i], new_ds_index, new_l_index, combo_index, l_combo_index, idays, odays)
                     elif synthesize == "l":
-                        d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, combo_index, idays, odays)
+                        if ds_index = 1:
+                            new_ds_index = 2
+                            new_l_index = 2
+                        else:
+                            new_ds_index = 1
+                            new_l_index = 1 
+                        d_name = create_dataset_name(ae_prev_names[i], new_ds_index, new_l_index, ds_combo_index, combo_index, idays, odays)
                     first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
                     ae_paths.append(first_path)
     else:
