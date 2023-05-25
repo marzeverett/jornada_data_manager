@@ -256,9 +256,9 @@ def get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
     else:
         model_inputs = dataset_object["x_columns"]
         #CHANGE HERE
-        print("DEBUG")
-        print(model_inputs)
-        print(x_columns)
+        # print("DEBUG")
+        # print(model_inputs)
+        # print(x_columns)
         relevant_indexes = []
         for input_col in model_inputs:
             relevant_indexes.append(x_columns.index(input_col))
