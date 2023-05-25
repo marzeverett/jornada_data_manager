@@ -164,13 +164,26 @@ def return_input_output_dict_combo(kind, loc_or_site):
     return main_dict
 
 
-def return_ae_paths(ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays):
+def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays):
     ae_paths = []
-    for i in range(0, len(ae_models)):
-        d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
-        first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
-        ae_paths.append(first_path)
-        return ae_paths
+    if "ae_synthesis" in list(parameters_dict.keys()):
+        synthesize = parameters_dict["ae_synthesis"]
+        if synthesize == "ds" or synthesize == "l":
+            combo_dict = return_input_output_dict_combo("ONE", synthesize)
+            for i in range(0, len(ae_models)):
+                for combo_index in range(0, len(combo_dict["input"])):
+                    if synthesize == "ds":
+                        d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, combo_index, l_combo_index, idays, odays)
+                    elif synthesize == "l":
+                        d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, combo_index, idays, odays)
+                    first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+                    ae_paths.append(first_path)
+    else:
+        for i in range(0, len(ae_models)):
+            d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
+            first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+            ae_paths.append(first_path)
+    return ae_paths
 
 
 #This can be called outside 
@@ -209,7 +222,7 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     ae_models = parameters_dict["ae_models"]
     ae_prev_names = parameters_dict["ae_prev_names"]
     if ae_models != []:
-        ae_paths = return_ae_paths(ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
+        ae_paths = return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
         if ae_paths != []:
             dataset_dict["ae_paths"] = ae_paths
     global_data_descriptors_list.append(dataset_dict)
