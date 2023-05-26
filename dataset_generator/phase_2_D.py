@@ -61,7 +61,7 @@ parameters_dict = {
     "target_model": "time_regression",
     "base_dataset_name": "reg_D",
     "list_of_base_sets": [1, 2],
-    "ae_models": ["AE_C0.5"],
+    "ae_models": ["lstm_C0.5"],
     "ae_prev_names":  ["reg_C"],
     "base_name": "lstm_D",
     "scaling_factors": [8, 32, 64]
