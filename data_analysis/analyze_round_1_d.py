@@ -27,10 +27,11 @@ cols = [
     "dataset_size",
     "training_time",
     "experiment_name",
-    "dataset_name"
+    "dataset_name",
+    "epochs"
 ]
 
-data = pd.read_csv('main_metrics/1_main_metrics.csv', names=cols)
+data = pd.read_csv('main_metrics/phase_1_D.csv', names=cols)
 
 #print(data.head())
 
@@ -55,7 +56,7 @@ print("Mean", mean)
 print("Standard Deviation", std)
 
 
-df = new_data.groupby(["ds_combo"]).mean()
+df = new_data.groupby(["output_days"]).mean()
 
 #df.plot(y="mse")
 df.plot(kind="bar", y="mse")

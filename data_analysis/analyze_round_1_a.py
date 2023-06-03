@@ -30,7 +30,7 @@ cols = [
 
 data = pd.read_csv('main_metrics/phase_1_A.csv', names=cols)
 
-print(data.head())
+#print(data.head())
 
 #data.plot(x="output_days", y=["mse"], kind="scatter")
 #data.groupby(["input_days", "output_days"]).plot(x="output_days", y=["mse"], kind="scatter")
@@ -45,7 +45,16 @@ print(data.head())
 #df = data.groupby(["input_days", "output_days"])
 
 #df = data.groupby("experiment_name").mean()
-df = data.groupby(["epochs"]).mean()
+
+new_data = data.loc[(data["datastream_scheme"] == 3) & (data["location_scheme"] == 3)]
+
+mean = round(new_data["mse"].mean(), 5)
+std = round(new_data["mse"].std(), 5)
+print("Mean", mean)
+print("Standard Deviation", std)
+
+
+df = new_data.groupby(["experiment_name"]).mean()
 #df = data
 #df.plot(y="mse")
 df.plot(kind="bar", y="mse")

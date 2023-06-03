@@ -3,6 +3,7 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt 
+import os 
 
 #LOOK INTO
 #Group by Documentation
@@ -44,13 +45,30 @@ print(data.head())
 #df = data.groupby(["dataset_name", "experiment_name"]).mean()
 #df = data.groupby(["input_days", "output_days"])
 
-#df = data.groupby("experiment_name").mean()
-df = data.groupby(["epochs"]).mean()
-#df = data
+new_data = data.loc[(data["datastream_scheme"] == 0) & (data["location_scheme"] == 0)]
+
+mean = round(new_data["mse"].mean(), 5)
+std = round(new_data["mse"].std(), 5)
+print("Mean", mean)
+print("Standard Deviation", std)
+
+
+df = new_data.groupby(["dataset_size"]).mean()
+
 #df.plot(y="mse")
 df.plot(kind="bar", y="mse")
-#plt.xticks(rotation=30)
+#df2.plot(kind="bar", y="mse")
+plt.xticks(rotation=30)
+#plt.show()
+save_name = "performance_by_experiment_num_nodes"
+save_folder = "jornada_regression_C"
+save_folder_path = "/home/marz/Documents/vineyard/Written Papers/Dissertation/Notes and Such/"+save_folder+"/"
+if not os.path.exists(save_folder_path):
+    os.makedirs(save_folder_path)
+save_path = save_folder_path+save_name+".png"
+
 plt.show()
+#plt.savefig(save_path)
 
 #Might need to re-run these with a patience of 30. 
 

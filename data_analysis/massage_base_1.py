@@ -32,7 +32,7 @@ cols = [
 
 data = pd.read_csv('main_metrics/1_main_metrics.csv', names=cols)
 
-#print(data.head())
+print(data.head())
 
 #data.plot(x="output_days", y=["mse"], kind="scatter")
 #data.groupby(["input_days", "output_days"]).plot(x="output_days", y=["mse"], kind="scatter")
@@ -45,45 +45,27 @@ data = pd.read_csv('main_metrics/1_main_metrics.csv', names=cols)
 
 #df = data.loc[data["datastream_scheme"].isin([0, 1])].groupby(["location_scheme"]).mean()
 #df2 = data.loc[data["datastream_scheme"].isin([2, 3])].groupby(["location_scheme"]).mean()
-
-
-new_data = data.loc[(data["datastream_scheme"] == 0) & (data["location_scheme"] == 0)]
-
-mean = round(new_data["mse"].mean(), 5)
-std = round(new_data["mse"].std(), 5)
-print("Mean", mean)
-print("Standard Deviation", std)
-
-
-df = new_data.groupby(["ds_combo"]).mean()
+df = data.groupby(["experiment_name"]).mean()
 
 #df.plot(y="mse")
 df.plot(kind="bar", y="mse")
 #df2.plot(kind="bar", y="mse")
 plt.xticks(rotation=30)
-#plt.show()
-save_name = "performance_by_experiment_num_nodes"
+plt.show()
+save_name = ""
 save_folder = "jornada_regression_base"
 save_folder_path = "/home/marz/Documents/vineyard/Written Papers/Dissertation/Notes and Such/"+save_folder+"/"
 if not os.path.exists(save_folder_path):
-    os.makedirs(save_folder_path)
+    os.makedires(save_folder_path)
 save_path = save_folder_path+save_name+".png"
-
-plt.show()
-#plt.savefig(save_path)
-
-
-
-
-
-
-
+#plt.save(save_path)
 
 # # plot the dataframe
 # df.plot(x="Name", y=["Price", "User Rating"], kind="bar", figsize=(9, 8))
  
 # # print bar graph
 # mp.show()
+
 
 # # importing packages
 # import seaborn
