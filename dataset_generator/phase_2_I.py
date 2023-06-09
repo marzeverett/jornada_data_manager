@@ -61,7 +61,7 @@ parameters_dict = {
     "list_of_base_sets": [1, 4],
     "ae_models": ["AE_G0.5"],
     "ae_prev_names":  ["reg_G"],
-    "ae_synthesis": "ds", #means you are synthesizing previous aes on this datastream 
+    "ae_synthesis": "l", #means you are synthesizing previous aes on this datastream 
     "base_name": "lstm_I",
     "scaling_factors": [0.3, 0.5, 0.7, 0.9]
 }
