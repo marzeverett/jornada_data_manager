@@ -206,7 +206,7 @@ def save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, 
     num_epochs = len(metrics["loss"])
     dict_2["num_epochs"] = num_epochs
    
-    path_name = experiment_descriptor["experiment_folder_path"]+"main_metrics.csv"
+    path_name = experiment_descriptor["experiment_folder_path"]+dataset_descriptor["phase_metrics"]+"main_metrics.csv"
     df = pd.DataFrame.from_dict([dict_2])
     #Change header back to false
     df.to_csv(path_name, mode='a', index=False, header=False)
