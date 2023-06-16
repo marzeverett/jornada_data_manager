@@ -149,7 +149,7 @@ print(json.dumps(parameter_dict_list, indent=4))
 
 #RUN THEM HERE 
 for parameters_dict in parameter_dict_list:
-    print(f"Phase {phase} Letter: {parameters_dict['phase_metrics']}")
+    print(f"Phase {phase_name} Letter: {parameters_dict['phase_metrics']}")
     #Generate descriptors 
     descriptors_list = ddl.run_generate(parameters_dict)
     print(descriptors_list[0])
