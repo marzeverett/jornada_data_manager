@@ -143,10 +143,32 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
             new_dict["ae_models"]= [model_name]
             prev_dataset_name = phase_name+"_"+prev_letter
             new_dict["ae_prev_names"]=  [prev_dataset_name]
+        elif letter == 'K':
+            prev_letter = "A"
+            new_dict["target_model"] = "time_regression"
+            new_dict["list_of_base_sets"] = [1, 2]
+            new_dict["scaling_factors"] = [8, 32, 64]
+            model_name = phase_name+"_"+prev_letter+"_exp"+str(use_scaling_factor)
+            new_dict["ae_models"]= [model_name]
+            prev_dataset_name = phase_name+"_"+prev_letter
+            new_dict["ae_prev_names"]=  [prev_dataset_name]
+            new_dict["ae_synthesis"] = "ds"
+        elif letter == 'L':
+            prev_letter = "G"
+            new_dict["target_model"] = "time_regression"
+            new_dict["list_of_base_sets"] = [1, 4]
+            new_dict["scaling_factors"] = [8, 32, 64]
+            model_name = phase_name+"_"+prev_letter+"_exp"+str(use_scaling_factor)
+            new_dict["ae_models"]= [model_name]
+            prev_dataset_name = phase_name+"_"+prev_letter
+            new_dict["ae_prev_names"]=  [prev_dataset_name]
+            new_dict["ae_synthesis"] = "l"
+        
         parameter_dict_list.append(new_dict)
 
     print(json.dumps(parameter_dict_list, indent=4))
 
+    #NOTE - You need to make sure K and L work! 
 
     #RUN THEM HERE 
     for parameters_dict in parameter_dict_list:
