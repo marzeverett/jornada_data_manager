@@ -12,8 +12,8 @@ import slate_library
 #Phase 2 is exactly the same as phase 1, except is uses a 0.7 AE scaling factor 
 phase_name = "2"
 phase_path_start = "generated_files/"
-#letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-letters = ['A', 'B']
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+#letters = ['A', 'B']
 input_days = [30, 60]
 output_days = [1, 7]
 use_scaling_factor = "0.7"
