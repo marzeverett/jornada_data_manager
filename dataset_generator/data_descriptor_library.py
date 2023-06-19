@@ -27,6 +27,17 @@ parameters_dict = {
     "ae_prev_names": []
 }
 
+static_parameters_dict = {
+    "phase_path": "generated_files/phase_1_ae_individual/",
+    "input_days": [30, 60],
+    "output_days": [1, 7],
+    "target_model": "time_regression",
+    "base_dataset_name": "simple_reg_weather_ae",
+    "list_of_base_sets": [],
+    "ae_models": [],
+    "ae_prev_names": []
+}
+
 
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
@@ -314,6 +325,7 @@ def set_parameters_dict(new_dict):
         parameters_dict[key] = new_dict[key]
 
 
+
 def generate_base_datasets(indexes):
     for index in indexes:
         if index == 1:
@@ -333,6 +345,8 @@ def generate_base_datasets(indexes):
 def run_generate(new_dict):
     global parameters_dict
     global global_data_descriptors_list
+    parameters_dict = static_parameters_dict
+    global_data_descriptors_list = []
     set_parameters_dict(new_dict)
     list_of_base_sets = parameters_dict["list_of_base_sets"]
     generate_base_datasets(list_of_base_sets)
