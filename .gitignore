@@ -161,6 +161,9 @@ cython_debug/
 
 dataset_generator/generated_files/*
 
+dataset_generator/image_map.pkl
+image_map.pkl 
+
 .keras/
 .local/
 .config/

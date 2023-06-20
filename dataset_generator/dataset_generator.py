@@ -402,7 +402,15 @@ def matricize_dataset(x_vect, y_vect, dataset_object):
     existing_location = [] 
     existing_datasource_index = []
     existing_location_index = []
-    #Make a matrix with all locations 
+    #Make a matrix with all locations or all datastreams first? 
+    #Need a dataset object that matches each data stream to their 
+    #channel location, row column location 
+    #row column location you can get from the 
+    #Do we need to be fully convolutional here? Not sure that we do...
+    #In which case, don't really need to mess with y columns 
+    #Get x shape --- 
+    #y shape stays the same 
+    #Need to unmatricize x before anything... 
 
 
 #Take in a dataset object, create it, and save it. 

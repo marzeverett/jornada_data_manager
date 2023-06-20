@@ -35,7 +35,7 @@ def return_experiment_1():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_7"
+    "experiment_name": "test_experiment_8"
     }
     return experiment_1
 
