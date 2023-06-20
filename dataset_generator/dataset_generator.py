@@ -294,7 +294,6 @@ def process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect):
     return latent_space, y_vect, x_key_vect, y_key_vect 
 
 
-
 #This makes sure only columns present both in the spec and the dataset make it in. 
 def get_actual_input_output_columns(dataset_object, df):
     input_fields = get_input_output_fields(dataset_object, "input_fields")
@@ -395,6 +394,17 @@ def print_dataset_info(df):
     print(list(df.columns))
     print("--------------")
 
+
+def matricize_dataset(x_vect, y_vect, dataset_object):
+    x_columns = dataset_object['x_columns']
+    y_columns = dataset_object['x_columns'] 
+    existing_datasource = []
+    existing_location = [] 
+    existing_datasource_index = []
+    existing_location_index = []
+    #Make a matrix with all locations 
+
+
 #Take in a dataset object, create it, and save it. 
 #Takes in a dataset object, returns 
 def create_dataset_from_dataset_object(dataset_object):
@@ -406,6 +416,11 @@ def create_dataset_from_dataset_object(dataset_object):
     #print_dataset_info(df)
     #3. Format for Keras model - this handles LSTM, AE, and (soon) Nested
     x_vect, y_vect, x_key, y_key = format_data_model_ready(dataset_object, df)
+    #matricize & unmatricize 
+    #if dataset_object["conv"] = True:
+    #  x_vect, y_vect =  matricize(x_vect, y_vect, dataset_object)
+    # #will have to unmatricize when it comes to graphing and visualizing 
+    
     #4. Save. 
     save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
     return x_vect, y_vect, x_key, y_key, dataset_object
@@ -415,8 +430,6 @@ def create_dataset_from_dataset_object(dataset_object):
 def return_test_dataset():
     dataset_result, dataset_descriptor = load_in_data(dataset_1)
     return dataset_result, dataset_descriptor
-
-
 
 
 # dataset_1 = {
