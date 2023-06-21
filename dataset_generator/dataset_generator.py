@@ -30,6 +30,7 @@ from tensorflow.keras import datasets, layers, models
 #https://numpy.org/doc/stable/reference/generated/numpy.load.html
 #https://sparkbyexamples.com/pandas/pandas-drop-columns-with-nan-none-values/  
 #https://www.techbeamers.com/program-python-list-contains-elements/ 
+#https://stackoverflow.com/questions/42916029/indexing-over-the-last-axis-when-you-dont-know-the-rank-in-advance 
 
 
 
@@ -395,23 +396,117 @@ def print_dataset_info(df):
     print("--------------")
 
 
+
+
+def feature_map_to_feature_vect(x_vect, grid, matrix_map, x_columns, channels):
+    for i in range(0, len(x_columns)):
+        if x_columns[i] in list(matrix_map.keys()):
+            indexes = matrix_map[x_columns[i]]
+            grid[i] = x_vect[indexes[0], indexes[1], indexes[2]] 
+    return grid
+
+
+def feature_vect_to_feature_map(x_vect, grid, matrix_map, x_columns, channels):
+    for i in range(0, len(x_columns)):
+        if x_columns[i] in list(matrix_map.keys()):
+            indexes = matrix_map[x_columns[i]]
+            grid[indexes[0], indexes[1], indexes[2]] = x_vect[i]
+    return grid
+        
+
+def matrix_map(x_columns, channels, coords, sites, dataset_object):
+    #need 3D index
+    #x, y, channel 
+    matrix_map = {}
+    for column in x_columns:
+        info = column.split("_")
+        #A bit ugly, but it works - dependent on the format we have the data in, currently 
+        site = "_".join(info[0:3])
+        datastream = "_".join(info[3:])
+        try:
+            channel_index = channels.index(datastream)
+            site_index = sites.index(site)
+            full_index = [coords[site_index][0], coords[site_index][1], channel_index]
+            matrix_map[column] = full_index
+        except Exception as e:
+            pass
+    dataset_object["matrix_map"] = matrix_map
+    return matrix_map
+        
+    
+#Get information channels present in dataset 
+def get_channels(x_columns, image_map, dataset_object):
+    #Get all channels 
+    feature_indexes = []
+    site_indexes = []
+    site_names = image_map["sites"]
+    raw_channels = x_columns.copy()
+    channels = []
+    #Take out all relevant site names
+    for item in raw_channels:
+        for site in site_names:
+            if site in item:
+                replace_string = site+"_"
+                channels.append(item.replace(replace_string, ''))
+    channels = list(set(channels))
+    dataset_object["channels"] = channels
+    return channels 
+    
+
+#This is not working. It may be ok to not implement?? 
+def unmatricize_dataset(x_vect, y_vect, dataset_object):
+    x_columns = dataset_object['x_columns']
+    channels = dataset_object["channels"]
+    matrix = dataset_object["matrix_map"]
+    grid = []
+    dimension = x_vect.ndim
+    iter_dim = dimension - 3
+    new_vect = x_vect[:iter_dim]
+    other_vect = x_vect[iter_dim:]
+    yes_vect = x_vect[..., iter_dim:]
+    no_vect = x_vect[...,:iter_dim]
+    final_vect = x_vect[:, :, ...]
+    print("AQUI")
+    print(new_vect.shape)
+    print(other_vect.shape)
+    print(yes_vect.shape)
+    print(no_vect.shape)
+    print(final_vect.shape)
+    for arr in np.nditer(x_vect, op_axes=[[-3, -2, -1]]):
+        print("X vector slice?")
+        print(arr.shape)
+        arr = feature_map_to_feature_vect(arr, grid.copy(), matrix, x_columns, channels) 
+    print(x_vect.shape)
+
 def matricize_dataset(x_vect, y_vect, dataset_object):
     x_columns = dataset_object['x_columns']
-    y_columns = dataset_object['x_columns'] 
+    y_columns = dataset_object['y_columns'] 
     existing_datasource = []
     existing_location = [] 
     existing_datasource_index = []
     existing_location_index = []
-    #Make a matrix with all locations or all datastreams first? 
-    #Need a dataset object that matches each data stream to their 
-    #channel location, row column location 
-    #row column location you can get from the 
-    #Do we need to be fully convolutional here? Not sure that we do...
-    #In which case, don't really need to mess with y columns 
-    #Get x shape --- 
-    #y shape stays the same 
-    #Need to unmatricize x before anything... 
+    #x_vect -
+    #Loads in the dictionary 
+    with open("image_map.pkl", "rb") as f:
+        image_map = pickle.load(f)
+    #samples, sequence items, features
+    #print(image_map)
+    #print(type(image_map))
+    #get last axis of array 
+    channels = get_channels(x_columns, image_map, dataset_object)
 
+    coords = image_map["coords"]
+    site_names = image_map["sites"]
+    grid_size = image_map["grid_size"]
+
+    matrix = matrix_map(x_columns, channels, coords, site_names, dataset_object)
+    print("Before")
+    print(x_vect.shape)
+    grid = np.zeros((grid_size, grid_size, len(channels)))
+    x_vect = np.apply_along_axis(feature_vect_to_feature_map, -1, x_vect, np.copy(grid), matrix, x_columns, channels)
+    print("After")
+    print(x_vect.shape)
+    return x_vect, y_vect
 
 #Take in a dataset object, create it, and save it. 
 #Takes in a dataset object, returns 
@@ -425,10 +520,10 @@ def create_dataset_from_dataset_object(dataset_object):
     #3. Format for Keras model - this handles LSTM, AE, and (soon) Nested
     x_vect, y_vect, x_key, y_key = format_data_model_ready(dataset_object, df)
     #matricize & unmatricize 
-    #if dataset_object["conv"] = True:
-    #  x_vect, y_vect =  matricize(x_vect, y_vect, dataset_object)
-    # #will have to unmatricize when it comes to graphing and visualizing 
-    
+    if "conv" in list(dataset_object.keys()):
+        if dataset_object["conv"] = True:
+            x_vect, y_vect = matricize_dataset(x_vect, y_vect, dataset_object)
+    #unmatricize_dataset(x_vect, y_vect, dataset_object)
     #4. Save. 
     save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
     return x_vect, y_vect, x_key, y_key, dataset_object

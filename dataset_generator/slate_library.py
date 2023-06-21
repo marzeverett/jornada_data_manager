@@ -56,10 +56,11 @@ def return_experiment_1():
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 
 
-def run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor):
+def run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, conv=False):
     parameter_dict_list = []
     for letter in letters:
         new_dict = {}
+        prev_letter = None
         new_dict["phase_metrics"] = phase_name+"_"+letter
         new_dict["phase_path"] = phase_path_start+phase_name+"_"+letter+"/"
         new_dict["input_days"] = input_days
@@ -225,6 +226,8 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
             new_dict["ae_models"]= [model_name]
             prev_dataset_name = phase_name+"_"+prev_letter
             new_dict["ae_prev_names"]=  [prev_dataset_name]
+        if conv == True:
+            new_dict["conv"] = True
         parameter_dict_list.append(new_dict)
 
     print(json.dumps(parameter_dict_list, indent=4))
@@ -237,23 +240,23 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
         #Generate descriptors 
         descriptors_list = ddl.run_generate(parameters_dict)
         print(json.dumps(descriptors_list[0], indent=3))
-        #Save the list 
-        ddl.save_list(parameters_dict, descriptors_list)
+        # #Save the list 
+        # ddl.save_list(parameters_dict, descriptors_list)
 
-        # # #The below for a quick test run. 
-        # indexes = [0]
-        # experiment_1 = return_experiment_1()
-        # ddl.run_test(indexes, experiment_1, descriptors_list)
+        # #The below for a quick test run. 
+        indexes = [0]
+        experiment_1 = return_experiment_1()
+        ddl.run_test(indexes, experiment_1, descriptors_list)
 
-        #Make the datasets
-        marl.make_datasets(parameters_dict["phase_path"])
+        # #Make the datasets
+        # marl.make_datasets(parameters_dict["phase_path"])
 
-        #Make the experiment descriptors
-        experiments = edl.run_generate(parameters_dict)
-        edl.save_list(parameters_dict, experiments)
+        # #Make the experiment descriptors
+        # experiments = edl.run_generate(parameters_dict)
+        # edl.save_list(parameters_dict, experiments)
 
-        #Run the experiments 
-        marl.run_experiments(parameters_dict["phase_path"])
+        # #Run the experiments 
+        # marl.run_experiments(parameters_dict["phase_path"])
         
 
 

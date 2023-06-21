@@ -238,6 +238,8 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     ae_models = parameters_dict["ae_models"]
     ae_prev_names = parameters_dict["ae_prev_names"]
     dataset_dict["phase_metrics"] = parameters_dict["phase_metrics"]
+    if conv in list(parameters_dict.keys()):
+        dataset_dict["conv"] = parameters_dict["conv"]
     if ae_models != []:
         ae_paths = return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
         if ae_paths != []:
