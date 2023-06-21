@@ -240,23 +240,23 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
         #Generate descriptors 
         descriptors_list = ddl.run_generate(parameters_dict)
         print(json.dumps(descriptors_list[0], indent=3))
-        # #Save the list 
-        # ddl.save_list(parameters_dict, descriptors_list)
+        #Save the list 
+        ddl.save_list(parameters_dict, descriptors_list)
 
         # #The below for a quick test run. 
         indexes = [0]
         experiment_1 = return_experiment_1()
         ddl.run_test(indexes, experiment_1, descriptors_list)
 
-        # #Make the datasets
-        # marl.make_datasets(parameters_dict["phase_path"])
+        #Make the datasets
+        marl.make_datasets(parameters_dict["phase_path"])
 
-        # #Make the experiment descriptors
-        # experiments = edl.run_generate(parameters_dict)
-        # edl.save_list(parameters_dict, experiments)
+        #Make the experiment descriptors
+        experiments = edl.run_generate(parameters_dict)
+        edl.save_list(parameters_dict, experiments)
 
-        # #Run the experiments 
-        # marl.run_experiments(parameters_dict["phase_path"])
+        #Run the experiments 
+        marl.run_experiments(parameters_dict["phase_path"])
         
 
 

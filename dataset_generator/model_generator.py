@@ -478,8 +478,6 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     #print(prepared_dataset["y"].shape)
     prepared_dataset = split_training_test(prepared_dataset, experiment_object)
     #Build the model
-    #CHANGE HERE
-    print(experiment_object)
 
     model = build_model(prepared_dataset, experiment_object)
     #Change here 
