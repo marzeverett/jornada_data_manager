@@ -521,7 +521,7 @@ def create_dataset_from_dataset_object(dataset_object):
     x_vect, y_vect, x_key, y_key = format_data_model_ready(dataset_object, df)
     #matricize & unmatricize 
     if "conv" in list(dataset_object.keys()):
-        if dataset_object["conv"] = True:
+        if dataset_object["conv"] == True:
             x_vect, y_vect = matricize_dataset(x_vect, y_vect, dataset_object)
     #unmatricize_dataset(x_vect, y_vect, dataset_object)
     #4. Save. 
