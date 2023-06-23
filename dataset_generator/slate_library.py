@@ -440,15 +440,15 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
         # ddl.run_test(indexes, experiment_1, descriptors_list)
 
 
-        # #Make the datasets
-        # marl.make_datasets(parameters_dict["phase_path"])
+        #Make the datasets
+        marl.make_datasets(parameters_dict["phase_path"])
 
-        # #Make the experiment descriptors
-        # experiments = edl.run_generate(parameters_dict)
-        # edl.save_list(parameters_dict, experiments)
+        #Make the experiment descriptors
+        experiments = edl.run_generate(parameters_dict)
+        edl.save_list(parameters_dict, experiments)
 
-        # #Run the experiments 
-        # marl.run_experiments(parameters_dict["phase_path"])
+        #Run the experiments 
+        marl.run_experiments(parameters_dict["phase_path"])
         
 
 
