@@ -356,7 +356,9 @@ def generate_base_datasets(indexes):
 def run_generate(new_dict):
     global parameters_dict
     global global_data_descriptors_list
-    parameters_dict = static_parameters_dict
+    parameters_dict = static_parameters_dict.copy()
+    if "ae_synthesis" in list(parameters_dict.keys()):
+            del parameters_dict["ae_synthesis"]
     global_data_descriptors_list = []
     set_parameters_dict(new_dict)
     list_of_base_sets = parameters_dict["list_of_base_sets"]
