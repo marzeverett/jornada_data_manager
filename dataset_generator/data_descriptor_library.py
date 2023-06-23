@@ -193,6 +193,11 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
                         d_name = create_dataset_name(ae_prev_names[i], ds_index, new_l_index, ds_combo_index, combo_index, idays, odays)
                     first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
                     ae_paths.append(first_path)
+        else:
+            for i in range(0, len(ae_models)):
+                d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
+                first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+                ae_paths.append(first_path)        
     #Otherwise assume we match 
     else:
         for i in range(0, len(ae_models)):
@@ -238,8 +243,8 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     ae_models = parameters_dict["ae_models"]
     ae_prev_names = parameters_dict["ae_prev_names"]
     dataset_dict["phase_metrics"] = parameters_dict["phase_metrics"]
-    if "conv" in list(parameters_dict.keys()):
-        dataset_dict["conv"] = parameters_dict["conv"]
+    dataset_dict["conv"] = parameters_dict["conv"]
+    dataset_dict["conv_and_prev_ae"] = parameters_dict["conv_and_prev_ae"]
     if ae_models != []:
         ae_paths = return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
         if ae_paths != []:

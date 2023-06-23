@@ -31,6 +31,7 @@ def unnormalize_data_transformation(feature_array, dataset_descriptor):
             feature_array[i] = (feature_array[i]*(max_val-min_val))+min_val
 
 #Unnormalize data 
+#This was a confusing way to do it, Marz. 
 def unnormalize_data(dataset_descriptor, dataset_result, experiment_result):
     y_map = {
         "y": "y_unnormalized",
@@ -213,7 +214,9 @@ def save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, 
 
 
 def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
-    unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
+    ##I don't think we need to unnormalize for now. -- but probably want to check your ability
+    ##To do so. 
+    #unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
     #Later, but not now. 
     #save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
     #save_all_model_history_graphs(experiment_descriptor, experiment_result)

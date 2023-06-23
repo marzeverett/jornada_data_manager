@@ -40,6 +40,180 @@ def return_experiment_1():
     return experiment_1
 
 
+def return_experiment_2():
+    experiment_1 = {
+    "model": {
+        "kind": "AE",
+        "model_type": "Sequential",
+        "layers": 
+            [
+                {
+                    "type": "Dense",
+                    "num_nodes": 10,
+                    "activation": "relu",
+                    "name": "latent_space"
+                },
+            ],
+        "final_activation": "relu",
+        "loss": "mse",
+        #"loss_function": "mean_square_error",
+        "optimizer": "adam",
+        "batch_size": 32,
+        "epochs": 10,
+        "test_split": 0.1,
+        "validation_split": 0.2,
+        "use_multiprocessing": True,
+        #"metrics": ["mse"]
+        "metrics": ["mse"],
+        "verbose": True,
+    },
+    "experiment_folder_path": "generated_files/experiments/",
+    "experiment_name": "test_experiment_9"
+    }
+    return experiment_1
+
+
+#Probably think about how we add parameterization - number of filters? 
+def return_experiment_3():
+    experiment_1 = {
+    "model": {
+        "kind": "CONV_AE",
+        "model_type": "Sequential",
+        "layers": 
+            [
+                {
+                    "type": "Conv2D",
+                    "num_nodes": 32,
+                    "kernel_size": 2,
+                },
+                {
+                    "type": "BatchNormalization",
+                },
+                {
+                    "type": "MaxPooling2D",
+                    "pool_size": (2,2),
+                    "name": "latent_space"
+                },
+                {
+                    "type": "BatchNormalization",
+                },
+                {
+                    "type": "Conv2DTranspose",
+                    "num_nodes": 32,
+                    "kernel_size": 3,
+                },
+                
+                
+                
+            ],
+        "final_activation": "relu",
+        "loss": "mse",
+        #"loss_function": "mean_square_error",
+        "optimizer": "adam",
+        "batch_size": 32,
+        "epochs": 10,
+        "test_split": 0.1,
+        "validation_split": 0.2,
+        "use_multiprocessing": True,
+        #"metrics": ["mse"]
+        "metrics": ["mse"],
+        "verbose": True,
+    },
+    "experiment_folder_path": "generated_files/experiments/",
+    "experiment_name": "test_experiment_10"
+    }
+    return experiment_1
+
+
+def return_experiment_4():
+    experiment_1 = {
+    "model": {
+        "kind": "CONV_LSTM",
+        "model_type": "Sequential",
+        "layers": 
+            [
+                {
+                    "type": "ConvLSTM2D",
+                    "num_nodes": 2,
+                    "kernel_size": 2,
+                    "strides": (9,9)
+                },
+                # {
+                #     "type": "MaxPooling2D",
+                #     "pool_size": (2,2),
+                #     "strides": (3,3)
+                # },
+                # {
+                #     "type": "ConvLSTM2D",
+                #     "num_nodes": 8,
+                #     "kernel_size": 2,
+                #     "strides": (3,3)
+                # },
+                {
+                    "type": "MaxPooling2D",
+                    "pool_size": (9,9),
+                    "strides": (9,9)
+                },
+                {
+                    "type": "Flatten",
+                },
+                
+                
+                
+                
+            ],
+        "final_activation": "relu",
+        "loss": "mse",
+        #"loss_function": "mean_square_error",
+        "optimizer": "adam",
+        "batch_size": 16,
+        "epochs": 3,
+        "test_split": 0.1,
+        "validation_split": 0.2,
+        "use_multiprocessing": True,
+        #"metrics": ["mse"]
+        "metrics": ["mse"],
+        "verbose": True,
+    },
+    "experiment_folder_path": "generated_files/experiments/",
+    "experiment_name": "test_experiment_10"
+    }
+    return experiment_1
+
+
+# def return_experiment_3():
+#     experiment_1 = {
+#     "model": {
+#         "kind": "LSTM",
+#         "model_type": "Sequential",
+#         "layers": 
+#             [
+#                 {
+#                     "type": "ConvLSTM2D",
+#                     "num_nodes": 30,
+#                 },
+#                 {
+#                     "type": "BatchNormalization",
+#                 },
+#             ],
+#         "final_activation": "relu",
+#         "loss": "mse",
+#         #"loss_function": "mean_square_error",
+#         "optimizer": "adam",
+#         "batch_size": 32,
+#         "epochs": 10,
+#         "test_split": 0.1,
+#         "validation_split": 0.2,
+#         "use_multiprocessing": True,
+#         #"metrics": ["mse"]
+#         "metrics": ["mse"],
+#         "verbose": True,
+#     },
+#     "experiment_folder_path": "generated_files/experiments/",
+#     "experiment_name": "test_experiment_10"
+#     }
+#     return experiment_1
+
 ################################################################
 
 # #Phase 2!!
@@ -228,7 +402,15 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
             new_dict["ae_prev_names"]=  [prev_dataset_name]
         if conv == True:
             new_dict["conv"] = True
-        parameter_dict_list.append(new_dict)
+        else:
+            new_dict["conv"] = False
+        if conv == True and "ae_prev_names" in list(new_dict.keys()):
+            new_dict["conv_and_prev_ae"] = True
+        else:
+            new_dict["conv_and_prev_ae"] = False
+        parameter_dict_list.append(new_dict.copy())
+        new_dict = {}
+
 
     print(json.dumps(parameter_dict_list, indent=4))
 
@@ -243,20 +425,30 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
         #Save the list 
         ddl.save_list(parameters_dict, descriptors_list)
 
-        # # #The below for a quick test run. 
+        # #The below for a quick test run. 
         # indexes = [0]
-        # experiment_1 = return_experiment_1()
+        # if descriptors_list[0]["target_model"] == "time_regression" and descriptors_list[0]["conv"] == False:
+        #     experiment_1 = return_experiment_1()
+        # elif descriptors_list[0]["target_model"] == "ae" and descriptors_list[0]["conv"] == False:
+        #     experiment_1 = return_experiment_2()
+        # elif descriptors_list[0]["target_model"] == "ae" and descriptors_list[0]["conv"] == True:
+        #     experiment_1 = return_experiment_3()
+        # elif descriptors_list[0]["target_model"] == "time_regression" and descriptors_list[0]["conv"] == True:
+        #     print("Experiment 4")
+        #     experiment_1 = return_experiment_4()
+
         # ddl.run_test(indexes, experiment_1, descriptors_list)
 
-        #Make the datasets
-        marl.make_datasets(parameters_dict["phase_path"])
 
-        #Make the experiment descriptors
-        experiments = edl.run_generate(parameters_dict)
-        edl.save_list(parameters_dict, experiments)
+        # #Make the datasets
+        # marl.make_datasets(parameters_dict["phase_path"])
 
-        #Run the experiments 
-        marl.run_experiments(parameters_dict["phase_path"])
+        # #Make the experiment descriptors
+        # experiments = edl.run_generate(parameters_dict)
+        # edl.save_list(parameters_dict, experiments)
+
+        # #Run the experiments 
+        # marl.run_experiments(parameters_dict["phase_path"])
         
 
 

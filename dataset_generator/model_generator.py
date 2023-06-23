@@ -13,6 +13,8 @@
 #Pickle help here: https://www.pythonlikeyoumeanit.com/Module5_OddsAndEnds/WorkingWithFiles.html 
 #Use this info for per-feature error: https://neptune.ai/blog/keras-loss-functions
 #Helpful for intermediate model layer: https://androidkt.com/get-output-of-intermediate-layers-keras/  
+#Encoder example from Keras: https://keras.io/examples/vision/autoencoder/ 
+
 
 import pickle
 import os
@@ -139,6 +141,98 @@ def build_layer(model, layer_object):
         use_bias=use_bias,
         name=name
         ))
+    if layer_type == "ConvLSTM2D":
+        activation = "tanh"
+        recurrent_activation = "hard_sigmoid"
+        if "num_nodes" in list(layer_object.keys()):
+            num_nodes=layer_object["num_nodes"]
+        else:
+            num_nodes = 20 
+        if "kernel_size" in list(layer_object.keys()):
+            kernel_size=layer_object["kernel_size"]
+        else:
+            kernel_size = 3 
+        if "activation" in list(layer_object.keys()):
+            activation = layer_object["activation"]
+        if "recurrent_activation" in list(layer_object.keys()):
+            recurrent_activation = layer_object["recurrent_activation"]
+
+        model.add(layers.ConvLSTM2D(num_nodes, kernel_size,
+        activation=activation,
+        recurrent_activation=recurrent_activation))
+
+    if layer_type == "Conv2D":
+        activation = None
+        name = None
+        kernel_size = 3
+        strides = (1,1)
+        if "num_nodes" in list(layer_object.keys()):
+            num_nodes=layer_object["num_nodes"]
+        else:
+            num_nodes = 20 
+        if "activation" in list(layer_object.keys()):
+            activation = layer_object["activation"]
+        if "kernel_size" in list(layer_object.keys()):
+            kernel_size = layer_object["kernel_size"]
+        if "strides" in list(layer_object.keys()):
+            strides = layer_object["strides"]
+        if "name" in list(layer_object.keys()):
+            name = layer_object["name"]
+
+        model.add(layers.Conv2D(num_nodes, kernel_size, name=name,
+        activation=activation, strides=strides))
+
+    if layer_type == "Conv2DTranspose":
+        activation = None
+        kernel_size = 3
+        strides = (1,1)
+        name=None
+        if "num_nodes" in list(layer_object.keys()):
+            num_nodes=layer_object["num_nodes"]
+        else:
+            num_nodes = 20 
+        if "activation" in list(layer_object.keys()):
+            activation = layer_object["activation"]
+        if "kernel_size" in list(layer_object.keys()):
+            kernel_size = layer_object["kernel_size"]
+        if "strides" in list(layer_object.keys()):
+            strides = layer_object["strides"]
+        if "name" in list(layer_object.keys()):
+            name = layer_object["name"]
+
+        model.add(layers.Conv2DTranspose(num_nodes, kernel_size, name=name,
+        activation=activation, strides=strides))
+
+    if layer_type == "MaxPooling2D":
+        pool_size= (2,2)
+        strides = (1,1)
+        name=None
+        if "pool_size" in list(layer_object.keys()):
+            pool_size=layer_object["pool_size"]
+        if "strides" in list(layer_object.keys()):
+            strides = layer_object["strides"]
+        if "name" in list(layer_object.keys()):
+            name = layer_object["name"]
+
+        model.add(layers.MaxPooling2D(pool_size=pool_size, name=name,
+        strides=strides))
+
+    if layer_type == "UpSampling2D":
+        size= (2,2)
+        name=None
+        if "size" in list(layer_object.keys()):
+            size=layer_object["size"]
+        if "name" in list(layer_object.keys()):
+            name = layer_object["name"]
+
+        model.add(layers.UpSampling2D(size=size, name=name))
+
+    if layer_type == "BatchNormalization":
+        model.add(layers.BatchNormalization())
+
+    if layer_type == "Flatten":
+        model.add(layers.Flatten())
+        
     return model
 
 def return_base_model(model_type):
@@ -159,24 +253,44 @@ def add_input_layer(model, prepared_dataset, experiment_object):
         dims = x.shape[1]
         model.add(layers.Input(shape=dims))
         model.add(layers.Dense(dims, activation=activation))
+    if model_def["kind"] == "CONV_AE":
+        shape = x.shape
+        #Everything but the first shape for the Conv AE 
+        input_shape = shape[1:]
+        print("INPUT SHAPE", input_shape)
+        model.add(layers.Input(shape=input_shape))
+    if model_def["kind"] == "CONV_LSTM":
+        shape = x.shape
+        #Everything but the first shape for the Conv AE 
+        input_shape = shape[1:]
+        print("INPUT SHAPE", input_shape)
+        model.add(layers.Input(shape=input_shape))
+
     return model 
 
 def add_output_layer(model, prepared_dataset, experiment_object):
     model_def = experiment_object["model"]
     activation = model_def["final_activation"]
     y = prepared_dataset["y"]
-    #LATER - put dimension checking here  #MARKED
+    x = prepared_dataset["x"]
+    #print("OUTPUT SHAPE")
+    #print(y.shape)
     num_dimensions = y.ndim
-    if num_dimensions <= 2:
-        features = y.shape[1]
-        model.add(layers.Dense(features,
-            activation=activation))
+    if model_def["kind"] == "CONV_AE":
+        model.add(layers.Conv2D(y.shape[-1], (1,1)))
     else:
-        timesteps = y.shape[1]
-        features = y.shape[2]
-        model.add(layers.Dense(timesteps*features,
-            activation=activation))
-        model.add(layers.Reshape((timesteps, features)))
+        #I think this is fine, just needs some rework. -- Lots of rework for a 
+        #conv ae
+        if num_dimensions <= 2:
+            features = y.shape[1]
+            model.add(layers.Dense(features,
+                activation=activation))
+        else:
+            timesteps = y.shape[1]
+            features = y.shape[2]
+            model.add(layers.Dense(timesteps*features,
+                activation=activation))
+            model.add(layers.Reshape((timesteps, features)))
     return model 
 
 #10 = timesteps, 2 = features 
@@ -379,7 +493,7 @@ def eval_feature(true_column, pred_column, loss):
 
     #y_true = y_true.reshape(y_true.shape[0]*y_true.shape[1], y_true.shape[2])
 
-def eval_all_features(true_column, pred_column, metric):
+def eval_all_features(true_column, pred_column, metric, experiment_object):
     if true_column.ndim > 2: 
         true_column = true_column.reshape(true_column.shape[0]*true_column.shape[1], true_column.shape[2])
     if pred_column.ndim > 2: 
@@ -399,12 +513,7 @@ def get_all_per_feature_evals(predictions, prepared_dataset, experiment_object):
     y_test = prepared_dataset["y_test"]
     metrics = experiment_object["model"]["metrics"]
     for metric in metrics:
-        # feature_list = []
-        # print(len(x_test[0]))
-        # for i in range(0, len(x_test[0])):
-        #     val = eval_feature(y_test[i].copy(), x_test[i].copy(), metric)
-        #     feature_list.append(val
-        feature_list = eval_all_features(y_test.copy(), x_test.copy(), metric)
+        feature_list = eval_all_features(y_test.copy(), x_test.copy(), metric, experiment_object)
         per_feature[metric] = feature_list
     return per_feature
 
@@ -422,7 +531,9 @@ def create_experiment_result_object(history, total_time, model, prepared_dataset
     #Predict on all x's, also test and train x's. 
     experiment_result["predictions"] = predict_values(model, prepared_dataset)
     #Get the per-feature metrics on test set.
-    experiment_result["per_feature"] = get_all_per_feature_evals(experiment_result["predictions"], prepared_dataset, experiment_object)
+    #CHANGE IS HERE - Can't quite get a per feature idea yet -- REVISIT 
+    if experiment_object["model"]["kind"] != "CONV_AE":
+        experiment_result["per_feature"] = get_all_per_feature_evals(experiment_result["predictions"], prepared_dataset, experiment_object)
     #ax.plot(prepared_dataset[y_index], prepared_dataset[pred_index][:, 0])
     return experiment_result
 
@@ -433,7 +544,7 @@ def save_model(model, experiment_object):
     save_path = path+"model"
     model.save(save_path)
     #If this an autoencoder, we also want to save the latent space model 
-    if model_def["kind"] == "AE":
+    if model_def["kind"] == "AE" or model_def["kind"] == "CONV_AE":
         latent_space = model.get_layer(name="latent_space")
         latent_output = latent_space.output
         latent_model = models.Model(inputs = model.input, outputs=latent_output)

@@ -54,7 +54,7 @@ def load_in_data(dataset_object):
         dataset_object = pickle.load(f)
     return dataset_result, dataset_object
 
-def save_dataset(x, y, x_key, y_key, dataset_object):
+def save_dataset(x, y, x_key, y_key, x_raw, y_raw, dataset_object):
     full_path, dataset_result_path, dataset_descriptor_path = get_data_filepaths(dataset_object)
     os.makedirs(full_path, exist_ok=True)
     #Make the dataset result object. 
@@ -63,12 +63,14 @@ def save_dataset(x, y, x_key, y_key, dataset_object):
         "y": y,
         "x_key": x_key,
         "y_key": y_key,
+        "x_raw": x_raw,
+        "y_raw": y_raw
     }
     #Save to pickle files.
     with open(dataset_result_path, "wb") as f:
-        pickle.dump(dataset_result, f)
+        pickle.dump(dataset_result, f, protocol=4)
     with open(dataset_descriptor_path, "wb") as f:
-        pickle.dump(dataset_object, f)
+        pickle.dump(dataset_object, f, protocol=4)
 
 
 def get_input_output_fields(dataset_object, field_object_index):
@@ -230,11 +232,9 @@ def deal_with_missing_data(df, dataset_object):
 #Don't have great error checking on this... 
 #But it gets the latent space. Admittedly, this could fail with latent space being []
 #But in that case it probably should fail... 
-def get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect):
+def get_ae_latent_space(path, x_columns, x_vect, x_key_vect):
     full_model_path = path + "latent_model"
     ae_model = models.load_model(full_model_path)
-    #print("MODEL SUMMARY")
-    #print(ae_model.summary())
     full_dd_path = path+"dataset_descriptor.pickle"
     latent_space = [] 
     with open(full_dd_path, "rb") as f:
@@ -243,11 +243,7 @@ def get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
     if "ae_paths" in list(dataset_object.keys()):
         ae_paths = dataset_object["ae_paths"]
         for path in ae_paths:
-            ae_output = get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
-            #CHANGE HERE
-            # print("HERE")
-            # print(latent_space)
-            # print(ae_output)
+            ae_output = get_ae_latent_space(path, x_columns, x_vect,x_key_vect)
             if latent_space == []:
                  latent_space = ae_output
             else:
@@ -256,25 +252,19 @@ def get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
     #Base case - model does not depend on AE outputs 
     else:
         model_inputs = dataset_object["x_columns"]
-        #CHANGE HERE
-        # print("DEBUG")
-        # print(model_inputs)
-        # print(x_columns)
         relevant_indexes = []
+        #This is the part we'll have to change if conv. 
         for input_col in model_inputs:
             relevant_indexes.append(x_columns.index(input_col))
         ae_input = x_vect[:, relevant_indexes]
-        #CHANGE HERE
-        # print(ae_input)
+        # print("Here")
         # print(ae_input.shape)
+        # print(ae_model.summary())
         latent_space = ae_model.predict(ae_input)
-        # print("NOWE HERE")
-        # print(latent_space.shape)
-        # print(latent_space)
     return latent_space
 
  #This function could use a LOT better documentation    
-def process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect):
+def process_aes(dataset_object, x_vect, x_key_vect):
     ae_paths = dataset_object["ae_paths"]
     #execute_list, ae_dict = build_ae_tree(ae_paths)
     x_columns = dataset_object["x_columns"]
@@ -283,16 +273,13 @@ def process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect):
     latent_space = []
     #latent_space = []
     for path in ae_paths:
-        ae_output = get_ae_latent_space(path, x_columns, x_vect, y_vect, x_key_vect, y_key_vect)
-        #Change here
-        # print("AQUI")
-        # print(ae_output)
+        ae_output = get_ae_latent_space(path, x_columns, x_vect, x_key_vect)
         if latent_space == []:
             latent_space = ae_output
         else:
             latent_space = np.hstack((latent_space, ae_output))
 
-    return latent_space, y_vect, x_key_vect, y_key_vect 
+    return latent_space, x_key_vect
 
 
 #This makes sure only columns present both in the spec and the dataset make it in. 
@@ -379,24 +366,31 @@ def format_data_model_ready(dataset_object, df):
     y_vect = y_cols.to_numpy()
     x_key_vect = key_cols.to_numpy()
     y_key_vect = key_cols.to_numpy()
+
+    x_raw = x_vect
+    y_raw = y_vect
+
+    if dataset_object["conv"] == True and dataset_object["conv_and_prev_ae"] == False:
+        x_matrix, y_matrix = matricize_dataset(x_vect, y_vect, dataset_object)
+        x_vect = x_matrix
+        y_vect = y_matrix
     #If this model needs to be preprocessed through an ae, do that first
     if "ae_paths" in list(dataset_object.keys()):
-        x_vect, y_vect, x_key_vect, y_key_vect = process_aes(dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
+        x_vect, x_key_vect = process_aes(dataset_object, x_vect, x_key_vect)
     #If this is a time regression model, we need to slice it up. 
     if target_model == "time_regression":
+        #For conv? - Maybe CHECK, CHANGE HERE 
+        y_vect = y_raw
         x_vect, y_vect, x_key_vect, y_key_vect = time_slice(df, dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)
     #Change also here 
     #print_output_data_info(actual_input, x_vect, y_vect, x_key_vect, y_key_vect)
-    return x_vect, y_vect, x_key_vect, y_key_vect
+    return x_vect, y_vect, x_key_vect, y_key_vect, x_raw, y_raw
 
 
 def print_dataset_info(df):
     print(df.describe())
     print(list(df.columns))
     print("--------------")
-
-
-
 
 def feature_map_to_feature_vect(x_vect, grid, matrix_map, x_columns, channels):
     for i in range(0, len(x_columns)):
@@ -405,7 +399,6 @@ def feature_map_to_feature_vect(x_vect, grid, matrix_map, x_columns, channels):
             grid[i] = x_vect[indexes[0], indexes[1], indexes[2]] 
     return grid
 
-
 def feature_vect_to_feature_map(x_vect, grid, matrix_map, x_columns, channels):
     for i in range(0, len(x_columns)):
         if x_columns[i] in list(matrix_map.keys()):
@@ -413,7 +406,6 @@ def feature_vect_to_feature_map(x_vect, grid, matrix_map, x_columns, channels):
             grid[indexes[0], indexes[1], indexes[2]] = x_vect[i]
     return grid
         
-
 def matrix_map(x_columns, channels, coords, sites, dataset_object):
     #need 3D index
     #x, y, channel 
@@ -430,7 +422,6 @@ def matrix_map(x_columns, channels, coords, sites, dataset_object):
             matrix_map[column] = full_index
         except Exception as e:
             pass
-    dataset_object["matrix_map"] = matrix_map
     return matrix_map
         
     
@@ -449,64 +440,67 @@ def get_channels(x_columns, image_map, dataset_object):
                 replace_string = site+"_"
                 channels.append(item.replace(replace_string, ''))
     channels = list(set(channels))
-    dataset_object["channels"] = channels
     return channels 
     
 
-#This is not working. It may be ok to not implement?? 
-def unmatricize_dataset(x_vect, y_vect, dataset_object):
-    x_columns = dataset_object['x_columns']
-    channels = dataset_object["channels"]
-    matrix = dataset_object["matrix_map"]
-    grid = []
-    dimension = x_vect.ndim
-    iter_dim = dimension - 3
-    new_vect = x_vect[:iter_dim]
-    other_vect = x_vect[iter_dim:]
-    yes_vect = x_vect[..., iter_dim:]
-    no_vect = x_vect[...,:iter_dim]
-    final_vect = x_vect[:, :, ...]
-    print("AQUI")
-    print(new_vect.shape)
-    print(other_vect.shape)
-    print(yes_vect.shape)
-    print(no_vect.shape)
-    print(final_vect.shape)
-    for arr in np.nditer(x_vect, op_axes=[[-3, -2, -1]]):
-        print("X vector slice?")
-        print(arr.shape)
-        arr = feature_map_to_feature_vect(arr, grid.copy(), matrix, x_columns, channels) 
-    print(x_vect.shape)
+# #This is not working. It may be ok to not implement?? 
+# def unmatricize_dataset(x_vect, y_vect, dataset_object):
+#     x_columns = dataset_object['x_columns']
+#     channels = dataset_object["channels"]
+#     matrix = dataset_object["matrix_map"]
+#     grid = []
+#     dimension = x_vect.ndim
+#     iter_dim = dimension - 3
+#     new_vect = x_vect[:iter_dim]
+#     other_vect = x_vect[iter_dim:]
+#     yes_vect = x_vect[..., iter_dim:]
+#     no_vect = x_vect[...,:iter_dim]
+#     final_vect = x_vect[:, :, ...]
+#     print("AQUI")
+#     print(new_vect.shape)
+#     print(other_vect.shape)
+#     print(yes_vect.shape)
+#     print(no_vect.shape)
+#     print(final_vect.shape)
+#     for arr in np.nditer(x_vect, op_axes=[[-3, -2, -1]]):
+#         print("X vector slice?")
+#         print(arr.shape)
+#         arr = feature_map_to_feature_vect(arr, grid.copy(), matrix, x_columns, channels) 
+#     print(x_vect.shape)
 
 def matricize_dataset(x_vect, y_vect, dataset_object):
     x_columns = dataset_object['x_columns']
     y_columns = dataset_object['y_columns'] 
-    existing_datasource = []
-    existing_location = [] 
-    existing_datasource_index = []
-    existing_location_index = []
-    #x_vect -
     #Loads in the dictionary 
     with open("image_map.pkl", "rb") as f:
         image_map = pickle.load(f)
-    #samples, sequence items, features
-    #print(image_map)
-    #print(type(image_map))
-    #get last axis of array 
-    channels = get_channels(x_columns, image_map, dataset_object)
-
+    #Get the channels used 
+    x_channels = get_channels(x_columns, image_map, dataset_object)
+    y_channels = get_channels(y_columns, image_map, dataset_object)
+    dataset_object["x_channels"] = x_channels
+    dataset_object["y_channels"] = y_channels
+    #Get the image map information 
     coords = image_map["coords"]
     site_names = image_map["sites"]
     grid_size = image_map["grid_size"]
 
-    matrix = matrix_map(x_columns, channels, coords, site_names, dataset_object)
+    x_matrix_map = matrix_map(x_columns, x_channels, coords, site_names, dataset_object)
+    y_matrix_map = matrix_map(y_columns, y_channels, coords, site_names, dataset_object)
+    dataset_object["x_matrix_map"] = x_matrix_map
+    dataset_object["y_matrix_map"] = y_matrix_map
     print("Before")
     print(x_vect.shape)
-    grid = np.zeros((grid_size, grid_size, len(channels)))
-    x_vect = np.apply_along_axis(feature_vect_to_feature_map, -1, x_vect, np.copy(grid), matrix, x_columns, channels)
-    print("After")
+    x_grid = np.zeros((grid_size, grid_size, len(x_channels)))
+    y_grid = np.zeros((grid_size, grid_size, len(y_channels)))
+    x_matrix = np.apply_along_axis(feature_vect_to_feature_map, -1, x_vect, np.copy(x_grid), x_matrix_map, x_columns, x_channels)
+    y_matrix = np.apply_along_axis(feature_vect_to_feature_map, -1, y_vect, np.copy(y_grid), y_matrix_map, y_columns, y_channels)
+
+    print("After - Vect then returned matrix")
     print(x_vect.shape)
-    return x_vect, y_vect
+    print(x_matrix.shape)
+    print(y_vect.shape)
+    print(y_matrix.shape)
+    return x_matrix, y_matrix 
 
 #Take in a dataset object, create it, and save it. 
 #Takes in a dataset object, returns 
@@ -518,16 +512,10 @@ def create_dataset_from_dataset_object(dataset_object):
     #Change here
     #print_dataset_info(df)
     #3. Format for Keras model - this handles LSTM, AE, and (soon) Nested
-    x_vect, y_vect, x_key, y_key = format_data_model_ready(dataset_object, df)
-    #matricize & unmatricize 
-    if "conv" in list(dataset_object.keys()):
-        if dataset_object["conv"] == True:
-            x_vect, y_vect = matricize_dataset(x_vect, y_vect, dataset_object)
-    #unmatricize_dataset(x_vect, y_vect, dataset_object)
+    x_vect, y_vect, x_key, y_key, x_raw, y_raw = format_data_model_ready(dataset_object, df)                  
     #4. Save. 
-    save_dataset(x_vect, y_vect, x_key, y_key, dataset_object)
+    save_dataset(x_vect, y_vect, x_key, y_key, x_raw, y_raw, dataset_object)
     return x_vect, y_vect, x_key, y_key, dataset_object
-
 
 
 def return_test_dataset():

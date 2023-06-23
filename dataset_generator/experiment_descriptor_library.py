@@ -100,6 +100,35 @@ def create_basic_ae_model_object(num_nodes):
     }
     return model 
 
+
+def create_basic_conv_ae_model_object(num_nodes):
+    model = {
+        "kind": "CONV_AE",
+        "model_type": "Sequential",
+        "layers": 
+            [
+                {
+                    "type": "Dense",
+                    "num_nodes": num_nodes,
+                    "activation": "relu",
+                    "name": "latent_space"
+                },
+            ],
+        "final_activation": "relu",
+        "loss": "mse",
+        #"loss_function": "mean_square_error",
+        "optimizer": "adam",
+        "batch_size": 32,
+        "epochs": 100,
+        "test_split": 0.1,
+        "validation_split": 0.2,
+        "use_multiprocessing": True,
+        #"metrics": ["mse"]
+        "metrics": ["mse"],
+        "verbose": False,
+    }
+    return model 
+
 def create_experiment(num_nodes, scaling_factor, dataset_name, kind):
     global parameters_dict
     base_name = parameters_dict["base_name"]
