@@ -21,7 +21,11 @@ phase_path_start = "generated_files/"
 # 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
 # 'AF', 'AG', 'AH', 'AI', 'AJ']
 
-letters = ['M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+# letters = ['M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
+# 'AF', 'AG', 'AH', 'AI', 'AJ']
+
+letters = ['T', 'U', 'V', 
 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
 'AF', 'AG', 'AH', 'AI', 'AJ']
 #letters = ['A', 'B']

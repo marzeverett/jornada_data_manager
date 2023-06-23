@@ -368,6 +368,7 @@ def run_generate(new_dict):
 #print(global_data_descriptors_list[0])
 def save_list(new_dict, global_data_descriptors_list):
     global parameters_dict
+    global static_parameters_dict
     set_parameters_dict(new_dict)
     #Save base dataset descriptors
     phase_path = parameters_dict["phase_path"]
@@ -377,6 +378,7 @@ def save_list(new_dict, global_data_descriptors_list):
     #Write out the dataset descriptors     
     with open(pathname, "wb") as f:
         pickle.dump(global_data_descriptors_list, f)
+    parameters_dict = static_parameters_dict.copy()
     print(f"Successfully saved dataset descriptors to {pathname}")
 
 
