@@ -9,7 +9,7 @@ import slate_library
 ################################################################
 
 #Phase 2!!
-#Phase 2 is exactly the same as phase 1, except is uses a 0.7 AE scaling factor 
+#All base, plus 0.5 scaling factor 
 phase_name = "2"
 phase_path_start = "generated_files/"
 # letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 

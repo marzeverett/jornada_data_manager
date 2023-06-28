@@ -13,24 +13,6 @@ import slate_library
 phase_name = "3"
 prev_phase_base = "2"
 phase_path_start = "generated_files/"
-# letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
-# 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
-# 'AF', 'AG', 'AH', 'AI', 'AJ']
-# letters = ['H', 
-# 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
-# 'AF', 'AG', 'AH', 'AI', 'AJ']
-
-# letters = ['M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
-# 'AF', 'AG', 'AH', 'AI', 'AJ']
-
-# letters = ['T', 'U', 'V', 
-# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
-# 'AF', 'AG', 'AH', 'AI', 'AJ']
-
-
 #Don't build new datasets!!! 
 letters = ['G', 'N', "T", "W", "Y", "AB", "AD", "AG", "AJ", "J", "M", "V", "AF", "F", "Q", "AA", "AI", "I"]
 
