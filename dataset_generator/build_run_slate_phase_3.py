@@ -15,8 +15,8 @@ phase_name = "3"
 prev_phase_base = "2"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
-letters = ["F","G", "I" "J", "M", 'N', "Q", "T", "V", "W", "Y", "AA",
-"AB", "AD", "AF", "AG", "AI", "AJ"]
+letters = ["F","G", "I", "J", "M", "N", "Q", "T", "V", "W", "Y",
+ "AA", "AB", "AD", "AF", "AG", "AI", "AJ"]
 
 #letters = ['A', 'B']
 print(len(letters))
