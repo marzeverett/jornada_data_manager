@@ -8,17 +8,16 @@ import slate_library
 
 ################################################################
 
-#Phase 3!!
-#Phase 3 is exactly the same as phase 2, except is uses a 0.7 AE scaling factor 
+#Phase 4!!
+#Phase 4 takes off datastreams and then retrains them. It is similar 
+# to phase 2-3, but with considerably more finangling of the 
+#retrain process. 
 #It is reusing the same 
-phase_name = "3"
-prev_phase_base = "2"
+phase_name = "4"
+prev_phase_base = "4"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
-# letters = ["F","G", "I", "J", "M", "N", "Q", "T", "V", "W", "Y",
-#  "AA", "AB", "AD", "AF", "AG", "AI", "AJ"]
-
-letters = ["I", "J", "M", "N", "Q", "T", "V", "W", "Y",
+letters = ["F","G", "I", "J", "M", "N", "Q", "T", "V", "W", "Y",
  "AA", "AB", "AD", "AF", "AG", "AI", "AJ"]
 
 #letters = ['A', 'B']
