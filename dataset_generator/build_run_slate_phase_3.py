@@ -10,11 +10,13 @@ import slate_library
 
 #Phase 3!!
 #Phase 3 is exactly the same as phase 2, except is uses a 0.7 AE scaling factor 
+#It is reusing the same 
 phase_name = "3"
 prev_phase_base = "2"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
-letters = ['G', 'N', "T", "W", "Y", "AB", "AD", "AG", "AJ", "J", "M", "V", "AF", "F", "Q", "AA", "AI", "I"]
+letters = ["F","G", "I" "J", "M", 'N', "Q", "T", "V", "W", "Y", "AA",
+"AB", "AD", "AF", "AG", "AI", "AJ"]
 
 #letters = ['A', 'B']
 print(len(letters))
