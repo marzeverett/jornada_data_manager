@@ -230,11 +230,15 @@ def return_experiment_4():
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 
 
-def run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, conv=False):
+def run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, conv=False, prev_phase_base=None):
     parameter_dict_list = []
     for letter in letters:
         new_dict = {}
         prev_letter = None
+        if prev_phase_base == None:
+            prev_phase = phase_name
+        else:
+            prev_phase = prev_phase_base
         new_dict["phase_metrics"] = phase_name+"_"+letter
         new_dict["phase_path"] = phase_path_start+phase_name+"_"+letter+"/"
         new_dict["input_days"] = input_days
@@ -396,9 +400,9 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
         else:
             new_dict["scaling_factors"] = [8, 32, 64]
         if prev_letter != None:
-            model_name = phase_name+"_"+prev_letter+"_exp"+str(use_scaling_factor)
+            model_name = prev_phase+"_"+prev_letter+"_exp"+str(use_scaling_factor)
             new_dict["ae_models"]= [model_name]
-            prev_dataset_name = phase_name+"_"+prev_letter
+            prev_dataset_name = prev_phase+"_"+prev_letter
             new_dict["ae_prev_names"]=  [prev_dataset_name]
         if conv == True:
             new_dict["conv"] = True
