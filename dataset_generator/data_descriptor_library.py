@@ -38,6 +38,12 @@ static_parameters_dict = {
     "ae_prev_names": []
 }
 
+ds_indexes = {
+    "1": "temp_hum",
+    "2": "rain",
+    "3": "wind_speed",
+    "4": "wind_direction"
+}
 
 datasets_base_path = "generated_files/datasets/"
 experiments_base_path = "generated_files/experiments/"
@@ -153,12 +159,20 @@ def create_dataset_class(ds, l, ds_combo, l_combo, idays, odays):
 #dataset name is therefore 
 #simple_reg_weather.v[1+].ds[1-4].l[1-4].ds_combo[INDEX].l_combo[INDEX].idays[index].odays[INDEX]
 
-def return_input_output_dict_combo(kind, loc_or_site):
+def return_input_output_dict_combo(kind, loc_or_site, parameters_dict):
     main_dict = {}
     if loc_or_site == "l":
         all_options = all_named_sites
     elif loc_or_site == "ds":
-        all_options = separate_stream_headers 
+        all_options = separate_stream_headers.copy()
+        if parameters_dict["delete_stream"] != None:
+            delete_option = parameters_dict["delete_stream"]
+            if isinstance(delete_option, list):
+                for item in delete_option:
+                    all_options.pop(item)
+            else:
+                all_options.pop(delete_option)
+
     if kind == "ALL":
         main_dict["input"] = all_options
         main_dict["output"] = all_options
@@ -181,7 +195,7 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
         synthesize = parameters_dict["ae_synthesis"]
         #If we synthesize, that means we don't match on index 
         if synthesize == "ds" or synthesize == "l":
-            combo_dict = return_input_output_dict_combo("ONE", synthesize)
+            combo_dict = return_input_output_dict_combo("ONE", synthesize, parameters_dict)
             #For each ae model listed here 
             for i in range(0, len(ae_models)):
                 for combo_index in range(0, len(combo_dict["input"])):
@@ -245,6 +259,7 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     dataset_dict["phase_metrics"] = parameters_dict["phase_metrics"]
     dataset_dict["conv"] = parameters_dict["conv"]
     dataset_dict["conv_and_prev_ae"] = parameters_dict["conv_and_prev_ae"]
+    #This is where we'll put the transfer model path 
     if ae_models != []:
         ae_paths = return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
         if ae_paths != []:
@@ -267,64 +282,64 @@ def generate_level_idays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds
 
 #All sites together predict all data for all sites (1 dataset, not counting i/o or model)
 #1 dataset * 15 i/o = 15 datasets 
-def generate_base(ds_num, l_num):
+def generate_base(ds_num, l_num, parameters_dict):
     if l_num == 0 and ds_num == 0:
-        generate_base_1()
+        generate_base_1(parameters_dict)
     elif l_num == 1 and ds_num == 0:
-        generate_base_2()
+        generate_base_2(parameters_dict)
     elif l_num == 1 and ds_num == 1:
-        generate_base_3()
+        generate_base_3(parameters_dict)
     elif l_num == 0 and ds_num == 1:
-        generate_base_4()
+        generate_base_4(parameters_dict)
 
 
-def generate_base_1():
+def generate_base_1(parameters_dict):
     l = "ALL"
     ds = "ALL"
     l_index = 0
     ds_index = 0
     l_combo_index = 0
     ds_combo_index = 0 
-    l_combo_dict = return_input_output_dict_combo(l, "l")
-    ds_combo_dict = return_input_output_dict_combo(ds, "ds")
+    l_combo_dict = return_input_output_dict_combo(l, "l", parameters_dict)
+    ds_combo_dict = return_input_output_dict_combo(ds, "ds", parameters_dict)
     generate_level_idays(l_combo_dict, l_combo_index, l_index, ds_combo_dict, ds_combo_index, ds_index)
 
 #One site predicts all data for one site
 #15 datasets * 15 i/o = 225 datasets 
-def generate_base_2():
+def generate_base_2(parameters_dict):
     l = "ONE"
     ds = "ALL"
     l_index = 1
     ds_index = 0
     ds_combo_index = 0
-    l_combo_dict = return_input_output_dict_combo(l, "l")
-    ds_combo_dict = return_input_output_dict_combo(ds, "ds")
+    l_combo_dict = return_input_output_dict_combo(l, "l", parameters_dict)
+    ds_combo_dict = return_input_output_dict_combo(ds, "ds", parameters_dict)
     for l_combo_index in range(0, len(l_combo_dict["input"])):
         generate_level_idays(l_combo_dict, l_combo_index, l_index, ds_combo_dict, ds_combo_index, ds_index)
 
 #One sites predicts one data stream for one sites
 #15 sites * 4 datastreams * 15 i/o = 900 datasets 
-def generate_base_3():
+def generate_base_3(parameters_dict):
     l = "ONE"
     ds = "ONE"
     l_index = 1
     ds_index = 1
-    l_combo_dict = return_input_output_dict_combo(l, "l")
-    ds_combo_dict = return_input_output_dict_combo(ds, "ds")
+    l_combo_dict = return_input_output_dict_combo(l, "l", parameters_dict)
+    ds_combo_dict = return_input_output_dict_combo(ds, "ds", parameters_dict)
     for l_combo_index in range(0, len(l_combo_dict["input"])):
         for ds_combo_index in range(0, len(ds_combo_dict["input"])):
             generate_level_idays(l_combo_dict, l_combo_index, l_index, ds_combo_dict, ds_combo_index, ds_index)
 
 #All sites predict one data stream for all sites 
 #4 datastreams * 15 i/o = 60 datasets 
-def generate_base_4():
+def generate_base_4(parameters_dict):
     l = "ALL"
     ds = "ONE"
     l_index = 0 
     ds_index = 1 
     l_combo_index = 0
-    l_combo_dict = return_input_output_dict_combo(l, "l")
-    ds_combo_dict = return_input_output_dict_combo(ds, "ds")
+    l_combo_dict = return_input_output_dict_combo(l, "l", parameters_dict)
+    ds_combo_dict = return_input_output_dict_combo(ds, "ds", parameters_dict)
     for ds_combo_index in range(0, len(ds_combo_dict["input"])):
         generate_level_idays(l_combo_dict, l_combo_index, l_index, ds_combo_dict, ds_combo_index, ds_index)
     
@@ -336,7 +351,7 @@ def set_parameters_dict(new_dict):
 
 
 
-def generate_base_datasets(indexes):
+def generate_base_datasets(indexes, parameters_dict):
     # for index in indexes:
     #     if index == 1:
     #         generate_base_1()
@@ -346,7 +361,7 @@ def generate_base_datasets(indexes):
     #         generate_base_3()
     #     elif index == 4:
     #         generate_base_4()
-    generate_base(indexes[0], indexes[1])
+    generate_base(indexes[0], indexes[1], parameters_dict)
 
 
 
@@ -362,7 +377,7 @@ def run_generate(new_dict):
     global_data_descriptors_list = []
     set_parameters_dict(new_dict)
     list_of_base_sets = parameters_dict["list_of_base_sets"]
-    generate_base_datasets(list_of_base_sets)
+    generate_base_datasets(list_of_base_sets, parameters_dict)
     print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
     return global_data_descriptors_list
 

@@ -180,6 +180,9 @@ def return_experiment_4():
     }
     return experiment_1
 
+def return_test_experiment():
+    pass
+
 
 # def return_experiment_3():
 #     experiment_1 = {
@@ -230,7 +233,9 @@ def return_experiment_4():
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 
 
-def run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, conv=False, prev_phase_base=None):
+def run(phase_name, phase_path_start, letters, input_days, output_days,
+ use_scaling_factor, conv=False, prev_phase_base=None,
+  delete_stream=None, test=False):
     parameter_dict_list = []
     for letter in letters:
         new_dict = {}
@@ -239,12 +244,14 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
             prev_phase = phase_name
         else:
             prev_phase = prev_phase_base
+        new_dict["delete_stream"] = delete_stream
         new_dict["phase_metrics"] = phase_name+"_"+letter
         new_dict["phase_path"] = phase_path_start+phase_name+"_"+letter+"/"
         new_dict["input_days"] = input_days
         new_dict["output_days"] = output_days
         new_dict["base_dataset_name"] = phase_name+"_"+letter
         new_dict["base_name"] = phase_name+"_"+letter+"_exp"
+        new_dict["test"] = test
         prev_letter = None 
         #Base 
         if letter == 'A':
@@ -431,7 +438,10 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
 
         # #The below for a quick test run. 
         # indexes = [0]
-        # if descriptors_list[0]["target_model"] == "time_regression" and descriptors_list[0]["conv"] == False:
+        #
+        # if test == "True":
+        #     experiment_1 = return_test_experiment()
+        # elif descriptors_list[0]["target_model"] == "time_regression" and descriptors_list[0]["conv"] == False:
         #     experiment_1 = return_experiment_1()
         # elif descriptors_list[0]["target_model"] == "ae" and descriptors_list[0]["conv"] == False:
         #     experiment_1 = return_experiment_2()
@@ -440,6 +450,7 @@ def run(phase_name, phase_path_start, letters, input_days, output_days, use_scal
         # elif descriptors_list[0]["target_model"] == "time_regression" and descriptors_list[0]["conv"] == True:
         #     print("Experiment 4")
         #     experiment_1 = return_experiment_4()
+        
 
         # ddl.run_test(indexes, experiment_1, descriptors_list)
 
