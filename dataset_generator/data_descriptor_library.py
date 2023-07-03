@@ -146,9 +146,9 @@ def return_index_replacement(parameters_dict, index):
         delete_option = parameters_dict["delete_stream"]
         if isinstance(delete_option, list):
             for item in delete_option:
-                all_options.pop(item)
+                all_options.remove(item)
         else:
-            all_options.pop(delete_option)
+            all_options.reemove(delete_option)
     header = all_options[index]
     true_index = ds_indexes[header]
     return true_index
