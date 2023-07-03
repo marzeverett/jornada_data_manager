@@ -154,7 +154,7 @@ def return_index_replacement(parameters_dict, index):
     return true_index
 
 
-def create_dataset_name(base_name, ds, l, ds_combo, l_combo, idays, odays, , parameters_dict):
+def create_dataset_name(base_name, ds, l, ds_combo, l_combo, idays, odays, parameters_dict):
     version = 1
     #Change here 
     #POSSIBLE  - Could re-index here
