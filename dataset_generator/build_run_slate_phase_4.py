@@ -18,8 +18,10 @@ phase_name = "4"
 prev_phase_base = "4"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
-letters = ["F","G", "I", "J", "M", "N", "Q", "T", "V", "W", "Y",
- "AA", "AB", "AD", "AF", "AG", "AI", "AJ"]
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
+'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 
+'AF', 'AG', 'AH', 'AI', 'AJ']
 
 delete_stream = "temp_hum"
 
