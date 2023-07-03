@@ -245,7 +245,6 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
 #This can be called outside 
 #l_combo_item is a dictionary of datasets (input/output) 
 def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, odays, odays_index, parameters_dict):
-    global parameters_dict
     #global_data_descriptors_list = []
     dataset_dict = return_non_varying_data_descriptor()
     input_list_l = l_combo_item["input"]
@@ -290,13 +289,11 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
 
 #Can keep these, probably. 
 def generate_level_odays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, parameters_dict):
-    global parameters_dict
     output_days = parameters_dict["output_days"]
     for odays_index in range(0, len(output_days)):
         generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, output_days[odays_index], odays_index, parameters_dict) 
     
 def generate_level_idays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, parameters_dict):
-    global parameters_dict
     input_days = parameters_dict["input_days"]
     for idays_index in range(0, len(input_days)):
         generate_level_odays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, input_days[idays_index], idays_index, parameters_dict)
