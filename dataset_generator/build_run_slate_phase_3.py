@@ -11,8 +11,8 @@ import slate_library
 #Phase 3!!
 #Phase 3 is exactly the same as phase 2, except is uses a 0.7 AE scaling factor 
 #It is reusing the same 
-phase_name = "5"
-prev_phase_base = "4"
+phase_name = "3"
+prev_phase_base = "2"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 # letters = ["F","G", "I", "J", "M", "N", "Q", "T", "V", "W", "Y",
