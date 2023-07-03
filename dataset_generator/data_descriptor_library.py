@@ -190,9 +190,9 @@ def return_input_output_dict_combo(kind, loc_or_site, parameters_dict):
             delete_option = parameters_dict["delete_stream"]
             if isinstance(delete_option, list):
                 for item in delete_option:
-                    all_options.pop(item)
+                    all_options.remove(item)
             else:
-                all_options.pop(delete_option)
+                all_options.remove(delete_option)
 
     if kind == "ALL":
         main_dict["input"] = all_options
