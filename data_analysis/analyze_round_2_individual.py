@@ -6,6 +6,10 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import json 
 import os 
+import scipy.stats as stats 
+import seaborn as sn
+
+#https://www.geeksforgeeks.org/select-row-with-maximum-and-minimum-value-in-pandas-dataframe/ 
 
 #Group by Documentation
 #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.groupby.html 
@@ -15,6 +19,9 @@ import os
 #https://www.geeksforgeeks.org/how-to-plot-multiple-data-columns-in-a-dataframe/ 
 
 
+#Test from here: https://www.geeksforgeeks.org/how-to-conduct-a-wilcoxon-signed-rank-test-in-python/ 
+
+#https://datatofish.com/correlation-matrix-pandas/ 
 
 groups = {
     "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC", "AE", "AH"],
@@ -109,7 +116,7 @@ aggregate_metrics = {
 df_dict = {}
 
 
-def read_in_dfs(file_path, df_dict, ingroup="lstm"):
+def read_in_dfs(file_path, ingroup="lstm"):
     df_dict = {}
     for filename in os.listdir(file_path):
         f = os.path.join(file_path, filename)
@@ -188,8 +195,8 @@ def save_results(filename, save_dict):
     df.to_csv(filename, index=False)
 
 
-def save_graphs(phase, scheme)
-    df_dict = read_in_dfs(file_path, df_dict, ingroup=scheme)
+def save_graphs(phase, scheme, file_path):
+    df_dict = read_in_dfs(file_path, ingroup=scheme)
     # test_df = df_dict["A"]["df"]
     #print(test_df.head())
     metrics_dict = calc_aggregate_metrics(df_dict, scheme)
@@ -198,77 +205,54 @@ def save_graphs(phase, scheme)
     save_results(save_name, metrics_dict)
 
 
-
-
-file_path = 'main_metrics/phase_2/'
 phase = "2"  
 scheme = "lstm"
-#Read 'em in 
+letter = "AF"
 
+file_path = "main_metrics/phase_"+phase+"/"
 
+file_name_1 = file_path + phase+"_"+letter+"main_metrics.csv"
+file_name_2 = 'main_metrics/phase_3/' + "3"+"_"+"I"+"main_metrics.csv"
 
-#print(df_dict)
-#print(json.dumps(df_dict, indent=4))
-    #Get the main metrics that every set has together
+#Read in 
+data_1 = pd.read_csv(file_name_1, names=col_names[scheme])
+data_2 = pd.read_csv(file_name_2, names=col_names[scheme])
 
-
-
-    
-#data = pd.read_csv('main_metrics/phase_2/phase_1_A.csv', names=cols)
- 
-#print(data.head())
-
-#data.plot(x="output_days", y=["mse"], kind="scatter")
-#data.groupby(["input_days", "output_days"]).plot(x="output_days", y=["mse"], kind="scatter")
-#data.groupby("input_days")["output_days"].plot(x="output_days", y=["mse"], kind="scatter")
-
-
+# #Wilcox Test
+# result = stats.wilcoxon(data_1["mse"].tolist(), data_2["mse"].tolist())
+# print(result)
 #Look up - you need to make sure you know exactly what's its doing
 #https://www.geeksforgeeks.org/pandas-groupby-multiple-values-and-plotting-results/ 
-#df = data.groupby(["input_days", "output_days"]).mean()["mse"]
+#new_data = data.groupby(["input_days", "output_days"]).mean()["mse"]
 
-#df = data.groupby(["dataset_name", "experiment_name"]).mean()
-#df = data.groupby(["input_days", "output_days"])
 
-#df = data.groupby("experiment_name").mean()
+# #GRAPH
+df= data_1.groupby(["l_combo"]).mean()
+df.plot(kind="bar", y="mse")
+#plt.xticks(rotation=30)
+plt.show()
 
-##################
-# new_data = data.loc[(data["datastream_scheme"] == 3) & (data["location_scheme"] == 3)]
 
+
+# #Find Min Record for mse
+# print("Min")
+# print(data_1[data_1.mse == data_1.mse.min()])
+# #Find Max record for mse 
+# print("Max")
+# print(data_1[data_1.mse == data_1.mse.max()])
+ 
+
+#  #Correlation Matrix
+# print(data_1.head())
+# df = data_1[["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]]
+# corr_matrix = df.corr()
+# print(corr_matrix)
+# sn.heatmap(corr_matrix, annot=True)
+# plt.show()
+
+#Aggregate stats 
 # mean = round(new_data["mse"].mean(), 5)
 # std = round(new_data["mse"].std(), 5)
 # print("Mean", mean)
 # print("Standard Deviation", std)
 
-
-# df = new_data.groupby(["experiment_name"]).mean()
-# #df = data
-# #df.plot(y="mse")
-# df.plot(kind="bar", y="mse")
-# #plt.xticks(rotation=30)
-# plt.show()
-###################
-#Might need to re-run these with a patience of 30. 
-
-# # plot the dataframe
-# df.plot(x="Name", y=["Price", "User Rating"], kind="bar", figsize=(9, 8))
- 
-# # print bar graph
-# mp.show()
-
-
-# # importing packages
-# import seaborn
- 
-# # load dataset and view
-# data = seaborn.load_dataset('exercise')
-# print(data)
- 
-# # multiple groupby (pulse, diet and time)
-# df = data.groupby(['pulse', 'diet', 'time']).count()['kind']
-# print(df)
- 
-# # plot the result
-# df.plot()
-# plt.xticks(rotation=30)
-# plt.show()

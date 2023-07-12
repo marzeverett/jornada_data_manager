@@ -142,6 +142,7 @@ Overall Mean Mean mse: 0.014275
 Overall Min Min: 0.01064 
 Overall Mean Min: 0.11559 
 
+--------------------------
 ## All datastreams predicted from one location:
 ### B (Base) (180 experiments)
 Lowest mean MSE 
@@ -163,6 +164,7 @@ Overall Min Min: 0.0055
 Overall Mean Min: 0.008556 
 
 
+--------------------
 ## One datastream predicted from all locations:
 ### C (Base) (48 experiments)
 Lowest Mean MSE 
@@ -184,9 +186,9 @@ Overall Min Min: 0.00204
 Overall Mean Min: 0.002546 
 
 
-
+----------------------
 ## One datastream predicted from one location: 
-### D (Case) (696 experiments)
+### D (Base) (696 experiments)
 Lower Mean 
 
 ### I (Separate Latent) (696 experiments)
@@ -198,4 +200,13 @@ Overall Min Min: 0.00062
 Overall Mean Min: 0.00071 (Doesn't mean much)
 
 
+Wilcoxon Signed Rank between D and I (0.5) = 3.3686806530748164e-48
+
+Wilcoxon Signed Rank between D and I (0.7) = 1.6508024710723744e-31
+
+
 ToDo: Check variance by location and by datastream. 
+
+
+
+
