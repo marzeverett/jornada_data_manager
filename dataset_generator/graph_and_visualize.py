@@ -224,6 +224,34 @@ def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descrip
     save_to_csv(experiment_descriptor, experiment_result)
     save_to_main_csv(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
+
+
+def load_everything(experiment_model, dataset_name):
+    path = "generated_files/experiments/"+experiment_model+"/"+dataset_name+"/"
+    names = ["dataset_descriptor", "dataset_result", "experiment_descriptor", "experiment_result"]
+    return_dict = {}
+    for name in names:
+        full_path = path + name + ".pickle"
+        with open(full_path, "rb") as f:
+                return_dict[name] = pickle.load(f)
+    dataset_descriptor = return_dict["dataset_descriptor"]
+    dataset_result = return_dict["dataset_result"]
+    experiment_descriptor = return_dict["experiment_descriptor"]
+    experiment_result = return_dict["experiment_result"]
+    return dataset_descriptor, dataset_result, experiment_descriptor, experiment_result
+
+
+def just_visualize(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result):
+    ##I don't think we need to unnormalize for now. -- but probably want to check your ability
+    ##To do so. 
+    unnormalize_data(dataset_descriptor, dataset_result, experiment_result)
+    #Later, but not now. 
+    save_all_prediction_graphs(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
+    save_all_model_history_graphs(experiment_descriptor, experiment_result)
+    save_all_per_feature_graphs(dataset_descriptor, experiment_descriptor, experiment_result)
+
+
+
 #experiment_1 = model_generator.return_test_experiment_descriptor()
 #dataset_descriptor, dataset_result, experiment_descriptor, experiment_result = model_generator.load_in_experiment_files(experiment_1)
 

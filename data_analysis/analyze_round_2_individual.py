@@ -8,7 +8,6 @@ import json
 import os 
 import scipy.stats as stats 
 import seaborn as sn
-
 #https://www.geeksforgeeks.org/select-row-with-maximum-and-minimum-value-in-pandas-dataframe/ 
 
 #Group by Documentation
@@ -205,9 +204,9 @@ def save_graphs(phase, scheme, file_path):
     save_results(save_name, metrics_dict)
 
 
-phase = "2"  
+phase = "3"  
 scheme = "lstm"
-letter = "AF"
+letter = "T"
 
 file_path = "main_metrics/phase_"+phase+"/"
 
@@ -226,11 +225,11 @@ data_2 = pd.read_csv(file_name_2, names=col_names[scheme])
 #new_data = data.groupby(["input_days", "output_days"]).mean()["mse"]
 
 
-# #GRAPH
-df= data_1.groupby(["l_combo"]).mean()
-df.plot(kind="bar", y="mse")
-#plt.xticks(rotation=30)
-plt.show()
+# # #GRAPH
+# df= data_1.groupby(["output_days"]).mean()
+# df.plot(kind="bar", y="mse")
+# #plt.xticks(rotation=30)
+# plt.show()
 
 
 
