@@ -110,29 +110,29 @@ AJ. All datastreams from all locations are predicted from all datatstreams from 
 
 # Results (Predictions Only): 
 ## All datastreams predicted from all locations: 
-### A (Base) (12 experiments)
+### A (Base) (12 experiments)(Network 1)
 Second Highest Mean MSE 
 Second highest Max MSE 
-### G (Separate Latent Space, Datastream) (12 experiments)
+### G (Separate Latent Space, Datastream) (12 experiments) (Network 2)
 Second Lowest Mean MSE 
 Second Highest Min MSE 
 Second Lowest Max MSE 
 Lowest Stdev 
-### N (Separate Latent Space, Datastream) (12 experiments)
+### N (Separate Latent Space, Datastream) (12 experiments) (Network 2)
 Lowest Min MSE 
 highest Max MSE 
 
-### T (Separate Latent Space on datastream, Then Combined Latent Space, fuse datastream) (12 experiments)
+### T (Separate Latent Space on datastream, Then Combined Latent Space, fuse datastream) (12 experiments) ((Network 3)  (Network 3)
 Second lowest stdev 
 
-### W (Separate Latent Space Then Combined Latent Space, fuse datastream) (12 experiments)
+### W (Separate Latent Space Then Combined Latent Space, fuse datastream) (12 experiments) (Network 3)
 Second Lowest Min MSE 
-### Y  (Separate Latent Space Then Combined Latent Space (fuse location) (12 experiments)
+### Y  (Separate Latent Space Then Combined Latent Space (fuse location) (12 experiments)(Network 3)
 Lowest Max MSE 
 ### AB  (Separate Latent Space Then Combined Latent Space, fuse location) (12 experiments)
 Highest Mean MSE 
 Highest Min MSE 
-### AD (Shared Latent Space, all)  (12 experiments)
+### AD (Shared Latent Space, all)  (12 experiments) (Network 4)
 Lowest Mean MSE 
 ### AG (Shared Latent Datastream, fused) (12 experiments)
 ### AJ (Shared Latent Location, fused) (12 experiments)
@@ -144,14 +144,14 @@ Overall Mean Min: 0.11559
 
 --------------------------
 ## All datastreams predicted from one location:
-### B (Base) (180 experiments)
+### B (Base) (180 experiments) (Network 1)
 Lowest mean MSE 
 Second lowest min (barely!)
 Lowest max 
 
-### J (Separate Latent Space, Datastream) (180 experiments)
-### M (Separate Latent Space, Location) (180 experiments)
-### V (Separate Latent Space, Then Together) (180 experiments)
+### J (Separate Latent Space, Datastream) (180 experiments) (Network 2)
+### M (Separate Latent Space, Location) (180 experiments) (Network 2, also Network 4 for datastreams when locations are broken up)
+### V (Separate Latent Space, Then Together) (180 experiments) (Network 3)
 ### AF (Shared Latent) (180 experiments)
 Second Lowest Mean MSE 
 Lowest Min (barely!)
@@ -166,16 +166,16 @@ Overall Mean Min: 0.008556
 
 --------------------
 ## One datastream predicted from all locations:
-### C (Base) (48 experiments)
+### C (Base) (48 experiments) (Network 1)
 Lowest Mean MSE 
 
-### F (Separate Latent Space, Datastream) (48 experiments)
-### Q (Separate Latent Space, Location) (48 experiments)
+### F (Separate Latent Space, Datastream) (48 experiments) (Network 2, and Network 4 for location when datastreams broken up)
+### Q (Separate Latent Space, Location) (48 experiments) (Network 2)
 Second Lowest Mean MSE 
 Second Lowest Min MSE 
 
-### AA (Separate, then Together) (48 experiments)
-### AI (Shared Latent Space) (48 experiments)
+### AA (Separate, then Together) (48 experiments) (Network 3)
+### AI (Shared Latent Space) (48 experiments) 
 Lowest Min MSE
 
 
@@ -188,10 +188,10 @@ Overall Mean Min: 0.002546
 
 ----------------------
 ## One datastream predicted from one location: 
-### D (Base) (696 experiments)
+### D (Base) (696 experiments) (Network 1)
 Lower Mean 
 
-### I (Separate Latent) (696 experiments)
+### I (Separate Latent) (696 experiments) (Network 2)
 Lower Min 
 
 Overall Min Mean mse: 0.01515

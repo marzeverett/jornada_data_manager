@@ -358,9 +358,9 @@ def get_min_per_organization(file_path_start, phases, kind):
     df_4 = read_in_dfs_concat(file_path_start, all_datastreams_all_locations, phases, kind)
     result_4 = df_4[df_4.mse == df_4.mse.min()]
     all_datastreams_all_locations_dict = {
-                    "model_name": [result_3["experiment_name"].item()],
-                    "dataset_name": [result_3["dataset_name"].item()],
-                    "min_mse": [result_3["mse"].item()]
+                    "model_name": [result_4["experiment_name"].item()],
+                    "dataset_name": [result_4["dataset_name"].item()],
+                    "min_mse": [result_4["mse"].item()]
                 }
 
 
