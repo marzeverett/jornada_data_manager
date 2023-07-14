@@ -310,12 +310,7 @@ def build_model(prepared_dataset, experiment_object):
     #Create defined layers
     layer_list = model_def["layers"]
     for layer in layer_list:
-        print("Building layer ", layer)
         model = build_layer(model, layer)
-        #Change here!
-        print("MODEL SUMMARY")
-        print(model.summary())
-        print()
     #Create output layer
     model = add_output_layer(model, prepared_dataset, experiment_object)
     #Compile the model 
