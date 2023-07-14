@@ -112,11 +112,7 @@ def build_layer(model, layer_object):
             num_nodes=layer_object["num_nodes"]
         else:
             num_nodes = 20 
-        if "return_sequences" in list(layer_object.keys()):
-            return_sequences=layer_object["return_sequences"]
-        else:
-            return_sequences = False
-        model.add(layers.LSTM(num_nodes, return_sequences=return_sequences))
+        model.add(layers.LSTM(num_nodes))
     #Dropout Layer 
     if layer_type == "Dropout":
         if "percent" in list(layer_object.keys()):
@@ -310,12 +306,7 @@ def build_model(prepared_dataset, experiment_object):
     #Create defined layers
     layer_list = model_def["layers"]
     for layer in layer_list:
-        print("Building layer ", layer)
         model = build_layer(model, layer)
-        #Change here!
-        print("MODEL SUMMARY")
-        print(model.summary())
-        print()
     #Create output layer
     model = add_output_layer(model, prepared_dataset, experiment_object)
     #Compile the model 

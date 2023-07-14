@@ -180,8 +180,83 @@ def return_experiment_4():
     }
     return experiment_1
 
-def return_test_experiment():
-    pass
+def return_experiment_5():
+    num_nodes = 32
+    experiment_1 = {
+    "model": {
+        "kind": "LSTM",
+        "model_type": "Sequential",
+        "layers": [
+            {
+                        "type": "LSTM",
+                        "num_nodes": round(num_nodes*2),
+                        "return_sequences": True,
+                    },
+                    {
+                        "type": "Dropout",
+                        "percent": 0.2,
+                    },
+                    {
+                        "type": "LSTM",
+                        "num_nodes": round(num_nodes*1.5),
+                        "return_sequences": True,
+                    },
+                    {
+                        "type": "Dropout",
+                        "percent": 0.2,
+                    },
+                    {
+                        "type": "LSTM",
+                        "num_nodes": num_nodes
+                    },
+                    {
+                        "type": "Dropout",
+                        "percent": 0.2,
+                    },
+                    {
+                    "type": "Dense",
+                    "num_nodes": num_nodes,
+                    "activation": "relu",
+                    }
+        ],
+        "final_activation": "relu",
+        "loss": "mse",
+        #"loss_function": "mean_square_error",
+        "optimizer": "adam",
+        "batch_size": 32,
+        "epochs": 10,
+        "test_split": 0.1,
+        "validation_split": 0.2,
+        "use_multiprocessing": True,
+        #"metrics": ["mse"]
+        "metrics": ["mse"],
+        "verbose": True,
+    },
+    "experiment_folder_path": "generated_files/experiments/",
+    "experiment_name": "test_experiment_9"
+    }
+    return experiment_1
+
+def return_test_experiment(descriptors_list):
+    target_model = descriptors_list[0]["target_model"]
+    conv = descriptors_list[0]["conv"]
+    deep_lstm = descriptors_list[0]["deep_lstm"]
+    deep_ae = descriptors_list[0]["deep_ae"]
+    if target_model == "time_regression":
+        if conv and not deep_lstm:
+            experiment_1 = return_experiment_4()
+        elif deep_lstm and not conv:
+            experiment_1 = return_experiment_5()
+        elif not deep_lstm and not conv:
+            experiment_1 = return_experiment_1()
+    elif target_model == "ae":
+        if conv and not deep_ae:
+            experiment_1 = return_experiment_3()
+        if deep_ae and not conv:
+            pass
+        elif not deep_ae and not conv:
+            experiment_1 = return_experiment_2()
+    return experiment_1
 
 
 # def return_experiment_3():
@@ -235,7 +310,7 @@ def return_test_experiment():
 
 def run(phase_name, phase_path_start, letters, input_days, output_days,
  use_scaling_factor, conv=False, prev_phase_base=None,
-  delete_stream=None, test=False):
+  delete_stream=None, test=False, deep_lstm=False, deep_ae=False):
     parameter_dict_list = []
     for letter in letters:
         new_dict = {}
@@ -252,6 +327,8 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         new_dict["base_dataset_name"] = phase_name+"_"+letter
         new_dict["base_name"] = phase_name+"_"+letter+"_exp"
         new_dict["test"] = test
+        new_dict["deep_lstm"] = deep_lstm
+        new_dict["deep_ae"] = deep_ae
         prev_letter = None 
         #Base 
         if letter == 'A':
@@ -403,7 +480,10 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
             new_dict["ae_synthesis"] = "ds"
         #End 
         if new_dict["target_model"] == "ae":
-            new_dict["scaling_factors"] = [0.3, 0.5, 0.7]
+            #Keep for phases 6 and 7!
+            #new_dict["scaling_factors"] = [0.3, 0.5, 0.7]
+            #Otherwise stick with phases from now on 
+            new_dict["scaling_factors"] = [0.7]
         else:
             new_dict["scaling_factors"] = [8, 32, 64]
         if prev_letter != None:
@@ -436,34 +516,19 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         #Save the list 
         ddl.save_list(parameters_dict, descriptors_list)
 
-        # #The below for a quick test run. 
-        # indexes = [0]
-        #
-        # if test == "True":
-        #     experiment_1 = return_test_experiment()
-        # elif descriptors_list[0]["target_model"] == "time_regression" and descriptors_list[0]["conv"] == False:
-        #     experiment_1 = return_experiment_1()
-        # elif descriptors_list[0]["target_model"] == "ae" and descriptors_list[0]["conv"] == False:
-        #     experiment_1 = return_experiment_2()
-        # elif descriptors_list[0]["target_model"] == "ae" and descriptors_list[0]["conv"] == True:
-        #     experiment_1 = return_experiment_3()
-        # elif descriptors_list[0]["target_model"] == "time_regression" and descriptors_list[0]["conv"] == True:
-        #     print("Experiment 4")
-        #     experiment_1 = return_experiment_4()
-        
-
-        # ddl.run_test(indexes, experiment_1, descriptors_list)
-
-
-        #Make the datasets
-        marl.make_datasets(parameters_dict["phase_path"])
-
-        #Make the experiment descriptors
-        experiments = edl.run_generate(parameters_dict)
-        edl.save_list(parameters_dict, experiments)
-
-        #Run the experiments 
-        marl.run_experiments(parameters_dict["phase_path"])
+        if test == True:
+            print("Running Test")
+            indexes = [0]
+            experiment_1 = return_test_experiment(descriptors_list)
+            ddl.run_test(indexes, experiment_1, descriptors_list)
+        else:
+            #Make the datasets
+            marl.make_datasets(parameters_dict["phase_path"])
+            #Make the experiment descriptors
+            experiments = edl.run_generate(parameters_dict)
+            edl.save_list(parameters_dict, experiments)
+            #Run the experiments 
+            marl.run_experiments(parameters_dict["phase_path"])
         
 
 

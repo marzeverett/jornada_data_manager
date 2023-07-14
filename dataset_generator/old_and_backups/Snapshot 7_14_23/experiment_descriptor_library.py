@@ -72,113 +72,6 @@ def create_basic_lstm_model_object(num_nodes):
         }
     return model 
 
-
-def create_deep_lstm_model_object(num_nodes):
-    if num_nodes == 8:
-        layers = [
-                    {
-                        "type": "LSTM",
-                        "num_nodes": num_nodes*3,
-                        "return_sequences": True,
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    },
-                    {
-                        "type": "LSTM",
-                        "num_nodes": num_nodes
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    },
-                ]
-    elif num_nodes == 32:
-        layers = [
-                    {
-                        "type": "LSTM",
-                        "num_nodes": round(num_nodes*2),
-                        "return_sequences": True,
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    },
-                    {
-                        "type": "LSTM",
-                        "num_nodes": round(num_nodes*1.5),
-                        "return_sequences": True,
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    },
-                    {
-                        "type": "LSTM",
-                        "num_nodes": num_nodes
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    }
-                ]
-
-    elif num_nodes == 64:
-        layers = [
-                    {
-                        "type": "LSTM",
-                        "num_nodes": round(num_nodes*2),
-                        "return_sequences": True,
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    },
-                    {
-                        "type": "LSTM",
-                        "num_nodes": round(num_nodes*1.5),
-                        "return_sequences": True,
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    },
-                    {
-                        "type": "LSTM",
-                        "num_nodes": num_nodes
-                    },
-                    {
-                        "type": "Dropout",
-                        "percent": 0.2,
-                    },
-                    {
-                    "type": "Dense",
-                    "num_nodes": num_nodes,
-                    "activation": "relu",
-                    }
-                ]
-
-    model = {
-            "kind": "LSTM",
-            "model_type": "Sequential",
-            #Don't include input, code will figure it out. 
-            #Don't include output, code will figure it out. 
-            "layers": layers,
-            "final_activation": "relu",
-            "loss": "mse",
-            "optimizer": "adam",
-            "batch_size": 32,
-            #Change from previous 
-            "epochs": 150,
-            "test_split": 0.1,
-            "validation_split": 0.2,
-            "use_multiprocessing": True,
-            "metrics": ["mse", "mape", "mae"],
-            "verbose": False,
-        }
-    return model 
-
 def create_basic_ae_model_object(num_nodes):
     model = {
         "kind": "AE",
@@ -207,46 +100,6 @@ def create_basic_ae_model_object(num_nodes):
     }
     return model 
 
-
-
-
-def create_deep_ae_model_object(num_nodes):
-    model = {
-        "kind": "AE",
-        "model_type": "Sequential",
-        "layers": 
-            [
-                {
-                    "type": "Dense",
-                    "num_nodes": num_nodes * 2,
-                    "activation": "relu",
-                },
-                {
-                    "type": "Dense",
-                    "num_nodes": num_nodes,
-                    "activation": "relu",
-                    "name": "latent_space"
-                },
-                {
-                    "type": "Dense",
-                    "num_nodes": num_nodes *2,
-                    "activation": "relu",
-                },
-            ],
-        "final_activation": "relu",
-        "loss": "mse",
-        #"loss_function": "mean_square_error",
-        "optimizer": "adam",
-        "batch_size": 32,
-        "epochs": 150,
-        "test_split": 0.1,
-        "validation_split": 0.2,
-        "use_multiprocessing": True,
-        #"metrics": ["mse"]
-        "metrics": ["mse"],
-        "verbose": False,
-    }
-    return model 
 
 def create_basic_conv_ae_model_object(num_nodes):
     model = {
@@ -286,12 +139,6 @@ def create_experiment(num_nodes, scaling_factor, dataset_name, kind):
     elif kind == "base_ae":
         model = create_basic_ae_model_object(num_nodes)
         name_append = scaling_factor
-    elif kind == "deep_lstm":
-        model = create_deep_lstm_model_object(num_nodes)
-        name_append = num_nodes
-    elif kind == "deep_ae":
-        model = create_deep_ae_model_object(num_nodes)
-        name_append = scaling_factor
     experiment_1 = {
         "model": model,
         "dataset_name": dataset_name,
@@ -321,18 +168,10 @@ def run_generate(new_dict):
     set_parameters_dict(new_dict)
     phase_path = parameters_dict["phase_path"]
     target_model = parameters_dict["target_model"]
-    deep_lstm = parameters_dict["deep_lstm"]
-    deep_ae = parameters_dict["deep_ae"]
     if target_model == "time_regression":
-        if deep_lstm:
-            kind = "deep_lstm"
-        else:
-            kind = "base_lstm"
+        kind = "base_lstm"
     elif target_model == "ae":
-        if deep_ae:
-            kind = "base_ae"
-        else:
-            kind = "deep_ae"
+        kind = "base_ae"
     scaling_factors = parameters_dict["scaling_factors"]
     #Load in dataset descriptors 
     d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
@@ -343,7 +182,7 @@ def run_generate(new_dict):
     for scaling_factor in scaling_factors:
         for dataset in dataset_descriptors: 
             d_result = load_dataset_result_from_dataset_descriptor(dataset)
-            if kind == "base_ae" or kind == "deep_ae":
+            if kind == "base_ae":
                 node_count = determine_ae_nodes_from_dataset_object(d_result, scaling_factor)
             else:
                 node_count = scaling_factor

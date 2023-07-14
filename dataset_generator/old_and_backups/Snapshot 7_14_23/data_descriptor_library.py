@@ -16,31 +16,27 @@ import graph_and_visualize
 #datasets_base_path = "/home/maryeverett/Documents/ai_research/jornada_data_manager/experiments/generated_files/datasets/"
 
 #These will be set in the function 
-def return_parameter_dict_default():
-    parameters_dict = {
-        "phase_path": "generated_files/phase_1_ae_individual/",
-        "input_days": [30, 60],
-        "output_days": [1, 7],
-        "target_model": "time_regression",
-        "base_dataset_name": "simple_reg_weather_ae",
-        "list_of_base_sets": [],
-        "ae_models": [],
-        "ae_prev_names": []
-    }
-    return parameters_dict.copy()
+parameters_dict = {
+    "phase_path": "generated_files/phase_1_ae_individual/",
+    "input_days": [30, 60],
+    "output_days": [1, 7],
+    "target_model": "time_regression",
+    "base_dataset_name": "simple_reg_weather_ae",
+    "list_of_base_sets": [],
+    "ae_models": [],
+    "ae_prev_names": []
+}
 
-def return_static_parameters_dict():
-    static_parameters_dict = {
-        "phase_path": "generated_files/phase_1_ae_individual/",
-        "input_days": [30, 60],
-        "output_days": [1, 7],
-        "target_model": "time_regression",
-        "base_dataset_name": "simple_reg_weather_ae",
-        "list_of_base_sets": [],
-        "ae_models": [],
-        "ae_prev_names": []
-    }
-    return static_parameters_dict.copy()
+static_parameters_dict = {
+    "phase_path": "generated_files/phase_1_ae_individual/",
+    "input_days": [30, 60],
+    "output_days": [1, 7],
+    "target_model": "time_regression",
+    "base_dataset_name": "simple_reg_weather_ae",
+    "list_of_base_sets": [],
+    "ae_models": [],
+    "ae_prev_names": []
+}
 
 ds_indexes = {
     "temp_hum":1,
@@ -126,7 +122,8 @@ def make_single_fields_dict(datasets, fields):
     return main_dict
 
 #Data all together, all sites predict all weather for all sites. 
-def return_non_varying_data_descriptor(parameters_dict):
+def return_non_varying_data_descriptor():
+    global parameters_dict
     main_dict = {}
     #main_dict["target_model"] = "time_regression"
     #this is the change from base 1!
@@ -249,7 +246,7 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
 #l_combo_item is a dictionary of datasets (input/output) 
 def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, odays, odays_index, parameters_dict):
     #global_data_descriptors_list = []
-    dataset_dict = return_non_varying_data_descriptor(parameters_dict)
+    dataset_dict = return_non_varying_data_descriptor()
     input_list_l = l_combo_item["input"]
     output_list_l = l_combo_item["output"]
     input_list_ds = ds_combo_item["input"]
@@ -282,14 +279,13 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     dataset_dict["phase_metrics"] = parameters_dict["phase_metrics"]
     dataset_dict["conv"] = parameters_dict["conv"]
     dataset_dict["conv_and_prev_ae"] = parameters_dict["conv_and_prev_ae"]
-    dataset_dict["deep_lstm"] = parameters_dict["deep_lstm"]
-    dataset_dict["deep_ae"] = parameters_dict["deep_ae"]
     #This is where we'll put the transfer model path 
     if ae_models != []:
         ae_paths = return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
         if ae_paths != []:
             dataset_dict["ae_paths"] = ae_paths
     global_data_descriptors_list.append(dataset_dict)
+
 
 #Can keep these, probably. 
 def generate_level_odays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, parameters_dict):
@@ -366,26 +362,38 @@ def generate_base_4(parameters_dict):
         generate_level_idays(l_combo_dict, l_combo_index, l_index, ds_combo_dict, ds_combo_index, ds_index, parameters_dict)
     
 
-def set_parameters_dict(new_dict, parameters_dict):
+def set_parameters_dict(new_dict):
+    global parameters_dict
     for key in list(new_dict.keys()):
         parameters_dict[key] = new_dict[key]
-    return parameters_dict
 
 
 
 def generate_base_datasets(indexes, parameters_dict):
+    # for index in indexes:
+    #     if index == 1:
+    #         generate_base_1()
+    #     elif index == 2:
+    #         generate_base_2()
+    #     elif index == 3:
+    #         generate_base_3()
+    #     elif index == 4:
+    #         generate_base_4()
     generate_base(indexes[0], indexes[1], parameters_dict)
+
+
 
 
 ##################################################
 #Most likely used by outside 
 def run_generate(new_dict):
+    global parameters_dict
     global global_data_descriptors_list
-    parameters_dict = return_static_parameters_dict()
+    parameters_dict = static_parameters_dict.copy()
     if "ae_synthesis" in list(parameters_dict.keys()):
             del parameters_dict["ae_synthesis"]
     global_data_descriptors_list = []
-    parameters_dict = set_parameters_dict(new_dict, parameters_dict)
+    set_parameters_dict(new_dict)
     list_of_base_sets = parameters_dict["list_of_base_sets"]
     generate_base_datasets(list_of_base_sets, parameters_dict)
     print(f"Generated {len(global_data_descriptors_list)} dataset descriptors")
@@ -394,8 +402,9 @@ def run_generate(new_dict):
 #Generated base dataset descriptors
 #print(global_data_descriptors_list[0])
 def save_list(new_dict, global_data_descriptors_list):
-    parameters_dict = return_parameter_dict_default()
-    sparameters_dict = set_parameters_dict(new_dict, parameters_dict)
+    global parameters_dict
+    global static_parameters_dict
+    set_parameters_dict(new_dict)
     #Save base dataset descriptors
     phase_path = parameters_dict["phase_path"]
     pathname = phase_path + "phase1_dataset_descriptors.pickle"
@@ -404,7 +413,7 @@ def save_list(new_dict, global_data_descriptors_list):
     #Write out the dataset descriptors     
     with open(pathname, "wb") as f:
         pickle.dump(global_data_descriptors_list, f)
-    parameters_dict = return_static_parameters_dict()
+    parameters_dict = static_parameters_dict.copy()
     print(f"Successfully saved dataset descriptors to {pathname}")
 
 
@@ -420,5 +429,4 @@ def run_test(indexes, experiment_1, global_data_descriptors_list):
 
 
 #tensorman run --gpu pip3 install pandas 
-
 

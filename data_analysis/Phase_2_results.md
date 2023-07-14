@@ -14,7 +14,26 @@ The 4 datastreams and the fields they include:
         "wind_direction": ['WinDir_mean_Resultant', 'WinDir_Std_Dev'],
     }
 
+"ae": ["E", "H", "L", "S", "U", "X", "Z", "AC", "AE","AH"]
+"lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD",
+                "AF", "AG", "AI", "AJ"]
+separate_letters = ['D', 'I']
+separate_datastreams_all_locations = ["C", "F", "Q","AA", "AI"]
+all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
+all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
 
+Network_1 = ["A", "B", "C", "D"]
+Network_2 = ["F", "G", "I", "J", "M", "N", "Q"]
+Network_3 = ["T", "V", "W", "Y", "AA"]
+Network_4 = ["F", "M", "AD"]
+#AI - Network 2/4
+#AF - Network 2/4  
+#AB - kinda network 3, kind of a mess 
+#AJ - Network 2/4 
+#AE- Network 2/4 
+
+rid_letters = ["AI", "AE" (must be AG actually), "AF", "AB", "AJ", "AF]
 
 Here are the experiments that were run: (First Phase) 
 --------------------------------------------
@@ -84,7 +103,7 @@ Z. One datastream from all locations are recreated from one datastream from all 
 
 AA. One datastream from all locations are predicted from one datastream from all location, after being preprocessed by the autoencoder from Z. 
 
-AB. All datastreams from all locations are predicted from all datastreams from all locations, after being preprocessed by the autoencoder from AA and fusing the locations. 
+#AB. All datastreams from all locations are predicted from all datastreams from #all locations, after being preprocessed by the autoencoder from AA and fusing #the locations. 
 
 ## AE, datatsreams/locations share Latent Space
 ### All together
@@ -93,18 +112,18 @@ AC.  All datastreams from all locations are recreated from all datastreams from 
 AD. All datastreams from all locations are predicted from from all datastreams from all locations, after being preprocessed from the autoencoder from AC. 
 
 ### By datastream 
-AE. All datastreams from one location are recreated from all datastreams from one location. 
+#AE. All datastreams from one location are recreated from all datastreams from #one location. 
 
-AF. All datastreams from one location are predicted from all datatsreams from one location, after being preprocessed from the autoencoder from AE. 
+#AF. All datastreams from one location are predicted from all datatsreams from #one location, after being preprocessed from the autoencoder from AE. 
 
-AG. All datastreams from all locations are predicted from all datatstreams from all locations, after being preprocessed from the autoencoder from AE and fused together.
+#AG. All datastreams from all locations are predicted from all datatstreams from #all locations, after being preprocessed from the autoencoder from AE and fused #together.
 
 ###  By location 
-AH. One datastream from all locations is recreated from one datastream from all locations.
+#AH. One datastream from all locations is recreated from one datastream from all #locations.
 
-AI. One datastream from all locations is predicted from one datastream from all locations, after being preprocessed by the autencoder from AH. 
+#AI. One datastream from all locations is predicted from one datastream from all #locations, after being preprocessed by the autencoder from AH. 
 
-AJ. All datastreams from all locations are predicted from all datatstreams from all locations, after being preprocessed from the autoencoder from AI and fused together.
+#AJ. All datastreams from all locations are predicted from all datatstreams from #all locations, after being preprocessed from the autoencoder from AI and fused #together.
 
 
 
