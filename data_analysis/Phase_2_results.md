@@ -77,7 +77,7 @@ M. All datastreams from one location were used to predict all datastream from on
 
 N. All datastreams from all locations were used to predict all datastreams from all locations using an LSTM network with data preprocessed by the autoencoders from L and fused together for each location.
 
-Q. One datastream from one location was used to predict one datastream from one location using an LSTM network with data preprocessed by the autoencoders from H and fused together for each location.
+Q. One datastream from all location was used to predict one datastream from all location using an LSTM network with data preprocessed by the autoencoders from H and fused together for each location.
 
 
 

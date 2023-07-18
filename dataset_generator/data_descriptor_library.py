@@ -254,6 +254,12 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     output_list_l = l_combo_item["output"]
     input_list_ds = ds_combo_item["input"]
     output_list_ds = ds_combo_item["output"]
+
+    if "predict_type" in list(parameters_dict.keys()):
+        predict_type = parameters_dict["predict_type"]
+        dataset_dict["predict_type"] = predict_type
+    else:
+        predict_type = False
     if isinstance(input_list_l[0], list):
         i_dataset = input_list_l[l_combo_index]
         o_dataset = output_list_l[l_combo_index]
@@ -274,6 +280,12 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     classification = create_dataset_class(ds_index, l_index, ds_combo_index, l_combo_index, idays, odays, parameters_dict)
     dataset_dict["dataset_class"] = classification
     dataset_dict["input_fields"] = make_single_fields_dict(i_dataset, i_streams)
+    if predict_type == "frost":
+        o_streams = ["frost"]
+    elif predict_type == "storm":
+        o_streams = ["storm"]
+    elif predict_type == ["storm", "frost"] or predict_type == ["frost", "storm"]:
+        o_streams = predict_type
     dataset_dict["output_fields"] = make_single_fields_dict(o_dataset, o_streams)
     combo_datasets = i_dataset + o_dataset
     dataset_dict["datasets"] = [*set(combo_datasets)]
@@ -417,7 +429,7 @@ def run_test(indexes, experiment_1, global_data_descriptors_list):
         print("Experiment_Descriptor")
         print(experiment_descriptor)
         graph_and_visualize.visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
-
+        graph_and_visualize.just_visualize(dataset_descriptor, dataset_result, experiment_descriptor, experiment_result)
 
 #tensorman run --gpu pip3 install pandas 
 

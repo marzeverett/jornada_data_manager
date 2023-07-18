@@ -140,6 +140,14 @@ def create_reduced_dataframe(dataset_name, df, dataset_object):
     normalize = dataset_object["normalize"]
     #Handle categorical variables 
     df = handle_categorical(df, dataset_object)
+
+    #If prediction task, handle here 
+    if "predict_type" in list(dataset_object.keys()):
+        predict_type = dataset_object["predict_type"]
+        if predict_type == "frost":
+            df['frost'] = np.where(df['Air_TempC_Min'] < 0, 1, 0)
+        if predict_type == "storm":
+            df['storm'] = np.where(df['Ppt_mm_Tot'] >= 10, 1, 0)
     #Need input and output fields, concat_key, and renamed here. 
     concat_key = dataset_object["concat_key"]
     i_fields = dataset_object["input_fields"]
@@ -332,6 +340,53 @@ def time_slice(df, dataset_object, x, y, x_key, y_key):
     y_key_vect = np.array(y_key_vect)
     return x_vect, y_vect, x_key_vect, y_key_vect
 
+# #Going to have to think about more -- basically need this 
+# #On a per-site basis... 
+# def analyze_y_array(predict_type, y_raw_array):
+#     if predict_type == "frost":
+#         if 
+# def time_slice_predict(df, dataset_object, x, y, x_key, y_key, x_raw, y_raw, predict_type="frost", y_cols):
+#     input_slices_days = dataset_object["input_slices_days"]
+#     output_slices_days = dataset_object["output_slices_days"]
+#     output_offset_days = dataset_object["output_offset_days"]
+#     num_rows = len(df)
+#     x_vect, y_vect, x_key_vect, y_key_vect = [], [], [], []
+#     x_start = 0
+#     x_end = input_slices_days-1
+#     y_start = x_end+output_offset_days
+#     y_end = y_start+output_slices_days-1
+#     #Get x and y values indexed properly. 
+#     while y_end < num_rows-1:
+#         x_array = x[x_start:x_end+1]
+#         x_key_array = x_key[x_start:x_end+1]
+#         if y_start == y_end:
+#             y_array = y[y_start]
+#             y_key_array = y_key[y_start]
+#             y_raw_array = y_raw[y_start]
+#         else:
+#             y_array = y[y_start:y_end+1]
+#             y_key_array = y_key[y_start:y_end+1]
+#             y_raw_array = y_raw[y_start:y_end+1]
+#         #Add the slices 
+#         x_vect.append(x_array)
+#         #Here's where we change things up a bit. 
+#         y_array = analyze_y_array(predict_type, y_raw_array)
+#         y_vect.append(y_array)
+#         x_key_vect.append(x_key_array)
+#         y_key_vect.append(y_key_array)
+#         #If it is nested, this is where we go for it. 
+#         #Increment    
+#         x_start = x_start+1
+#         x_end = x_end+1
+#         y_start = y_start+1
+#         y_end = y_end+1
+#     #Finally, convert to a numpy array 
+#     x_vect = np.array(x_vect)
+#     y_vect = np.array(y_vect)
+#     x_key_vect = np.array(x_key_vect)
+#     y_key_vect = np.array(y_key_vect)
+#     return x_vect, y_vect, x_key_vect, y_key_vect
+
 #Prints stuff. Kinda useful for debugging. 
 def print_output_data_info(actual_input, x_vect, y_vect, x_key, y_key):
     print("Cols ", actual_input)
@@ -378,7 +433,7 @@ def format_data_model_ready(dataset_object, df):
     if "ae_paths" in list(dataset_object.keys()):
         x_vect, x_key_vect = process_aes(dataset_object, x_vect, x_key_vect)
     #If this is a time regression model, we need to slice it up. 
-    if target_model == "time_regression":
+    if target_model == "time_regression" or target_model == "time_predict":
         #For conv? - Maybe CHECK, CHANGE HERE 
         y_vect = y_raw
         x_vect, y_vect, x_key_vect, y_key_vect = time_slice(df, dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)

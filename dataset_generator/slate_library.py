@@ -310,7 +310,8 @@ def return_test_experiment(descriptors_list):
 
 def run(phase_name, phase_path_start, letters, input_days, output_days,
  use_scaling_factor, conv=False, prev_phase_base=None,
-  delete_stream=None, test=False, deep_lstm=False, deep_ae=False):
+  delete_stream=None, test=False, deep_lstm=False, 
+  deep_ae=False, predict_type=False):
     parameter_dict_list = []
     for letter in letters:
         new_dict = {}
@@ -330,56 +331,61 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         new_dict["deep_lstm"] = deep_lstm
         new_dict["deep_ae"] = deep_ae
         prev_letter = None 
+        if predict_type:
+            new_dict["predict_type"] = predict_type
+            final_model_type = "time_prediction"
+        final_model_type = "time_regression"
+        ae_model_type = "ae"
         #Base 
         if letter == 'A':
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
         elif letter == 'B':
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 1]
         elif letter == 'C':
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [1, 0]
         elif letter == 'D':
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [1, 1]
 
         #Network 2 - Datastreams 
         elif letter == 'E':
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [1, 0]
         elif letter == 'F':
             prev_letter = 'E'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [1, 0]
         elif letter == 'G':
             prev_letter = 'E'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "ds"
         elif letter == 'H':
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [1, 1]
         elif letter == 'I':
             prev_letter = 'H'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [1, 1]
         elif letter == 'J':
             prev_letter = 'H'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 1]
             new_dict["ae_synthesis"] = "ds"
         #Network 2 - Locations  
         elif letter == 'L':
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [0, 1]
         elif letter == 'M':
             prev_letter = 'L'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 1]
         elif letter == 'N':
             prev_letter = 'L'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "l"
         #O and P really already taken care of technically 
@@ -392,90 +398,90 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         #     new_dict["list_of_base_sets"] = [1, 1]
         elif letter == 'Q':
             prev_letter = 'H'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [1, 0]
             new_dict["ae_synthesis"] = "l"
         
         #Network 3 - Datastreams 
         if letter == 'S':
             prev_letter = 'E'
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "ds"
         if letter == 'T':
             prev_letter = 'S'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
         if letter == 'U':
             prev_letter = 'H'
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [0, 1]
             new_dict["ae_synthesis"] = "ds"
         if letter == 'V':
             prev_letter = 'U'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 1]
         if letter == 'W':
             prev_letter = 'U'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "l"
         #Network 3 - Locations  
         if letter == 'X':
             prev_letter = 'L'
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "l"
         if letter == 'Y':
             prev_letter = 'X'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
         if letter == 'Z':
             prev_letter = 'H'
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [1, 0]
             new_dict["ae_synthesis"] = "l"
         if letter == 'AA':
             prev_letter = 'Z'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [1, 0]
         if letter == 'AB':
             prev_letter = 'Z'
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "ds"
         #Network 4 - All  
         if letter == 'AC':
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [0, 0]
         if letter == 'AD':
             prev_letter = "AC"
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
         #Network 4 - All datastreams, one location 
         if letter == "AE":
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [0, 1]
         if letter == 'AF':
             prev_letter = "AE"
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 1]
         if letter == 'AG':
             prev_letter = "AE"
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "l"
         #Network 4- All locations, one datastream 
         if letter == "AH":
-            new_dict["target_model"] = "ae"
+            new_dict["target_model"] = ae_model_type
             new_dict["list_of_base_sets"] = [1, 0]
         if letter == 'AI':
             prev_letter = "AH"
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [1, 0]
         if letter == 'AJ':
             prev_letter = "AH"
-            new_dict["target_model"] = "time_regression"
+            new_dict["target_model"] = final_model_type
             new_dict["list_of_base_sets"] = [0, 0]
             new_dict["ae_synthesis"] = "ds"
         #End 
