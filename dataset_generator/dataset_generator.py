@@ -9,6 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']  = '3'
 import tensorflow as tf
 tf.get_logger().setLevel('ERROR')
 from tensorflow.keras import datasets, layers, models
+#Help here for prediction: https://towardsdatascience.com/deep-learning-which-loss-and-activation-functions-should-i-use-ac02f1c56aa8 
 
 #Reverse_mapping help here: 
 #https://www.techiedelight.com/build-dictionary-from-list-of-keys-values-python/
@@ -277,7 +278,6 @@ def process_aes(dataset_object, x_vect, x_key_vect):
     #execute_list, ae_dict = build_ae_tree(ae_paths)
     x_columns = dataset_object["x_columns"]
     #For each identified autoencoder, in each stage. 
-    #CHECK
     latent_space = []
     #latent_space = []
     for path in ae_paths:
@@ -286,7 +286,6 @@ def process_aes(dataset_object, x_vect, x_key_vect):
             latent_space = ae_output
         else:
             latent_space = np.hstack((latent_space, ae_output))
-
     return latent_space, x_key_vect
 
 
@@ -340,53 +339,6 @@ def time_slice(df, dataset_object, x, y, x_key, y_key):
     y_key_vect = np.array(y_key_vect)
     return x_vect, y_vect, x_key_vect, y_key_vect
 
-# #Going to have to think about more -- basically need this 
-# #On a per-site basis... 
-# def analyze_y_array(predict_type, y_raw_array):
-#     if predict_type == "frost":
-#         if 
-# def time_slice_predict(df, dataset_object, x, y, x_key, y_key, x_raw, y_raw, predict_type="frost", y_cols):
-#     input_slices_days = dataset_object["input_slices_days"]
-#     output_slices_days = dataset_object["output_slices_days"]
-#     output_offset_days = dataset_object["output_offset_days"]
-#     num_rows = len(df)
-#     x_vect, y_vect, x_key_vect, y_key_vect = [], [], [], []
-#     x_start = 0
-#     x_end = input_slices_days-1
-#     y_start = x_end+output_offset_days
-#     y_end = y_start+output_slices_days-1
-#     #Get x and y values indexed properly. 
-#     while y_end < num_rows-1:
-#         x_array = x[x_start:x_end+1]
-#         x_key_array = x_key[x_start:x_end+1]
-#         if y_start == y_end:
-#             y_array = y[y_start]
-#             y_key_array = y_key[y_start]
-#             y_raw_array = y_raw[y_start]
-#         else:
-#             y_array = y[y_start:y_end+1]
-#             y_key_array = y_key[y_start:y_end+1]
-#             y_raw_array = y_raw[y_start:y_end+1]
-#         #Add the slices 
-#         x_vect.append(x_array)
-#         #Here's where we change things up a bit. 
-#         y_array = analyze_y_array(predict_type, y_raw_array)
-#         y_vect.append(y_array)
-#         x_key_vect.append(x_key_array)
-#         y_key_vect.append(y_key_array)
-#         #If it is nested, this is where we go for it. 
-#         #Increment    
-#         x_start = x_start+1
-#         x_end = x_end+1
-#         y_start = y_start+1
-#         y_end = y_end+1
-#     #Finally, convert to a numpy array 
-#     x_vect = np.array(x_vect)
-#     y_vect = np.array(y_vect)
-#     x_key_vect = np.array(x_key_vect)
-#     y_key_vect = np.array(y_key_vect)
-#     return x_vect, y_vect, x_key_vect, y_key_vect
-
 #Prints stuff. Kinda useful for debugging. 
 def print_output_data_info(actual_input, x_vect, y_vect, x_key, y_key):
     print("Cols ", actual_input)
@@ -433,7 +385,7 @@ def format_data_model_ready(dataset_object, df):
     if "ae_paths" in list(dataset_object.keys()):
         x_vect, x_key_vect = process_aes(dataset_object, x_vect, x_key_vect)
     #If this is a time regression model, we need to slice it up. 
-    if target_model == "time_regression" or target_model == "time_predict":
+    if target_model == "time_regression" or target_model == "time_prediction":
         #For conv? - Maybe CHECK, CHANGE HERE 
         y_vect = y_raw
         x_vect, y_vect, x_key_vect, y_key_vect = time_slice(df, dataset_object, x_vect, y_vect, x_key_vect, y_key_vect)

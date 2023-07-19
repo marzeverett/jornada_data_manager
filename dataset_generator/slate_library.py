@@ -102,9 +102,6 @@ def return_experiment_3():
                     "num_nodes": 32,
                     "kernel_size": 3,
                 },
-                
-                
-                
             ],
         "final_activation": "relu",
         "loss": "mse",
@@ -233,7 +230,42 @@ def return_experiment_5():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_9"
+    "experiment_name": "test_experiment_11"
+    }
+    return experiment_1
+
+
+def return_experiment_6():
+    experiment_1 = {
+    "model": {
+        "kind": "LSTM",
+        "model_type": "Sequential",
+        "layers": 
+            [
+                {
+                    "type": "LSTM",
+                    "num_nodes": 32,
+                },
+                {
+                    "type": "Dropout",
+                    "percent": 0.2,
+                },
+            ],
+        "final_activation": "sigmoid",
+        "loss": "mse",
+        "optimizer": "adam",
+        "batch_size": 32,
+        "epochs": 10,
+        "test_split": 0.1,
+        "validation_split": 0.2,
+        "use_multiprocessing": True,
+        #"metrics": ["mse"]
+        "metrics": ['BinaryAccuracy', 'Precision', 'Recall', 
+        'TruePositives', 'TrueNegatives','FalsePositives', 'FalseNegatives'],
+        "verbose": True,
+    },
+    "experiment_folder_path": "generated_files/experiments/",
+    "experiment_name": "test_experiment_12"
     }
     return experiment_1
 
@@ -242,6 +274,10 @@ def return_test_experiment(descriptors_list):
     conv = descriptors_list[0]["conv"]
     deep_lstm = descriptors_list[0]["deep_lstm"]
     deep_ae = descriptors_list[0]["deep_ae"]
+    if "predict_type" in list(descriptors_list[0].keys()):
+        predict_type = descriptors_list[0]["predict_type"]
+    else:
+        predict_type = False
     if target_model == "time_regression":
         if conv and not deep_lstm:
             experiment_1 = return_experiment_4()
@@ -256,6 +292,9 @@ def return_test_experiment(descriptors_list):
             pass
         elif not deep_ae and not conv:
             experiment_1 = return_experiment_2()
+    elif target_model == "time_prediction":
+        print("Experiment 6")
+        experiment_1 = return_experiment_6()
     return experiment_1
 
 
@@ -334,7 +373,8 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         if predict_type:
             new_dict["predict_type"] = predict_type
             final_model_type = "time_prediction"
-        final_model_type = "time_regression"
+        else:
+            final_model_type = "time_regression"
         ae_model_type = "ae"
         #Base 
         if letter == 'A':
@@ -521,7 +561,7 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         print(json.dumps(descriptors_list[0], indent=3))
         #Save the list 
         ddl.save_list(parameters_dict, descriptors_list)
-
+        #If it's a test, just run that 
         if test == True:
             print("Running Test")
             indexes = [0]

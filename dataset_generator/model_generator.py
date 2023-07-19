@@ -39,12 +39,25 @@ for device in gpu_devices:
 #NOTES - You need to better define your saving/loading naming schema for a particular dataset. 
 
 #true first, then pred. 
+#add binary cross entropy here 
 loss_dict = {
     "mape": tf.keras.losses.MeanAbsolutePercentageError(),
     "mse": tf.keras.losses.MeanSquaredError(),
     "mae": tf.keras.losses.MeanAbsoluteError(),
+    "BinaryCrossentropy": tf.keras.losses.BinaryCrossentropy(),
+    "CategoricalCrossentropy": tf.keras.losses.CategoricalCrossentropy(),
+    "BinaryAccuracy": tf.keras.metrics.BinaryAccuracy(),
+    "Precision": tf.keras.metrics.Precision(),
+    "Recall": tf.keras.metrics.Recall(),
+    "TruePositives": tf.keras.metrics.TruePositives(),
+    "TrueNegatives": tf.keras.metrics.TrueNegatives(),
+    "FalsePositives": tf.keras.metrics.FalsePositives(),
+    "FalseNegatives":  tf.keras.metrics.FalseNegatives()
 }
 
+# metrics_dict = {
+#     "accuracy": 
+# }
 
 experiment_1 = {
     "model":{
@@ -595,6 +608,7 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     #Build the model
 
     model = build_model(prepared_dataset, experiment_object)
+    
     #Change here 
     #print(model.summary())
     history, total_time = fit_model(model, prepared_dataset, experiment_object)
@@ -612,85 +626,3 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
 def return_test_experiment_descriptor():
     return experiment_1
 
-# history, test_metrics = experiment_from_experiment_object(experiment_1)
-# print(history.history)
-# print(test_metrics)
-
-# x = prepared_dataset["x"]
-# y = prepared_dataset["y"]
-# print(x.shape)
-# print(y.shape)
-
-
-#https://keras.io/api/losses/regression_losses/#meansquarederror-class 
-#model.compile(optimizer='sgd', loss=tf.keras.losses.MeanSquaredError())
-
-
-# #https://towardsdatascience.com/choosing-the-right-hyperparameters-for-a-simple-lstm-using-keras-f8e9ed76f046 
-# # Build the model
-# print('Build model...')
-# model = Sequential()
-# model.add(LSTM(hidden_nodes, return_sequences=False, input_shape=(word_vec_length, char_vec_length)))
-# model.add(Dropout(0.2))
-# model.add(Dense(units=output_labels))
-# model.add(Activation('softmax'))
-# model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
-# batch_size=1000
-# model.fit(train_x, train_y, batch_size=batch_size, epochs=10, validation_data=(validate_x, validate_y))
-# view raw
-
-
-
-
-
-
-# EXPERIMENT
-# Layers: (dict)
-#     key with num layer index, 
-#     nodes: number of nodes (value)
-#     activation_function: activation function
-#     type - LSTM 
-# Optimization (Like adam)
-# Initial LR
-# Number of epochs?
-# Early stopping
-# Metrics (list)
-# Model save path (do you need multiple? Maybe per number of epochs)
-# Save values (model history) - what to save 
-# Save path as well ...
-
-#Tomorrow - start with figuring out your scaling
-#Maybe small network just to check 
-#Also loading in the dataset. 
-
-#https://www.tensorflow.org/api_docs/python/tf/keras/losses
-
-
-#https://www.tensorflow.org/api_docs/python/tf/keras/metrics
-
-
-# def predict_values(model, prepared_dataset, experiment_object, x_key=None, prediction_key=None):
-#     values_to_predict = ["x", "x_train", "x_test"]
-#     suffix = "_predictions"
-
-#     if x_key == None:
-#         x_vals = prepared_dataset["x"]
-#     else:
-#         x_vals = prepared_dataset[x_key]
-#     predictions = model.predict(x_vals)
-#     if prediction_key == None:
-#         prediction_label = "predictions"
-#     else:
-#         prediction_label = prediction_key
-#     prepared_dataset[prediction_label] = predictions
-#     return prepared_dataset
-#     # Model.predict(
-#     #     x,
-#     #     batch_size=None,
-#     #     verbose="auto",
-#     #     steps=None,
-#     #     callbacks=None,
-#     #     max_queue_size=10,
-#     #     workers=1,
-#     #     use_multiprocessing=False,
-#     # )

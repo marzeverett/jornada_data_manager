@@ -179,6 +179,38 @@ def create_deep_lstm_model_object(num_nodes):
         }
     return model 
 
+
+def create_predict_lstm_model_object(num_nodes):
+    model = {
+            "kind": "LSTM",
+            "model_type": "Sequential",
+            #Don't include input, code will figure it out. 
+            #Don't include output, code will figure it out. 
+            "layers": 
+                [
+                    {
+                        "type": "LSTM",
+                        "num_nodes": num_nodes
+                    },
+                    {
+                        "type": "Dropout",
+                        "percent": 0.2,
+                    },
+                ],
+            "final_activation": "sigmoid",
+            "loss": "mse",
+            "optimizer": "adam",
+            "batch_size": 32,
+            "epochs": 100,
+            "test_split": 0.1,
+            "validation_split": 0.2,
+            "use_multiprocessing": True,
+            "metrics": ['mse', 'BinaryAccuracy', 'Precision', 'Recall', 
+        'TruePositives', 'TrueNegatives','FalsePositives', 'FalseNegatives'],
+            "verbose": False,
+        }
+    return model 
+
 def create_basic_ae_model_object(num_nodes):
     model = {
         "kind": "AE",
@@ -292,6 +324,9 @@ def create_experiment(num_nodes, scaling_factor, dataset_name, kind):
     elif kind == "deep_ae":
         model = create_deep_ae_model_object(num_nodes)
         name_append = scaling_factor
+    elif kind == "predict_lstm""
+        model = create_predict_lstm_model_object(num_nodes)
+        name_append = num_nodes
     experiment_1 = {
         "model": model,
         "dataset_name": dataset_name,
@@ -333,6 +368,9 @@ def run_generate(new_dict):
             kind = "base_ae"
         else:
             kind = "deep_ae"
+    elif target_model = "time_prediction":
+        kind = "predict_lstm"
+
     scaling_factors = parameters_dict["scaling_factors"]
     #Load in dataset descriptors 
     d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
