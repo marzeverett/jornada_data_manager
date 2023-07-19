@@ -350,7 +350,8 @@ def return_test_experiment(descriptors_list):
 def run(phase_name, phase_path_start, letters, input_days, output_days,
  use_scaling_factor, conv=False, prev_phase_base=None,
   delete_stream=None, test=False, deep_lstm=False, 
-  deep_ae=False, predict_type=False):
+  deep_ae=False, predict_type=False, transfer_learn=False, 
+  transfer_dict=None):
     parameter_dict_list = []
     for letter in letters:
         new_dict = {}
@@ -369,6 +370,8 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         new_dict["test"] = test
         new_dict["deep_lstm"] = deep_lstm
         new_dict["deep_ae"] = deep_ae
+        new_dict["transfer_learn"] = transfer_learn
+        new_dict["transfer_dict"] = transfer_dict
         prev_letter = None 
         if predict_type:
             new_dict["predict_type"] = predict_type
@@ -533,6 +536,9 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
         else:
             new_dict["scaling_factors"] = [8, 32, 64]
         if prev_letter != None:
+            new_dict["use_scaling_factor"] = use_scaling_factor
+            new_dict["ae_letter"] = prev_letter
+            new_dict["ae_phase"] = prev_phase
             model_name = prev_phase+"_"+prev_letter+"_exp"+str(use_scaling_factor)
             new_dict["ae_models"]= [model_name]
             prev_dataset_name = prev_phase+"_"+prev_letter
@@ -545,6 +551,7 @@ def run(phase_name, phase_path_start, letters, input_days, output_days,
             new_dict["conv_and_prev_ae"] = True
         else:
             new_dict["conv_and_prev_ae"] = False
+        new_dict["letter"] = letter
         parameter_dict_list.append(new_dict.copy())
         new_dict = {}
 

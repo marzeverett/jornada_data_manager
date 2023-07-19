@@ -14,7 +14,7 @@
 #Use this info for per-feature error: https://neptune.ai/blog/keras-loss-functions
 #Helpful for intermediate model layer: https://androidkt.com/get-output-of-intermediate-layers-keras/  
 #Encoder example from Keras: https://keras.io/examples/vision/autoencoder/ 
-
+#https://stackoverflow.com/questions/63053427/keras-add-layers-to-another-model 
 
 import pickle
 import os
@@ -310,20 +310,39 @@ def add_output_layer(model, prepared_dataset, experiment_object):
             model.add(layers.Reshape((timesteps, features)))
     return model 
 
+
+def transfer_learn(model, experiment_object, dataset_object):
+    transfer_dict = dataset_object["transfer_dict"]
+    transfer_phase = dataset_object["prev_phase"]
+    transfer_model_path = dataset_object["transfer_model"]
+    letter = dataset_object["letter"]
+    name_append = experiment_object["name_appen"]
+    main_path = "generated_files/experiments/"
+    prev_exp_name = transfer_phase+"_"+letter+"_exp"+name_append
+    #Check 
+    prev_model_path = main_path + prev_exp_name + "/" + transfer_model
+    transfer = models.load_model(prev_model_path)
+    model = layers.Concatenate([model, prev_model])
+    return model 
+
 #10 = timesteps, 2 = features 
 # model.add(Dense(10 * 2))
 # model.add(Reshape((10, 2)))
-
-def build_model(prepared_dataset, experiment_object):
+def build_model(prepared_dataset, experiment_object, dataset_descriptor):
     model_def = experiment_object["model"]
     model_type = model_def["model_type"]
     model = return_base_model(model_type)
     #Create input layer 
     model = add_input_layer(model, prepared_dataset, experiment_object)
-    #Create defined layers
-    layer_list = model_def["layers"]
-    for layer in layer_list:
-        model = build_layer(model, layer)
+    
+    #Create defined layers - Maybe add the transfer model here instead? 
+    if dataset_descriptor["transfer_learn"]:
+        model = transfer_learn(model, experiment_object, dataset_object)
+    else:
+        layer_list = model_def["layers"]
+        for layer in layer_list:
+            model = build_layer(model, layer)
+    
     #Create output layer
     model = add_output_layer(model, prepared_dataset, experiment_object)
     #Compile the model 
@@ -607,7 +626,7 @@ def experiment_from_experiment_object(dataset_descriptor, experiment_object):
     prepared_dataset = split_training_test(prepared_dataset, experiment_object)
     #Build the model
 
-    model = build_model(prepared_dataset, experiment_object)
+    model = build_model(prepared_dataset, experiment_object, dataset_descriptor)
     
     #Change here 
     #print(model.summary())

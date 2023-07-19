@@ -331,7 +331,8 @@ def create_experiment(num_nodes, scaling_factor, dataset_name, kind):
         "model": model,
         "dataset_name": dataset_name,
         "experiment_folder_path": experiments_base_path,
-        "experiment_name": base_name+str(name_append)
+        "experiment_name": base_name+str(name_append),
+        "name_append": name_append
     }
     return experiment_1
 

@@ -142,11 +142,14 @@ def return_non_varying_data_descriptor(parameters_dict):
     return main_dict
 
 
-def return_index_replacement(parameters_dict, index):
+def return_index_replacement(parameters_dict, index, delete_steam=None):
     all_options = separate_stream_headers.copy()
     #Get the list with just stuff at hand 
-    if parameters_dict["delete_stream"] != None:
-        delete_option = parameters_dict["delete_stream"]
+    first_pass_delete_stream = parameters_dict["delete_stream"]
+    if first_pass_delete_stream == None:
+        first_pass_delete_stream = delete_stream
+    if delete_stream != None:
+        delete_option = delete_steam
         if isinstance(delete_option, list):
             for item in delete_option:
                 all_options.remove(item)
@@ -163,7 +166,6 @@ def create_dataset_name(base_name, ds, l, ds_combo, l_combo, idays, odays, param
     #POSSIBLE  - Could re-index here
     #Get list of keys in separate stream header
     ds_combo = return_index_replacement(parameters_dict, ds_combo)
-
     name = base_name+".v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
     return name
 
@@ -213,8 +215,16 @@ def return_input_output_dict_combo(kind, loc_or_site, parameters_dict):
     return main_dict
 
 
+#Hope this works! No promises! 
 def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays):
     ae_paths = []
+    transfer_learn = parameters_dict["transfer_learn"]
+    transfer_dict = parameters_dict["transfer_dict"]
+    transfer_letters = transfer_dict["part_train_letters"]
+    transfer_phase = transfer_dict["prev_phase"]
+    stream = transfer_dict["delete_stream"]
+    ae_letter = parameters_dict["ae_letter"]
+    ae_phase = parameters_dict["ae_phase"]
     if "ae_synthesis" in list(parameters_dict.keys()):
         synthesize = parameters_dict["ae_synthesis"]
         #If we synthesize, that means we don't match on index 
@@ -222,25 +232,37 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
             combo_dict = return_input_output_dict_combo("ONE", synthesize, parameters_dict)
             #For each ae model listed here 
             for i in range(0, len(ae_models)):
+                #Get the new index 
                 for combo_index in range(0, len(combo_dict["input"])):
                     if synthesize == "ds":
                         new_ds_index = 1  
-                        d_name = create_dataset_name(ae_prev_names[i], new_ds_index, l_index, combo_index, l_combo_index, idays, odays, parameters_dict)
+                        new_l_index = l_index
                     elif synthesize == "l":
                         new_l_index = 1
-                        d_name = create_dataset_name(ae_prev_names[i], ds_index, new_l_index, ds_combo_index, combo_index, idays, odays, parameters_dict)
-                    first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+                        new_ds_index = ds_index
+                    ae_prev_name = ae_prev_names[i]
+                    ae_model = ae_model[i]
+                    #If it is the one newly trained letter/data combo - it will be normal
+                    #The rest will use the prev phase 
+                    if ae_letter in transfer_letters:
+                        if new_ds_index != separate_stream_headers.index(stream):
+                            ae_model = transfer_phase+"_"+ae_letter+"_exp"+str(parameters_dict["use_scaling_factor"])
+                            ae_prev_name = transfer_phase+"_"+ae_letter
+                    #For transfer, if necessary, fix ae_prev name and ae_model name
+                    d_name = create_dataset_name(ae_prev_name, new_ds_index, new_l_index, ds_combo_index, combo_index, idays, odays, parameters_dict)
+                    first_path = "generated_files/experiments/"+ae_model+"/"+d_name+"/"
                     ae_paths.append(first_path)
-        else:
-            for i in range(0, len(ae_models)):
-                d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays, parameters_dict)
-                first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
-                ae_paths.append(first_path)        
-    #Otherwise assume we match 
     else:
         for i in range(0, len(ae_models)):
-            d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays, parameters_dict)
-            first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+            ae_prev_name = ae_prev_names[i]
+            ae_model = ae_model[i]
+            if ae_letter in transfer_letters:
+                if ds_index != separate_stream_headers.index(stream):
+                    #Reverts to the transfer learning model - the previous one 
+                    ae_model = transfer_phase+"_"+ae_letter+"_exp"+str(parameters_dict["use_scaling_factor"])
+                    ae_prev_name = transfer_phase+"_"+ae_letter
+            d_name = create_dataset_name(ae_prev_name, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays, parameters_dict)
+            first_path = "generated_files/experiments/"+ae_model+"/"+d_name+"/"
             ae_paths.append(first_path)
     return ae_paths
 
@@ -296,12 +318,32 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
     dataset_dict["conv_and_prev_ae"] = parameters_dict["conv_and_prev_ae"]
     dataset_dict["deep_lstm"] = parameters_dict["deep_lstm"]
     dataset_dict["deep_ae"] = parameters_dict["deep_ae"]
+    dataset_dict["transfer_learn"] = parameters_dict["transfer_learn"]
+    dataset_dict["transfer_dict"] = parameters_dict["transfer_dict"]
+    dataset_dict["letter"] = parameters_dict["letter"]
     #This is where we'll put the transfer model path 
     if ae_models != []:
         ae_paths = return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays)
         if ae_paths != []:
             dataset_dict["ae_paths"] = ae_paths
-    global_data_descriptors_list.append(dataset_dict)
+    #This is where we check for transfer conditions on
+    #training in part. 
+    if dataset_dict["transfer_learn"]:
+        transfer_dict = dataset_dict["transfer_dict"]
+        stream = transfer_dict["delete_stream"]
+        letters = transfer_dict['part_train_letters']
+        #If its a part train letter 
+        if dataset_dict["letter"] in letters:
+            #If its the right datastream, no transfer learning
+            if ds_combo_index == stream:
+                global_data_descriptors_list.append(dataset_dict)
+        #Otherwise, just add the transfer learning model 
+        else:
+            dataset_dict["transfer_model"] = transfer_dict["prev_phase"]+"_"+dataset_dict["letter"]
+            global_data_descriptors_list.append(dataset_dict)
+        
+    else:
+        global_data_descriptors_list.append(dataset_dict)
 
 #Can keep these, probably. 
 def generate_level_odays(l_combo_item, l_combo_index, l_index, ds_combo_item, ds_combo_index, ds_index, idays, idays_index, parameters_dict):
@@ -434,3 +476,39 @@ def run_test(indexes, experiment_1, global_data_descriptors_list):
 #tensorman run --gpu pip3 install pandas 
 
 
+
+
+# #Have to change this 3 places, which is a tad annoying
+# def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays):
+#     ae_paths = []
+#     transfer_learn = parameters_dict["transfer_learn"]
+#     transfer_dict = parameters_dict["transfer_dict"]
+#     if "ae_synthesis" in list(parameters_dict.keys()):
+#         synthesize = parameters_dict["ae_synthesis"]
+#         #If we synthesize, that means we don't match on index 
+#         if synthesize == "ds" or synthesize == "l":
+#             combo_dict = return_input_output_dict_combo("ONE", synthesize, parameters_dict)
+#             #For each ae model listed here 
+#             for i in range(0, len(ae_models)):
+#                 for combo_index in range(0, len(combo_dict["input"])):
+#                     if synthesize == "ds":
+#                         new_ds_index = 1  
+#                         d_name = create_dataset_name(ae_prev_names[i], new_ds_index, l_index, combo_index, l_combo_index, idays, odays, parameters_dict)
+#                     elif synthesize == "l":
+#                         new_l_index = 1
+#                         d_name = create_dataset_name(ae_prev_names[i], ds_index, new_l_index, ds_combo_index, combo_index, idays, odays, parameters_dict)
+#                     first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+#                     ae_paths.append(first_path)
+#         #Should not happen - synthesis needs to be ds or l 
+#         # else:
+#         #     for i in range(0, len(ae_models)):
+#         #         d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays, parameters_dict)
+#         #         first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+#         #         ae_paths.append(first_path)        
+#     #Otherwise assume we match 
+#     else:
+#         for i in range(0, len(ae_models)):
+#             d_name = create_dataset_name(ae_prev_names[i], ds_index, l_index, ds_combo_index, l_combo_index, idays, odays, parameters_dict)
+#             first_path = "generated_files/experiments/"+ae_models[i]+"/"+d_name+"/"
+#             ae_paths.append(first_path)
+#     return ae_paths
