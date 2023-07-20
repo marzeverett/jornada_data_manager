@@ -335,13 +335,14 @@ def build_model(prepared_dataset, experiment_object, dataset_descriptor):
     #Create input layer 
     model = add_input_layer(model, prepared_dataset, experiment_object)
     
-    #Create defined layers - Maybe add the transfer model here instead? 
-    if dataset_descriptor["transfer_learn"]:
-        model = transfer_learn(model, experiment_object, dataset_descriptor)
-    else:
-        layer_list = model_def["layers"]
-        for layer in layer_list:
-            model = build_layer(model, layer)
+    #Maybe put in later? 
+    # #Create defined layers - Maybe add the transfer model here instead? 
+    # if dataset_descriptor["transfer_learn"]:
+    #     model = transfer_learn(model, experiment_object, dataset_descriptor)
+    # else:
+    layer_list = model_def["layers"]
+    for layer in layer_list:
+        model = build_layer(model, layer)
     
     #Create output layer
     model = add_output_layer(model, prepared_dataset, experiment_object)
