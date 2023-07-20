@@ -339,7 +339,9 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
                 global_data_descriptors_list.append(dataset_dict)
         #Otherwise, just add the transfer learning model 
         else:
-            dataset_dict["transfer_model"] = transfer_dict["prev_phase"]+"_"+dataset_dict["letter"]
+            transfer_base_name = transfer_dict["prev_phase"]+"_"+dataset_dict["letter"]
+            dataset_dict["transfer_model"] = create_dataset_name(transfer_base_name, ds_index, l_index, ds_combo_index, l_combo_index, idays, odays, parameters_dict)
+
             global_data_descriptors_list.append(dataset_dict)
         
     else:
