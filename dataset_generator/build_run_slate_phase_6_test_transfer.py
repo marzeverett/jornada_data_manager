@@ -15,17 +15,18 @@ import slate_library
 
 #Same basic processes. Taking out some 
 phase_name = "6"
-prev_phase_base = "4"
+prev_phase_base = "6"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 letters = ["A", "B", "E", "G", "H", "J", "L", "M", "N", "S", "T", "U", "V", "W",
 "X", "Y", "AC", "AD"]
 
+old_delete_stream = "temp_hum"
 transfer_learn = True
 transfer_dict = {
     "prev_phase": "4",
     "transfer_on": "ds",
-    "delete_stream": delete_stream,
+    "delete_stream": old_delete_stream,
     "part_train_letters": ["E", "H"],
 }
 
@@ -36,10 +37,10 @@ output_days = [1, 7]
 #Decide on this going forward based on results of 3.  
 use_scaling_factor = "0.7"
 #incoporate phase into base dataset name and base name!!! 
-
+test = True
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 
 
-slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, test=True, transfer_learn=True, transfer_dict=transfer_dict)
+slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, test=test, transfer_learn=transfer_learn, transfer_dict=transfer_dict)
 
 #IMPORTANT: How to handle the issue of pretraining? 

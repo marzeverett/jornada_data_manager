@@ -35,7 +35,8 @@ def return_experiment_1():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_8"
+    "experiment_name": "test_experiment_8",
+    "name_append": 32,
     }
     return experiment_1
 
@@ -68,7 +69,8 @@ def return_experiment_2():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_9"
+    "experiment_name": "test_experiment_9",
+    "name_append": 10
     }
     return experiment_1
 
@@ -117,7 +119,8 @@ def return_experiment_3():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_10"
+    "experiment_name": "test_experiment_10",
+    "name_append": 8
     }
     return experiment_1
 
@@ -173,7 +176,8 @@ def return_experiment_4():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_10"
+    "experiment_name": "test_experiment_10",
+    "name_append": 8
     }
     return experiment_1
 
@@ -230,7 +234,8 @@ def return_experiment_5():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_11"
+    "experiment_name": "test_experiment_11",
+    "name_append": 32
     }
     return experiment_1
 
@@ -265,7 +270,8 @@ def return_experiment_6():
         "verbose": True,
     },
     "experiment_folder_path": "generated_files/experiments/",
-    "experiment_name": "test_experiment_12"
+    "experiment_name": "test_experiment_12",
+    "name_append": 32,
     }
     return experiment_1
 

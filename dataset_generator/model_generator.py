@@ -313,14 +313,14 @@ def add_output_layer(model, prepared_dataset, experiment_object):
 
 def transfer_learn(model, experiment_object, dataset_object):
     transfer_dict = dataset_object["transfer_dict"]
-    transfer_phase = dataset_object["prev_phase"]
+    transfer_phase = transfer_dict["prev_phase"]
     transfer_model_path = dataset_object["transfer_model"]
     letter = dataset_object["letter"]
-    name_append = experiment_object["name_appen"]
+    name_append = experiment_object["name_append"]
     main_path = "generated_files/experiments/"
-    prev_exp_name = transfer_phase+"_"+letter+"_exp"+name_append
+    prev_exp_name = transfer_phase+"_"+letter+"_exp"+str(name_append)
     #Check 
-    prev_model_path = main_path + prev_exp_name + "/" + transfer_model
+    prev_model_path = main_path + prev_exp_name + "/" + transfer_model_path
     transfer = models.load_model(prev_model_path)
     model = layers.Concatenate([model, prev_model])
     return model 
@@ -337,7 +337,7 @@ def build_model(prepared_dataset, experiment_object, dataset_descriptor):
     
     #Create defined layers - Maybe add the transfer model here instead? 
     if dataset_descriptor["transfer_learn"]:
-        model = transfer_learn(model, experiment_object, dataset_object)
+        model = transfer_learn(model, experiment_object, dataset_descriptor)
     else:
         layer_list = model_def["layers"]
         for layer in layer_list:

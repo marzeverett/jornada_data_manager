@@ -324,7 +324,7 @@ def create_experiment(num_nodes, scaling_factor, dataset_name, kind):
     elif kind == "deep_ae":
         model = create_deep_ae_model_object(num_nodes)
         name_append = scaling_factor
-    elif kind == "predict_lstm""
+    elif kind == "predict_lstm":
         model = create_predict_lstm_model_object(num_nodes)
         name_append = num_nodes
     experiment_1 = {
@@ -369,7 +369,7 @@ def run_generate(new_dict):
             kind = "base_ae"
         else:
             kind = "deep_ae"
-    elif target_model = "time_prediction":
+    elif target_model == "time_prediction":
         kind = "predict_lstm"
 
     scaling_factors = parameters_dict["scaling_factors"]

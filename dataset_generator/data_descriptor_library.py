@@ -142,7 +142,7 @@ def return_non_varying_data_descriptor(parameters_dict):
     return main_dict
 
 
-def return_index_replacement(parameters_dict, index, delete_steam=None):
+def return_index_replacement(parameters_dict, index, delete_stream=None):
     all_options = separate_stream_headers.copy()
     #Get the list with just stuff at hand 
     first_pass_delete_stream = parameters_dict["delete_stream"]
