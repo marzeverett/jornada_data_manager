@@ -259,11 +259,17 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
                     #If it is the one newly trained letter/data combo - it will be normal
                     #The rest will use the prev phase 
                     if ae_letter in transfer_letters:
-                        if new_ds_index != separate_stream_headers.index(stream):
+                        stream_index_new = separate_stream_headers.index(stream)
+                        #stream_index_new = stream_index_new + 1
+                        if combo_index != stream_index_new:
                             ae_model = transfer_phase+"_"+ae_letter+"_exp"+str(parameters_dict["use_scaling_factor"])
                             ae_prev_name = transfer_phase+"_"+ae_letter
                     #For transfer, if necessary, fix ae_prev name and ae_model name
-                    d_name = create_dataset_name(ae_prev_name, new_ds_index, new_l_index, ds_combo_index, combo_index, idays, odays, parameters_dict)
+                    if synthesize == 'l':
+                        d_name = create_dataset_name(ae_prev_name, new_ds_index, new_l_index, ds_combo_index, combo_index, idays, odays, parameters_dict)
+                    elif synthesize == "ds":
+                        d_name = create_dataset_name(ae_prev_names[i], new_ds_index, new_l_index, combo_index, l_combo_index, idays, odays, parameters_dict)
+
                     first_path = "generated_files/experiments/"+ae_model+"/"+d_name+"/"
                     ae_paths.append(first_path)
     else:

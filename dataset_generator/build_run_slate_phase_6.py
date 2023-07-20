@@ -29,14 +29,14 @@ transfer_dict = {
 }
 
 #letters = ['E', 'G']
-#letters = ['G']
+letters = ['G']
 
 input_days = [30, 60]
 output_days = [1, 7]
 #Decide on this going forward based on results of 3.  
 use_scaling_factor = "0.7"
 #incoporate phase into base dataset name and base name!!! 
-test = True
+test = False
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 
 
