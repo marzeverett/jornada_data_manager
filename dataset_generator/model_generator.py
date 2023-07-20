@@ -321,8 +321,8 @@ def transfer_learn(model, experiment_object, dataset_object):
     prev_exp_name = transfer_phase+"_"+letter+"_exp"+str(name_append)
     #Check 
     prev_model_path = main_path + prev_exp_name + "/" + transfer_model_path
-    transfer = models.load_model(prev_model_path)
-    model = layers.Concatenate([model, prev_model])
+    transfer_model = models.load_model(prev_model_path)
+    model = layers.Concatenate([model, transfer_model])
     return model 
 
 #10 = timesteps, 2 = features 
