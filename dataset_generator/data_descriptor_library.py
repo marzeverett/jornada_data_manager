@@ -268,7 +268,7 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
                     if synthesize == 'l':
                         d_name = create_dataset_name(ae_prev_name, new_ds_index, new_l_index, ds_combo_index, combo_index, idays, odays, parameters_dict)
                     elif synthesize == "ds":
-                        d_name = create_dataset_name(ae_prev_names[i], new_ds_index, new_l_index, combo_index, l_combo_index, idays, odays, parameters_dict)
+                        d_name = create_dataset_name(ae_prev_name, new_ds_index, new_l_index, combo_index, l_combo_index, idays, odays, parameters_dict)
 
                     first_path = "generated_files/experiments/"+ae_model+"/"+d_name+"/"
                     ae_paths.append(first_path)
