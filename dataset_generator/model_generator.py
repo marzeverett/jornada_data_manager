@@ -322,7 +322,7 @@ def transfer_learn(model, experiment_object, dataset_object):
     #Check 
     prev_model_path = main_path + prev_exp_name + "/" + transfer_model_path
     transfer_model = models.load_model(prev_model_path)
-    model = layers.Concatenate([model, transfer_model])
+    model = layers.Concatenate()([model, transfer_model])
     return model 
 
 #10 = timesteps, 2 = features 
