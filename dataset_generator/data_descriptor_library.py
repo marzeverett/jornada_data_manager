@@ -155,6 +155,8 @@ def return_index_replacement(parameters_dict, index, delete_stream=None):
                 all_options.remove(item)
         else:
             all_options.remove(delete_option)
+
+    #Dumb Hack Option -- for a coding mistake 
     header = all_options[index]
     true_index = ds_indexes[header]
     return true_index
@@ -171,7 +173,14 @@ def create_dataset_name(base_name, ds, l, ds_combo, l_combo, idays, odays, param
 
 def create_dataset_class(ds, l, ds_combo, l_combo, idays, odays, parameters_dict):
     #POSSIBLE - could re-index here
-    ds_combo = return_index_replacement(parameters_dict, ds_combo) 
+    #CHANGE HERE 
+    #DUMB hack! - for phase 4 (try)
+    if ds == 0:
+        ds_combo = 2
+    else:
+        ds_combo = return_index_replacement(parameters_dict, ds_combo) 
+    
+
     main_dict = {}
     main_dict["version"] = 1
     main_dict["location_scheme"] = l
