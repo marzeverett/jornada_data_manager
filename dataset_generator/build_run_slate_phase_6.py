@@ -29,7 +29,7 @@ transfer_dict = {
 }
 
 #letters = ['E', 'G']
-letters = ['G']
+#letters = ['G']
 
 input_days = [30, 60]
 output_days = [1, 7]
