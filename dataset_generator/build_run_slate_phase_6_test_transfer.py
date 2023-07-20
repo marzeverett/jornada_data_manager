@@ -21,7 +21,7 @@ phase_path_start = "generated_files/"
 letters = ["A", "B", "E", "G", "H", "J", "L", "M", "N", "S", "T", "U", "V", "W",
 "X", "Y", "AC", "AD"]
 
-letters = ["A", "E", "G", "H", "J", "S", "T", "U", "V", "W"]
+letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
 
 old_delete_stream = "temp_hum"
 transfer_learn = True
@@ -32,7 +32,7 @@ transfer_dict = {
     "part_train_letters": ["E", "H"],
 }
 
-letters = ['A', 'B']
+letters = ['E', 'G']
 print(len(letters))
 input_days = [30, 60]
 output_days = [1, 7]
