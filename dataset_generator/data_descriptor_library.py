@@ -255,7 +255,7 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
                         new_l_index = 1
                         new_ds_index = ds_index
                     ae_prev_name = ae_prev_names[i]
-                    ae_model = ae_model[i]
+                    ae_model = ae_models[i]
                     #If it is the one newly trained letter/data combo - it will be normal
                     #The rest will use the prev phase 
                     if ae_letter in transfer_letters:
@@ -348,8 +348,9 @@ def generate_data_descriptor(l_combo_item, l_combo_index, l_index, ds_combo_item
         letters = transfer_dict['part_train_letters']
         #If its a part train letter 
         if dataset_dict["letter"] in letters:
+            compare_index = separate_stream_headers.index(stream)
             #If its the right datastream, no transfer learning
-            if ds_combo_index == stream:
+            if ds_combo_index == compare_index:
                 global_data_descriptors_list.append(dataset_dict)
         #Otherwise, just add the transfer learning model 
         else:

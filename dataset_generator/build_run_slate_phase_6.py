@@ -17,10 +17,6 @@ import slate_library
 phase_name = "6"
 prev_phase_base = "6"
 phase_path_start = "generated_files/"
-#Don't build new datasets!!! 
-letters = ["A", "B", "E", "G", "H", "J", "L", "M", "N", "S", "T", "U", "V", "W",
-"X", "Y", "AC", "AD"]
-
 letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
 
 old_delete_stream = "temp_hum"
@@ -32,8 +28,9 @@ transfer_dict = {
     "part_train_letters": ["E", "H"],
 }
 
-letters = ['E', 'G']
-print(len(letters))
+#letters = ['E', 'G']
+#letters = ['G']
+
 input_days = [30, 60]
 output_days = [1, 7]
 #Decide on this going forward based on results of 3.  
