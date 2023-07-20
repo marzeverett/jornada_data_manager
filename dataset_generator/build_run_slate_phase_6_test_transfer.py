@@ -21,6 +21,8 @@ phase_path_start = "generated_files/"
 letters = ["A", "B", "E", "G", "H", "J", "L", "M", "N", "S", "T", "U", "V", "W",
 "X", "Y", "AC", "AD"]
 
+letters = ["A", "E", "G", "H", "J", "S", "T", "U", "V", "W"]
+
 old_delete_stream = "temp_hum"
 transfer_learn = True
 transfer_dict = {
