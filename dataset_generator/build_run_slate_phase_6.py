@@ -17,7 +17,9 @@ import slate_library
 phase_name = "6"
 prev_phase_base = "6"
 phase_path_start = "generated_files/"
-letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
+#letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
+letters = ["T", "U", "V", "W"]
+
 
 old_delete_stream = "temp_hum"
 transfer_learn = True

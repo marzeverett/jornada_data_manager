@@ -275,9 +275,9 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
     else:
         for i in range(0, len(ae_models)):
             ae_prev_name = ae_prev_names[i]
-            ae_model = ae_model[i]
+            ae_model = ae_models[i]
             if ae_letter in transfer_letters:
-                if ds_index != separate_stream_headers.index(stream):
+                if ds_combo_index != separate_stream_headers.index(stream):
                     #Reverts to the transfer learning model - the previous one 
                     ae_model = transfer_phase+"_"+ae_letter+"_exp"+str(parameters_dict["use_scaling_factor"])
                     ae_prev_name = transfer_phase+"_"+ae_letter
