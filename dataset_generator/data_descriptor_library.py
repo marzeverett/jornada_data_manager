@@ -170,7 +170,7 @@ def create_dataset_name(base_name, ds, l, ds_combo, l_combo, idays, odays, param
     #DUMB hack! - for phase 4 (try) (Fix going forward)
 
     if ds == 0:
-        ds_combo = 2
+        ds_combo = 1
     else:
         ds_combo = return_index_replacement(parameters_dict, ds_combo)
     name = base_name+".v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)

@@ -204,9 +204,9 @@ def save_graphs(phase, scheme, file_path):
     save_results(save_name, metrics_dict)
 
 
-phase = "3"  
+phase = "8"  
 scheme = "lstm"
-letter = "T"
+letter = "G"
 
 file_path = "main_metrics/phase_"+phase+"/"
 
@@ -215,7 +215,7 @@ file_name_2 = 'main_metrics/phase_3/' + "3"+"_"+"I"+"main_metrics.csv"
 
 #Read in 
 data_1 = pd.read_csv(file_name_1, names=col_names[scheme])
-data_2 = pd.read_csv(file_name_2, names=col_names[scheme])
+#data_2 = pd.read_csv(file_name_2, names=col_names[scheme])
 
 # #Wilcox Test
 # result = stats.wilcoxon(data_1["mse"].tolist(), data_2["mse"].tolist())
@@ -225,11 +225,11 @@ data_2 = pd.read_csv(file_name_2, names=col_names[scheme])
 #new_data = data.groupby(["input_days", "output_days"]).mean()["mse"]
 
 
-# # #GRAPH
-# df= data_1.groupby(["output_days"]).mean()
-# df.plot(kind="bar", y="mse")
-# #plt.xticks(rotation=30)
-# plt.show()
+# #GRAPH
+df= data_1.groupby(["experiment_name"]).mean()
+df.plot(kind="bar", y="mse")
+#plt.xticks(rotation=30)
+plt.show()
 
 
 

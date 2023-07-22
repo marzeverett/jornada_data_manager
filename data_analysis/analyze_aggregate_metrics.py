@@ -189,7 +189,7 @@ def save_results(filename, save_dict):
     df.to_csv(filename, index=False)
 
 
-def save_graphs(phase, scheme, file_path):
+def save_metrics(phase, scheme, file_path):
     df_dict = read_in_dfs(file_path, phase, ingroup=scheme)
     #test_df = df_dict["AF"]["df"]
     #print(test_df.head())
@@ -207,78 +207,11 @@ def save_graphs(phase, scheme, file_path):
 
 
 
-file_path = 'main_metrics/phase_3/'
-phase = "3"  
+file_path = 'main_metrics/phase_8/'
+phase = "8"  
 scheme = "lstm"
 #scheme = "ae"
 #Read 'em in 
 
-#save_graphs(phase, scheme, file_path)
+#save_metrics(phase, scheme, file_path)
 
-
-
-#print(df_dict)
-#print(json.dumps(df_dict, indent=4))
-    #Get the main metrics that every set has together
-
-
-
-    
-#data = pd.read_csv('main_metrics/phase_2/phase_1_A.csv', names=cols)
- 
-#print(data.head())
-
-#data.plot(x="output_days", y=["mse"], kind="scatter")
-#data.groupby(["input_days", "output_days"]).plot(x="output_days", y=["mse"], kind="scatter")
-#data.groupby("input_days")["output_days"].plot(x="output_days", y=["mse"], kind="scatter")
-
-
-#Look up - you need to make sure you know exactly what's its doing
-#https://www.geeksforgeeks.org/pandas-groupby-multiple-values-and-plotting-results/ 
-#df = data.groupby(["input_days", "output_days"]).mean()["mse"]
-
-#df = data.groupby(["dataset_name", "experiment_name"]).mean()
-#df = data.groupby(["input_days", "output_days"])
-
-#df = data.groupby("experiment_name").mean()
-
-##################
-# new_data = data.loc[(data["datastream_scheme"] == 3) & (data["location_scheme"] == 3)]
-
-# mean = round(new_data["mse"].mean(), 5)
-# std = round(new_data["mse"].std(), 5)
-# print("Mean", mean)
-# print("Standard Deviation", std)
-
-
-# df = new_data.groupby(["experiment_name"]).mean()
-# #df = data
-# #df.plot(y="mse")
-# df.plot(kind="bar", y="mse")
-# #plt.xticks(rotation=30)
-# plt.show()
-###################
-#Might need to re-run these with a patience of 30. 
-
-# # plot the dataframe
-# df.plot(x="Name", y=["Price", "User Rating"], kind="bar", figsize=(9, 8))
- 
-# # print bar graph
-# mp.show()
-
-
-# # importing packages
-# import seaborn
- 
-# # load dataset and view
-# data = seaborn.load_dataset('exercise')
-# print(data)
- 
-# # multiple groupby (pulse, diet and time)
-# df = data.groupby(['pulse', 'diet', 'time']).count()['kind']
-# print(df)
- 
-# # plot the result
-# df.plot()
-# plt.xticks(rotation=30)
-# plt.show()
