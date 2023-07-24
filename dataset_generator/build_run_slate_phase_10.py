@@ -16,8 +16,8 @@ import slate_library
 #Phase 5 takes out rain 
 
 #Same basic processes. Taking out some 
-phase_name = "15"
-prev_phase_base = "15"
+phase_name = "10"
+prev_phase_base = "10"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
