@@ -234,7 +234,7 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
     ae_paths = []
     transfer_learn = parameters_dict["transfer_learn"]
     transfer_dict = parameters_dict["transfer_dict"]
-    if transfer_dict not None:
+    if transfer_dict != None:
         transfer_letters = transfer_dict["part_train_letters"]
         transfer_phase = transfer_dict["prev_phase"]
         stream = transfer_dict["delete_stream"]
