@@ -234,9 +234,14 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
     ae_paths = []
     transfer_learn = parameters_dict["transfer_learn"]
     transfer_dict = parameters_dict["transfer_dict"]
-    transfer_letters = transfer_dict["part_train_letters"]
-    transfer_phase = transfer_dict["prev_phase"]
-    stream = transfer_dict["delete_stream"]
+    if transfer_dict not None:
+        transfer_letters = transfer_dict["part_train_letters"]
+        transfer_phase = transfer_dict["prev_phase"]
+        stream = transfer_dict["delete_stream"]
+    else:
+        transfer_letters = []
+        transfer_phase = False
+        stream = False
     ae_letter = parameters_dict["ae_letter"]
     ae_phase = parameters_dict["ae_phase"]
     if "ae_synthesis" in list(parameters_dict.keys()):
@@ -258,7 +263,7 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
                     ae_model = ae_models[i]
                     #If it is the one newly trained letter/data combo - it will be normal
                     #The rest will use the prev phase 
-                    if ae_letter in transfer_letters:
+                    if transfer_learn and ae_letter in transfer_letters:
                         stream_index_new = separate_stream_headers.index(stream)
                         #stream_index_new = stream_index_new + 1
                         if combo_index != stream_index_new:
@@ -276,7 +281,7 @@ def return_ae_paths(parameters_dict, ae_models, ae_prev_names, ds_index, l_index
         for i in range(0, len(ae_models)):
             ae_prev_name = ae_prev_names[i]
             ae_model = ae_models[i]
-            if ae_letter in transfer_letters:
+            if transfer_learn and ae_letter in transfer_letters:
                 if ds_combo_index != separate_stream_headers.index(stream):
                     #Reverts to the transfer learning model - the previous one 
                     ae_model = transfer_phase+"_"+ae_letter+"_exp"+str(parameters_dict["use_scaling_factor"])

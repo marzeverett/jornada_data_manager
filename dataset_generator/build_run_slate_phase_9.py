@@ -21,7 +21,11 @@ prev_phase_base = "9"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
-letters = ['E', 'F', 'G', 'H', 
+# letters = ['E', 'F', 'G', 'H', 
+# 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+# 'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
+
+letters = ['F', 'G', 'H', 
 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
 'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
 
