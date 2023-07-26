@@ -19,10 +19,9 @@ import seaborn as sn
 
 
 groups = {
-    "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC", "AE", "AH"],
+    "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD",
-                "AF", "AG", "AI", "AJ"
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AD"
                 ]
 
 }
@@ -503,12 +502,12 @@ def get_min_per_organization(file_path_start, phases, kind):
 # phase_2 = "3"  
 # scheme_2 = "lstm"
 
-phases = [8]
+phases = [4]
 path_start = "main_metrics/"
 kind = "lstm"
 
-file_path_1 = 'main_metrics/phase_8/'
-phase_1 = "8"  
+file_path_1 = 'main_metrics/phase_4/'
+phase_1 = "4"  
 scheme_1 = "lstm"
 
 
@@ -533,8 +532,8 @@ scheme_1 = "lstm"
 
 
 
-# table_letters(kind, letters, file_path_1, phase_1, scheme_1)
-# test_letters(kind, letters, file_path_1, phase_1, scheme_1)
+#table_letters(kind, letters, file_path_1, phase_1, scheme_1)
+#test_letters(kind, letters, file_path_1, phase_1, scheme_1)
 
 get_min_per_organization(path_start, phases, kind)
 

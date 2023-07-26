@@ -23,10 +23,9 @@ import seaborn as sn
 #https://datatofish.com/correlation-matrix-pandas/ 
 
 groups = {
-    "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC", "AE", "AH"],
+    "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD",
-                "AF", "AG", "AI", "AJ"
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AD"
                 ]
 
 }

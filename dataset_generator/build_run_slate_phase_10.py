@@ -33,7 +33,7 @@ output_days = [1, 7]
 use_scaling_factor = "0.7"
 deep_lstm = False
 deep_ae = False
-test = True
+test = False
 predict_type = "frost"
 #test = False
 #incoporate phase into base dataset name and base name!!! 

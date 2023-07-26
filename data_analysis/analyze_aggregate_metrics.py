@@ -17,10 +17,9 @@ import os
 
 
 groups = {
-    "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC", "AE", "AH"],
+    "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD",
-                "AF", "AG", "AI", "AJ"
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AD",
                 ]
 
 }
@@ -206,12 +205,11 @@ def save_metrics(phase, scheme, file_path):
 #     save_results(filename, save_dict)
 
 
-
-file_path = 'main_metrics/phase_8/'
-phase = "8"  
+phase = "4" 
+file_path = f'main_metrics/phase_{phase}/'
 scheme = "lstm"
 #scheme = "ae"
 #Read 'em in 
 
-#save_metrics(phase, scheme, file_path)
+save_metrics(phase, scheme, file_path)
 
