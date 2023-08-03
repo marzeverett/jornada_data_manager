@@ -16,15 +16,14 @@ import slate_library
 #Phase 5 takes out rain 
 
 #Same basic processes. Taking out some 
-phase_name = "11"
-prev_phase_base = "11"
+phase_name = "13"
+prev_phase_base = "13"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
-#letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
-#'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-#'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
+#letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
 letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
+letters = ["D"]
 
 #letters = ['A', 'B']
 print(len(letters))
@@ -34,9 +33,18 @@ output_days = [1, 7]
 use_scaling_factor = "0.7"
 deep_lstm = False
 deep_ae = False
-test = False
-delete_stream="temp_hum"
+test = True
 predict_type = "frost"
+
+delete_stream = "temp_hum"
+transfer_learn = False
+transfer_dict = {
+    "prev_phase": "11",
+    "transfer_on": "ds",
+    "delete_stream": old_delete_stream,
+    "part_train_letters": ["E", "H"],
+}
+
 #test = False
 #incoporate phase into base dataset name and base name!!! 
 

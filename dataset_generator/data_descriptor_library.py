@@ -44,7 +44,7 @@ def return_static_parameters_dict():
 
 ds_indexes = {
     "temp_hum":1,
-    "rain": 2,
+    "rain":2,
     "wind_speed": 3, 
     "wind_direction": 4
 }
@@ -144,21 +144,16 @@ def return_non_varying_data_descriptor(parameters_dict):
 
 def return_index_replacement(parameters_dict, index, delete_stream=None):
     all_options = separate_stream_headers.copy()
-    #Get the list with just stuff at hand 
-    first_pass_delete_stream = parameters_dict["delete_stream"]
-    if first_pass_delete_stream == None:
-        first_pass_delete_stream = delete_stream
     if delete_stream != None:
-        delete_option = delete_steam
-        if isinstance(delete_option, list):
-            for item in delete_option:
-                all_options.remove(item)
-        else:
-            all_options.remove(delete_option)
-
+        delete_option = delete_stream
+        all_options.remove(delete_option)
     #Dumb Hack Option -- for a coding mistake 
+    #Get the stream header
     header = all_options[index]
+    #Get the 
+    print(header)
     true_index = ds_indexes[header]
+    print(true_index)
     return true_index
 
 
@@ -168,11 +163,10 @@ def create_dataset_name(base_name, ds, l, ds_combo, l_combo, idays, odays, param
     #POSSIBLE  - Could re-index here
     #Get list of keys in separate stream header
     #DUMB hack! - for phase 4 (try) (Fix going forward)
-
     if ds == 0:
         ds_combo = 0
     else:
-        ds_combo = return_index_replacement(parameters_dict, ds_combo)
+        ds_combo = return_index_replacement(parameters_dict, ds_combo, delete_stream=parameters_dict["delete_stream"])
     name = base_name+".v"+str(version)+".l"+str(l)+".ds"+str(ds)+".l_combo"+str(l_combo)+".ds_combo"+str(ds_combo)+".idays"+str(idays)+".odays"+str(odays)
     return name
 
@@ -181,11 +175,9 @@ def create_dataset_class(ds, l, ds_combo, l_combo, idays, odays, parameters_dict
     #CHANGE HERE 
     #DUMB hack! - for phase 4 (try)
     if ds == 0:
-        ds_combo = 2
+        ds_combo = 0
     else:
-        ds_combo = return_index_replacement(parameters_dict, ds_combo) 
-    
-
+        ds_combo = return_index_replacement(parameters_dict, ds_combo, delete_stream=parameters_dict["delete_stream"]) 
     main_dict = {}
     main_dict["version"] = 1
     main_dict["location_scheme"] = l
