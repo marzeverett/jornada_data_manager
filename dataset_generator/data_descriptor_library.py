@@ -151,9 +151,9 @@ def return_index_replacement(parameters_dict, index, delete_stream=None):
     #Get the stream header
     header = all_options[index]
     #Get the 
-    print(header)
+    #print(header)
     true_index = ds_indexes[header]
-    print(true_index)
+    #print(true_index)
     return true_index
 
 

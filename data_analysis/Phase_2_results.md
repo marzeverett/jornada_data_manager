@@ -103,7 +103,7 @@ Z. One datastream from all locations are recreated from one datastream from all 
 
 AA. One datastream from all locations are predicted from one datastream from all location, after being preprocessed by the autoencoder from Z. 
 
-#AB. All datastreams from all locations are predicted from all datastreams from #all locations, after being preprocessed by the autoencoder from AA and fusing #the locations. 
+#AB. All datastreams from all locations are predicted from all datastreams from #all locations, after being preprocessed by the autoencoder from AA and fusing #the datastreams. 
 
 ## AE, datatsreams/locations share Latent Space
 ### All together
