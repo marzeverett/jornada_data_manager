@@ -44,7 +44,7 @@ transfer_learn = False
 transfer_dict = {
     "prev_phase": "11",
     "transfer_on": "ds",
-    "delete_stream": old_delete_stream,
+    #"delete_stream": old_delete_stream,
     "part_train_letters": ["E", "H"],
 }
 
