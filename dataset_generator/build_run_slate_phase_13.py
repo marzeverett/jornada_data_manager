@@ -23,7 +23,10 @@ phase_path_start = "generated_files/"
 #Might not have to use all of the letters here, I think. 
 #letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
 letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
-letters = ["D"]
+#letters = ["D"]
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
+'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
 
 #letters = ['A', 'B']
 print(len(letters))
@@ -33,10 +36,10 @@ output_days = [1, 7]
 use_scaling_factor = "0.7"
 deep_lstm = False
 deep_ae = False
-test = True
+test = False
 predict_type = "frost"
 
-delete_stream = "temp_hum"
+delete_stream = "rain"
 transfer_learn = False
 transfer_dict = {
     "prev_phase": "11",
