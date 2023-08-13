@@ -52,5 +52,5 @@ transfer_dict = {
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 
 
-slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, deep_lstm=deep_lstm, test=test, deep_ae=deep_ae, predict_type=predict_type, delete_stream=delete_stream)
+slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, test=test, predict_type=predict_type, transfer_learn=transfer_learn, transfer_dict=transfer_dict)
 
