@@ -24,8 +24,10 @@ phase_path_start = "generated_files/"
 #letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
 #'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
 #'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
-letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
+#letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
 
+letters = ['A', 'B', 'C', 'D', 'F', 
+'I', 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
 #letters = ['A', 'B']
 print(len(letters))
 input_days = [30, 60]
