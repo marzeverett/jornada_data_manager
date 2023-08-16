@@ -25,9 +25,11 @@ phase_path_start = "generated_files/"
 # 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
 # 'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
 
-letters = ['F', 'G', 'H', 
-'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
+# letters = ['F', 'G', 'H', 
+# 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+# 'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
+
+letters = ['AB']
 
 #letters = ['A', 'B']
 print(len(letters))
