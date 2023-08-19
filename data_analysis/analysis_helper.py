@@ -141,6 +141,10 @@ def test_and_table(sep_kind, correct_letters, phase):
         analyze_separation_schemes.test_letters(sep_kind, correct_letters, file_path_1, phase, "lstm")
 
 
+#def get_min_models_per_network_type(sep_kind, correct_letters, phase):
+
+
+
 phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
 def run_basic_analysis(phases):
     #For each slate of experiments 
@@ -149,9 +153,6 @@ def run_basic_analysis(phases):
         aggregate_metrics(phase)
         #We also want C 
         minimum_comparison_models(phase)
-
-        #A -- I and II 
-
         #Then get the metrics per separation scheme:
         #Will need to make sure this saves correctly 
         for i in range(0, len(separation_scheme_list)):
@@ -166,8 +167,18 @@ def run_basic_analysis(phases):
             #Now for B -- We will need to break it up by Network Type
             #First, find the model with the minimum mean mse and min min mse 
             #But we want to find this for each network, which is a trifle trickier 
+            #Load in the 
+
+
+#But we need to find a per-separation scheme, per-network ad-hoc analysis 
 
 #This is a B thing - may want to do it manually? 
+#I think we very much do want to do this manually
+#It creates the graphs for that letter, and then also finds the minumum
+#Model for the main metrics 
+
 def get_best_graphs(phase, letter):
+    pass 
+
 
   
