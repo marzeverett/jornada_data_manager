@@ -3,11 +3,11 @@
 #https://www.geeksforgeeks.org/how-to-iterate-over-files-in-directory-using-python/ 
 
 import pandas as pd
-import matplotlib.pyplot as plt 
+#import matplotlib.pyplot as plt 
 import json 
 import os 
 import scipy.stats as stats 
-import seaborn as sn
+#import seaborn as sn
 import numpy as np 
 
 #Group by Documentation
