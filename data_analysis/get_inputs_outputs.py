@@ -44,7 +44,7 @@ col_names =  [
 
 def get_inputs_outputs(phase, letter, phase_path):
     #dataset_base_path = "generated_files/datasets/"
-    dataset_base_path = "/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/datasets/"
+    dataset_base_path = "../../media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/datasets/"
     d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
     #Load in descriptors 
     with open(d_pathname, "rb") as f:
@@ -83,8 +83,12 @@ def get_inputs_outputs(phase, letter, phase_path):
 
 phase = "2"
 letter = "A"
-phase_path = f"/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/{phase}_{letter}/"
+phase_path = f"../../media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/{phase}_{letter}/"
 get_inputs_outputs(phase, letter, phase_path)
 
 #Need to do a function call 
 #get_inputs_outputs
+
+#media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager
+#/dataset_generator/generated_files/datasets/
+#2_A.v1.l0.ds0.l_combo0.ds_combo0.idays30.odays1: No such file or directory
