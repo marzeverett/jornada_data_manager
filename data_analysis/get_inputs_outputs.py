@@ -81,10 +81,19 @@ def get_inputs_outputs(phase, letter, phase_path):
     df = pd.DataFrame(dataset_dict)
     df.to_csv(f"{dataset_base_path}/{phase}_{letter}inputs_outputs.csv")
 
-phase = "2"
-letter = "A"
-phase_path = f"/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/{phase}_{letter}/"
-get_inputs_outputs(phase, letter, phase_path)
+#phase = "2"
+#letter = "A"
+phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+letters = ['A', 'B', 'C', 'D', 'F', 
+'I', 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+for phase in phases:
+    for letter in letters:
+        try:
+            phase_path = f"/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/{phase}_{letter}/"
+            get_inputs_outputs(phase, letter, phase_path)
+        except Exception as e:
+            print(f"Couldn't for {phase} and {letter}")
+            print(e)
 
 #Need to do a function call 
 #get_inputs_outputs
