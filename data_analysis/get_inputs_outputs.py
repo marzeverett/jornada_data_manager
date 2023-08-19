@@ -44,7 +44,7 @@ col_names =  [
 
 def get_inputs_outputs(phase, letter, phase_path):
     #dataset_base_path = "generated_files/datasets/"
-    dataset_base_path = "../../media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/datasets/"
+    dataset_base_path = "/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/datasets/"
     d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
     #Load in descriptors 
     with open(d_pathname, "rb") as f:
