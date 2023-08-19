@@ -19,7 +19,7 @@ import os
 groups = {
     "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AD",
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD",
                 ]
 
 }
@@ -193,7 +193,7 @@ def save_metrics(phase, scheme, file_path):
     #test_df = df_dict["AF"]["df"]
     #print(test_df.head())
     metrics_dict = calc_aggregate_metrics(df_dict, scheme)
-    save_name = f"{phase}_{scheme}_aggregate_metrics"
+    save_name = f"{phase}_analysis/{phase}_{scheme}_aggregate_metrics"
     #print(metrics_dict)
     save_results(save_name, metrics_dict)
 
@@ -211,5 +211,5 @@ scheme = "lstm"
 #scheme = "ae"
 #Read 'em in 
 
-save_metrics(phase, scheme, file_path)
+#save_metrics(phase, scheme, file_path)
 

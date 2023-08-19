@@ -1,0 +1,5 @@
+,dataset_name,input_size,output_size
+0,11_A.v1.l0.ds0.l_combo0.ds_combo0.idays30.odays1,119,15
+1,11_A.v1.l0.ds0.l_combo0.ds_combo0.idays30.odays7,119,15
+2,11_A.v1.l0.ds0.l_combo0.ds_combo0.idays60.odays1,119,15
+3,11_A.v1.l0.ds0.l_combo0.ds_combo0.idays60.odays7,119,15

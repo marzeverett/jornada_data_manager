@@ -21,7 +21,7 @@ import seaborn as sn
 groups = {
     "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AD"
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD"
                 ]
 
 }
@@ -261,7 +261,7 @@ def table_letters(kind, letters, file_path_1, phase_1, scheme_1):
                 new_list.append(metrics_dict_1[item][letter_index])
             letters_dict[letter] = new_list
 
-    save_name = f"table_{kind}_{scheme_1}_metrics"
+    save_name = f"{phase_1}_analysis/table_{kind}_{scheme_1}_metrics"
     save_results(save_name, letters_dict)
     
 
@@ -299,7 +299,7 @@ def test_letters_rerun(kind, letters, file_path_1, phase_1, scheme_1, file_path_
                 letters_dict[labels_list[j]].append(-1)
         letters_dict["letter"].append(labels_list[i])
                 
-    save_name = f"test_{kind}_{scheme_1}_metrics"
+    save_name = f"{phase_1}_analysis/test_{kind}_{scheme_1}_metrics"
     save_results(save_name, letters_dict)
 
 
@@ -331,7 +331,7 @@ def test_letters(kind, letters, file_path_1, phase_1, scheme_1):
                 letters_dict[labels_list[j]].append(-1)
         letters_dict["letter"].append(labels_list[i])
                 
-    save_name = f"test_{kind}_{scheme_1}_metrics"
+    save_name = f"{phase_1}_analysis/test_{kind}_{scheme_1}_metrics"
     save_results(save_name, letters_dict)
 
 
@@ -346,7 +346,6 @@ def read_in_dfs_concat(file_path_start, letters, phases, kind):
                 df = df.append(sub_df)
             except Exception as e:
                 pass
-
     return df 
 
 
@@ -424,11 +423,11 @@ def get_min_per_organization_rerun(file_path_start, phases, kind):
 
 
 def get_min_per_organization(file_path_start, phases, kind):
+    input_output_csv = pd.read_csv("inputs_outputs/full_inputs_outputs.csv")
     separate_letters = ['D', 'I']
     separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
     all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
     all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
-
 
     location_combo = [*range(0, 16)]
     datastream_combo = [*range(0, 5)]
@@ -453,6 +452,13 @@ def get_min_per_organization(file_path_start, phases, kind):
                 separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
                 separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
                 separate_letters_dict["min_mse"].append(result_1["mse"].item())
+                new_dataset_name = result_1["dataset_name"].item()
+                try:
+                    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+                    separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
+                    separate_letters_dict["output_size"].append(i_o_csv["input_size"].item())
+                except Exception as e:
+                    print(e)
     #Separate location 
     df_2 = read_in_dfs_concat(file_path_start, all_datastreams_separate_locations, phases, kind)
     for l_index in location_combo:
@@ -464,6 +470,15 @@ def get_min_per_organization(file_path_start, phases, kind):
                 all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
                 all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
                 all_datastreams_separate_locations_dict["min_mse"].append(result_2["mse"].item())
+                new_dataset_name = result_2["dataset_name"].item()
+                try:
+                    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+                    all_datastreams_separate_locations_dict["input_size"].append(i_o_csv["input_size"].item())
+                    all_datastreams_separate_locations_dict["output_size"].append(i_o_csv["input_size"].item())
+                except Exception as e:
+                    print(e)
+
+
     #Separate datastream
     df_3 = read_in_dfs_concat(file_path_start, separate_datastreams_all_locations, phases, kind)
     for ds_index in datastream_combo:
@@ -475,18 +490,38 @@ def get_min_per_organization(file_path_start, phases, kind):
                 separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"].item())
                 separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"].item())
                 separate_datastreams_all_locations_dict["min_mse"].append(result_3["mse"].item())
+                new_dataset_name = result_3["dataset_name"].item()
+                try:
+                    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+                    separate_datastreams_all_locations_dict["input_size"].append(i_o_csv["input_size"].item())
+                    separate_datastreams_all_locations_dict["output_size"].append(i_o_csv["input_size"].item())
+                except Exception as e:
+                    print(e)
+
                 
     #All together
     df_4 = read_in_dfs_concat(file_path_start, all_datastreams_all_locations, phases, kind)
     result_4 = df_4[df_4.mse == df_4.mse.min()]
+    try:
+        new_dataset_name = result_4["dataset_name"].item()
+        i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+        input_size = i_o_csv["input_size"].item()
+        output_size = i_o_csv["input_size"].item()
+    except Exception as e:
+        print(e)
+        input_size = -1
+        output_size = -1 
+
     all_datastreams_all_locations_dict = {
                     "model_name": [result_4["experiment_name"].item()],
                     "dataset_name": [result_4["dataset_name"].item()],
                     "min_mse": [result_4["mse"].item()]
+                    "input_size": input_size,
+                    "output_size": output_size
                 }
 
-
-    save_names = ["min_separate", "min_location", "min_datastream", "min_all"]
+    ind_phase = phases[0]
+    save_names = [f"{ind_phase}_analysis/min_separate", f"{ind_phase}_analysis/min_location", f"{ind_phase}_analysis/min_datastream", f"{ind_phase}_analysis/min_all"]
     save_dicts = [separate_letters_dict, all_datastreams_separate_locations_dict, separate_datastreams_all_locations_dict, all_datastreams_all_locations_dict]
     
     for i in range(0, len(save_names)):

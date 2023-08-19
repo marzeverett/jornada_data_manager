@@ -203,9 +203,9 @@ def save_graphs(phase, scheme, file_path):
     save_results(save_name, metrics_dict)
 
 
-phase = "8"  
+phase = "2"  
 scheme = "lstm"
-letter = "G"
+letter = "D"
 
 file_path = "main_metrics/phase_"+phase+"/"
 
@@ -224,20 +224,20 @@ data_1 = pd.read_csv(file_name_1, names=col_names[scheme])
 #new_data = data.groupby(["input_days", "output_days"]).mean()["mse"]
 
 
-# #GRAPH
-df= data_1.groupby(["experiment_name"]).mean()
-df.plot(kind="bar", y="mse")
-#plt.xticks(rotation=30)
-plt.show()
+# # #GRAPH
+# df= data_1.groupby(["experiment_name"]).mean()
+# df.plot(kind="bar", y="mse")
+# #plt.xticks(rotation=30)
+# plt.show()
 
 
 
-# #Find Min Record for mse
-# print("Min")
-# print(data_1[data_1.mse == data_1.mse.min()])
-# #Find Max record for mse 
-# print("Max")
-# print(data_1[data_1.mse == data_1.mse.max()])
+#Find Min Record for mse
+print("Min")
+print(data_1[data_1.mse == data_1.mse.min()])
+#Find Max record for mse 
+print("Max")
+print(data_1[data_1.mse == data_1.mse.max()])
  
 
 #  #Correlation Matrix

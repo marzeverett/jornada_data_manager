@@ -1,6 +1,7 @@
 #Help from:
 #https://stackoverflow.com/questions/31645466/give-column-name-when-read-csv-file-pandas 
 #https://www.geeksforgeeks.org/how-to-iterate-over-files-in-directory-using-python/ 
+#https://www.geeksforgeeks.org/merge-two-dataframes-with-same-column-names/ 
 
 import pandas as pd
 #import matplotlib.pyplot as plt 
@@ -83,21 +84,44 @@ def get_inputs_outputs(phase, letter, phase_path):
 
 #phase = "2"
 #letter = "A"
-phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-letters = ['A', 'B', 'C', 'D', 'F', 
-'I', 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
-for phase in phases:
-    for letter in letters:
-        try:
-            phase_path = f"/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/{phase}_{letter}/"
-            get_inputs_outputs(phase, letter, phase_path)
-        except Exception as e:
-            print(f"Couldn't for {phase} and {letter}")
-            print(e)
 
+def get_all_phases():
+    phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+    letters = ['A', 'B', 'C', 'D', 'F', 
+    'I', 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+    for phase in phases:
+        for letter in letters:
+            try:
+                phase_path = f"/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/{phase}_{letter}/"
+                get_inputs_outputs(phase, letter, phase_path)
+            except Exception as e:
+                print(f"Couldn't for {phase} and {letter}")
+                print(e)
+#Get all phases
+
+def make_aggregate_csv():
+    phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+    letters = ['A', 'B', 'C', 'D', 'F', 
+    'I', 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+    merged_df = pd.DataFrame()
+    for phase in phases:
+        for letter in letters:
+            try:
+                phase_path = f"inputs_outputs/{phase}_{letter}inputs_outputs.csv"
+                new_df = pd.read_csv(phase_path)
+                if not merged_df.empty:
+                    merged_df = pd.concat([merged_df, new_df], axis=0)
+                else:
+                    merged_df = new_df
+            except Exception as e:
+                print(f"Couldn't for {phase} and {letter}")
+                print(e)
+    merged_df.to_csv("inputs_outputs/full_inputs_outputs.csv")
 #Need to do a function call 
 #get_inputs_outputs
 
 #media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager
 #/dataset_generator/generated_files/datasets/
 #2_A.v1.l0.ds0.l_combo0.ds_combo0.idays30.odays1: No such file or directory
+
+make_aggregate_csv()
