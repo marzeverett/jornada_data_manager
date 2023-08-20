@@ -247,20 +247,20 @@ def get_letter_graphs(phase, letter):
 
 phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
 phases = ["4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
-phases = ["4"]
+phases = ["5", "6", "7", "8", "9", "10", "11", "12", "13"]
 def run_basic_analysis(phases):
     #For each slate of experiments 
     for phase in phases:
         #First, get the aggregate metrics on the whole thing 
-        # try:
-        #     aggregate_metrics(phase)
-        # except Exception as e:
-        #        print(f"Couldn't get aggregate metrics for reason {e}")
+        try:
+            aggregate_metrics(phase)
+        except Exception as e:
+               print(f"Couldn't get aggregate metrics for reason {e}")
         #We also want C 
-        # try:
-        #     minimum_comparison_models(phase)
-        # except Exception as e:
-        #     print(f"Couldn't get minimum comparison models for reason {e}")
+        try:
+            minimum_comparison_models(phase)
+        except Exception as e:
+            print(f"Couldn't get minimum comparison models for reason {e}")
         #Then get the metrics per separation scheme:
         #Will need to make sure this saves correctly 
         for i in range(0, len(separation_scheme_list)):
@@ -271,15 +271,15 @@ def run_basic_analysis(phases):
             #Limit to only LSTM letters 
             correct_letters = get_correct_letters(sep_scheme, "lstm")
             #Test and Table (A I and II)
-            # try:
-            #     test_and_table(sep_kind, correct_letters, phase)
-            # except Exception as e:
-            #     print(f"Couldn't test and table for reason {e}")
+            try:
+                test_and_table(sep_kind, correct_letters, phase)
+            except Exception as e:
+                print(f"Couldn't test and table for reason {e}")
             #Now for B -- We will need to break it up by Network Type
-            #try:
-            get_min_models_per_network_type(sep_kind, correct_letters, phase)
-            #except Exception as e:
-            #    print(f"Couldn't get min models per network type for reason {e}")
+            try:
+                get_min_models_per_network_type(sep_kind, correct_letters, phase)
+            except Exception as e:
+                print(f"Couldn't get min models per network type for reason {e}")
 
 #But we need to find a per-separation scheme, per-network ad-hoc analysis 
 run_basic_analysis(phases)
