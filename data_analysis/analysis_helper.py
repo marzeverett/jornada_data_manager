@@ -1,22 +1,25 @@
 #Help from:
 #https://stackoverflow.com/questions/31645466/give-column-name-when-read-csv-file-pandas 
 #https://www.geeksforgeeks.org/how-to-iterate-over-files-in-directory-using-python/ 
+#https://stackoverflow.com/questions/273192/how-do-i-create-a-directory-and-any-missing-parent-directories
+#
 
 import pandas as pd
 import matplotlib.pyplot as plt 
 import json 
 import os 
+import seaborn as sn
+
 
 import analyze_aggregate_metrics
 import analyze_individual_metrics
-import analyze_separate_schemes 
+import analyze_separation_schemes 
 
 
 groups = {
     "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB" "AD",
-                ]
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD"]
 
 }
 
@@ -112,7 +115,7 @@ all_one_letters = ["B", "J", "L", "M", "U", "V"]
 all_all_letters = ["A", "G", "N", "S", "T", "W", "X", "Y", "AB", "AC", "AD"]
 
 separation_scheme_list = [one_one_letters, one_all_letters, all_one_letters, all_all_letters]
-separation_scheme_kinds = ["one_one", "one_all", "all_one", "one_one" ]
+separation_scheme_kinds = ["one_one", "one_all", "all_one", "all_all" ]
 
 
 
@@ -141,18 +144,123 @@ def test_and_table(sep_kind, correct_letters, phase):
         analyze_separation_schemes.test_letters(sep_kind, correct_letters, file_path_1, phase, "lstm")
 
 
-#def get_min_models_per_network_type(sep_kind, correct_letters, phase):
+def get_min_models_per_network_type(sep_kind, correct_letters, phase):
+    net_1 = []
+    net_2 = []
+    net_3 = []
+    net_4 = []
+    #Get the letters sorted into networks
+    for letter in correct_letters:
+        if letter in network_1_letters:
+            net_1.append(letter)
+        if letter in network_2_letters:
+            net_2.append(letter)
+        if letter in network_3_letters:
+            net_3.append(letter)
+        if letter in network_4_letters:
+            net_4.append(letter)
+    all_networks_list = [net_1, net_2, net_3, net_4]
+    all_networks_labels = ['Network 1', "Network 2", "Network 3", "Network 4"]
+    min_networks_df = pd.DataFrame()
+    #For each network
+    for i in range(0, len(all_networks_list)):
+        sub_network = all_networks_list[i]
+        sub_label = all_networks_labels[i]
+        min_mse = pd.DataFrame()
+        min_letter = None
+        max_mse = pd.DataFrame()
+        max_letter = None
+        #For each letter in that network 
+        for sub_letter in sub_network:
+            #load in the letter df.
+            df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["lstm"])
+            min_df = df[df.mse == df.mse.min()]
+            max_df = df[df.mse == df.mse.max()]
+            if min_mse.empty:
+                min_mse = min_df
+                min_letter = sub_letter
+            else:
+                if min_df["mse"].item() < min_mse["mse"].item():
+                    min_mse = min_df
+                    min_letter = sub_letter
+            if max_mse.empty:
+                max_mse = max_df
+                max_letter = sub_letter
+            else:
+                if max_df["mse"].item() > max_mse["mse"].item():
+                    max_mse = max_df
+                    max_letter = sub_letter
+        #At the end, will have a min and max row value for a network
+        min_mse = min_mse.assign(network=sub_label)
+        max_mse = max_mse.assign(network=sub_label)
+        min_mse= min_mse.assign(letter=min_letter)
+        max_mse = max_mse.assign(letter=max_letter)
+        min_mse = min_mse.assign(Max_or_Min="Min")
+        max_mse = max_mse.assign(Max_or_Min="Max")
+        if min_networks_df.empty:
+            min_networks_df = min_mse
+            min_networks_df = pd.concat([min_networks_df, max_mse], axis=0)
+        else:
+            min_networks_df = pd.concat([min_networks_df, min_mse], axis=0)
+            min_networks_df = pd.concat([min_networks_df, max_mse], axis=0)
+    #Finally, save the csv
+    save_name = f"{phase}_analysis/network_outliers_{sep_kind}.csv"
+    min_networks_df.to_csv(save_name)
+        
+
+
+
+#This is a B thing - may want to do it manually? 
+#I think we very much do want to do this manually
+#It creates the graphs for that letter
+def get_letter_graphs(phase, letter):
+    graphing_vars = ["location_scheme", "datastream_scheme", "l_combo", "ds_combo", "input_days", "output_days", "dataset_size", "dataset_name", "experiment_name"]
+    #only works for continuous vars
+    correlation_vars = ["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
+    #Load in the df
+    df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=col_names["lstm"])
+    graph_path = f"main_metrics/phase_{phase}/graphs/{letter}/"
+    if not os.path.exists(graph_path):
+        os.makedirs(graph_path)
+
+    #Make the graphs 
+    for graph_var in graphing_vars:
+        #graph_df = df.groupby([graph_var]).mean()
+        graph_df = df.groupby([graph_var]).mean()
+        graph_df.plot(kind="bar", y="mse")
+        plt.title(f"MSE by {graph_var}")
+        save_name = graph_path+f"{graph_var}_mse.jpg"
+        plt.savefig(save_name)
+
+    #Make the correlation matrix
+    corr_df = df[correlation_vars]
+    corr_matrix = corr_df.corr()
+    sn.heatmap(corr_matrix, annot=True)
+    plt.title(f"Correlation Matrix for phase {phase} {letter}")
+    save_name = graph_path+f"correlation_metrix.jpg"
+    plt.savefig(save_name)
+
+
+
 
 
 
 phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+phases = ["4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
+phases = ["4"]
 def run_basic_analysis(phases):
     #For each slate of experiments 
     for phase in phases:
         #First, get the aggregate metrics on the whole thing 
-        aggregate_metrics(phase)
+        # try:
+        #     aggregate_metrics(phase)
+        # except Exception as e:
+        #        print(f"Couldn't get aggregate metrics for reason {e}")
         #We also want C 
-        minimum_comparison_models(phase)
+        # try:
+        #     minimum_comparison_models(phase)
+        # except Exception as e:
+        #     print(f"Couldn't get minimum comparison models for reason {e}")
         #Then get the metrics per separation scheme:
         #Will need to make sure this saves correctly 
         for i in range(0, len(separation_scheme_list)):
@@ -163,22 +271,27 @@ def run_basic_analysis(phases):
             #Limit to only LSTM letters 
             correct_letters = get_correct_letters(sep_scheme, "lstm")
             #Test and Table (A I and II)
-            test_and_table(sep_kind, correct_letters, phase)
+            # try:
+            #     test_and_table(sep_kind, correct_letters, phase)
+            # except Exception as e:
+            #     print(f"Couldn't test and table for reason {e}")
             #Now for B -- We will need to break it up by Network Type
-            #First, find the model with the minimum mean mse and min min mse 
-            #But we want to find this for each network, which is a trifle trickier 
-            #Load in the 
-
+            #try:
+            get_min_models_per_network_type(sep_kind, correct_letters, phase)
+            #except Exception as e:
+            #    print(f"Couldn't get min models per network type for reason {e}")
 
 #But we need to find a per-separation scheme, per-network ad-hoc analysis 
-
-#This is a B thing - may want to do it manually? 
-#I think we very much do want to do this manually
-#It creates the graphs for that letter, and then also finds the minumum
-#Model for the main metrics 
-
-def get_best_graphs(phase, letter):
-    pass 
+run_basic_analysis(phases)
 
 
-  
+# phase = "2"
+# letter = "D"
+# get_letter_graphs(phase, letter)
+
+# min_mse["network"] = min_mse.assign(network=sub_label)
+#         max_mse["network"] = sub_label
+#         min_mse["letter"] = min_letter
+#         max_mse["letter"] = max_letter
+#         min_mse["Max_or_Min"] = "Min"
+#         max_mse["Max_or_Min"] = "Max"

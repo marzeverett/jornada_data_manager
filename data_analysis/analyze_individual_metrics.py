@@ -203,54 +203,54 @@ def save_graphs(phase, scheme, file_path):
     save_results(save_name, metrics_dict)
 
 
-phase = "2"  
-scheme = "lstm"
-letter = "D"
+# phase = "2"  
+# scheme = "lstm"
+# letter = "D"
 
-file_path = "main_metrics/phase_"+phase+"/"
+# file_path = "main_metrics/phase_"+phase+"/"
 
-file_name_1 = file_path + phase+"_"+letter+"main_metrics.csv"
-file_name_2 = 'main_metrics/phase_3/' + "3"+"_"+"I"+"main_metrics.csv"
+# file_name_1 = file_path + phase+"_"+letter+"main_metrics.csv"
+# file_name_2 = 'main_metrics/phase_3/' + "3"+"_"+"I"+"main_metrics.csv"
 
-#Read in 
-data_1 = pd.read_csv(file_name_1, names=col_names[scheme])
-#data_2 = pd.read_csv(file_name_2, names=col_names[scheme])
+# #Read in 
+# data_1 = pd.read_csv(file_name_1, names=col_names[scheme])
+# #data_2 = pd.read_csv(file_name_2, names=col_names[scheme])
 
-# #Wilcox Test
-# result = stats.wilcoxon(data_1["mse"].tolist(), data_2["mse"].tolist())
-# print(result)
-#Look up - you need to make sure you know exactly what's its doing
-#https://www.geeksforgeeks.org/pandas-groupby-multiple-values-and-plotting-results/ 
-#new_data = data.groupby(["input_days", "output_days"]).mean()["mse"]
-
-
-# # #GRAPH
-# df= data_1.groupby(["experiment_name"]).mean()
-# df.plot(kind="bar", y="mse")
-# #plt.xticks(rotation=30)
-# plt.show()
+# # #Wilcox Test
+# # result = stats.wilcoxon(data_1["mse"].tolist(), data_2["mse"].tolist())
+# # print(result)
+# #Look up - you need to make sure you know exactly what's its doing
+# #https://www.geeksforgeeks.org/pandas-groupby-multiple-values-and-plotting-results/ 
+# #new_data = data.groupby(["input_days", "output_days"]).mean()["mse"]
 
 
+# # # #GRAPH
+# # df= data_1.groupby(["experiment_name"]).mean()
+# # df.plot(kind="bar", y="mse")
+# # #plt.xticks(rotation=30)
+# # plt.show()
 
-#Find Min Record for mse
-print("Min")
-print(data_1[data_1.mse == data_1.mse.min()])
-#Find Max record for mse 
-print("Max")
-print(data_1[data_1.mse == data_1.mse.max()])
+
+
+# #Find Min Record for mse
+# print("Min")
+# print(data_1[data_1.mse == data_1.mse.min()])
+# #Find Max record for mse 
+# print("Max")
+# print(data_1[data_1.mse == data_1.mse.max()])
  
 
-#  #Correlation Matrix
-# print(data_1.head())
-# df = data_1[["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]]
-# corr_matrix = df.corr()
-# print(corr_matrix)
-# sn.heatmap(corr_matrix, annot=True)
-# plt.show()
+# #  #Correlation Matrix
+# # print(data_1.head())
+# # df = data_1[["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]]
+# # corr_matrix = df.corr()
+# # print(corr_matrix)
+# # sn.heatmap(corr_matrix, annot=True)
+# # plt.show()
 
-#Aggregate stats 
-# mean = round(new_data["mse"].mean(), 5)
-# std = round(new_data["mse"].std(), 5)
-# print("Mean", mean)
-# print("Standard Deviation", std)
+# #Aggregate stats 
+# # mean = round(new_data["mse"].mean(), 5)
+# # std = round(new_data["mse"].std(), 5)
+# # print("Mean", mean)
+# # print("Standard Deviation", std)
 

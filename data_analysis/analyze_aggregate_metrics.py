@@ -176,7 +176,7 @@ def get_metric(df_dict, metric):
 def calc_aggregate_metrics(df_dict, scheme):
     metrics_dict = aggregate_metrics[scheme].copy()
     for letter in list(df_dict.keys()):
-        print(letter)
+        #print(letter)
         letter_dict = df_dict[letter]
         for metric in list(metrics_dict.keys()):
             metrics_dict[metric].append(get_metric(letter_dict, metric))
@@ -193,23 +193,27 @@ def save_metrics(phase, scheme, file_path):
     #test_df = df_dict["AF"]["df"]
     #print(test_df.head())
     metrics_dict = calc_aggregate_metrics(df_dict, scheme)
-    save_name = f"{phase}_analysis/{phase}_{scheme}_aggregate_metrics"
+    dir_name = f"{phase}_analysis/"
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    save_name = f"{dir_name}{phase}_{scheme}_aggregate_metrics"
+    
     #print(metrics_dict)
     save_results(save_name, metrics_dict)
 
 
 
-# def get_agg_for_both(file_path, phase, scheme):
-#     df_dict = read_in_dfs(file_path, phase, df_dict, ingroup="lstm")
-#     metrics_dict = calc_aggregate_metrics(df_dict, scheme)
-#     save_results(filename, save_dict)
+# # def get_agg_for_both(file_path, phase, scheme):
+# #     df_dict = read_in_dfs(file_path, phase, df_dict, ingroup="lstm")
+# #     metrics_dict = calc_aggregate_metrics(df_dict, scheme)
+# #     save_results(filename, save_dict)
 
 
-phase = "4" 
-file_path = f'main_metrics/phase_{phase}/'
-scheme = "lstm"
-#scheme = "ae"
-#Read 'em in 
+# phase = "4" 
+# file_path = f'main_metrics/phase_{phase}/'
+# scheme = "lstm"
+# #scheme = "ae"
+# #Read 'em in 
 
-#save_metrics(phase, scheme, file_path)
+# #save_metrics(phase, scheme, file_path)
 

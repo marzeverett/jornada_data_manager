@@ -89,6 +89,8 @@ def get_all_phases():
     phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
     letters = ['A', 'B', 'C', 'D', 'F', 
     'I', 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+
+    letters = ['J', 'AF']
     for phase in phases:
         for letter in letters:
             try:
@@ -98,6 +100,7 @@ def get_all_phases():
                 print(f"Couldn't for {phase} and {letter}")
                 print(e)
 #Get all phases
+get_all_phases()
 
 def make_aggregate_csv():
     phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
@@ -124,4 +127,4 @@ def make_aggregate_csv():
 #/dataset_generator/generated_files/datasets/
 #2_A.v1.l0.ds0.l_combo0.ds_combo0.idays30.odays1: No such file or directory
 
-make_aggregate_csv()
+#make_aggregate_csv()

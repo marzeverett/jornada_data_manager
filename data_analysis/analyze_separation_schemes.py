@@ -432,10 +432,10 @@ def get_min_per_organization(file_path_start, phases, kind):
     location_combo = [*range(0, 16)]
     datastream_combo = [*range(0, 5)]
 
-    separate_letters_dict = {"l_index": [], "ds_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
-    separate_datastreams_all_locations_dict = {"ds_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
-    all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
-    all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], "min_mse": []}
+    separate_letters_dict = {"l_index": [], "ds_index": [], "model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
+    separate_datastreams_all_locations_dict = {"ds_index": [], "model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
+    all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
+    all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
 
     #Separate case:
     df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind)
@@ -456,9 +456,11 @@ def get_min_per_organization(file_path_start, phases, kind):
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
-                    separate_letters_dict["output_size"].append(i_o_csv["input_size"].item())
+                    separate_letters_dict["output_size"].append(i_o_csv["output_size"].item())
                 except Exception as e:
-                    print(e)
+                    print(f"Error getting min per org due to {e}")
+                    separate_letters_dict["input_size"].append(-1)
+                    separate_letters_dict["output_size"].append(-1)
     #Separate location 
     df_2 = read_in_dfs_concat(file_path_start, all_datastreams_separate_locations, phases, kind)
     for l_index in location_combo:
@@ -474,10 +476,11 @@ def get_min_per_organization(file_path_start, phases, kind):
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     all_datastreams_separate_locations_dict["input_size"].append(i_o_csv["input_size"].item())
-                    all_datastreams_separate_locations_dict["output_size"].append(i_o_csv["input_size"].item())
+                    all_datastreams_separate_locations_dict["output_size"].append(i_o_csv["output_size"].item())
                 except Exception as e:
-                    print(e)
-
+                    print(f"Error getting min per org due to {e}")
+                    all_datastreams_separate_locations_dict["input_size"].append(-1)
+                    all_datastreams_separate_locations_dict["output_size"].append(-1)
 
     #Separate datastream
     df_3 = read_in_dfs_concat(file_path_start, separate_datastreams_all_locations, phases, kind)
@@ -494,9 +497,11 @@ def get_min_per_organization(file_path_start, phases, kind):
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     separate_datastreams_all_locations_dict["input_size"].append(i_o_csv["input_size"].item())
-                    separate_datastreams_all_locations_dict["output_size"].append(i_o_csv["input_size"].item())
+                    separate_datastreams_all_locations_dict["output_size"].append(i_o_csv["output_size"].item())
                 except Exception as e:
-                    print(e)
+                    print(f"Error getting min per org due to {e}")
+                    separate_datastreams_all_locations_dict["input_size"].append(-1)
+                    separate_datastreams_all_locations_dict["output_size"].append(-1)
 
                 
     #All together
@@ -506,16 +511,16 @@ def get_min_per_organization(file_path_start, phases, kind):
         new_dataset_name = result_4["dataset_name"].item()
         i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
         input_size = i_o_csv["input_size"].item()
-        output_size = i_o_csv["input_size"].item()
+        output_size = i_o_csv["output_size"].item()
     except Exception as e:
-        print(e)
+        print(f"Error getting min per org (4) due to {e}")
         input_size = -1
         output_size = -1 
 
     all_datastreams_all_locations_dict = {
                     "model_name": [result_4["experiment_name"].item()],
                     "dataset_name": [result_4["dataset_name"].item()],
-                    "min_mse": [result_4["mse"].item()]
+                    "min_mse": [result_4["mse"].item()],
                     "input_size": input_size,
                     "output_size": output_size
                 }
@@ -525,59 +530,60 @@ def get_min_per_organization(file_path_start, phases, kind):
     save_dicts = [separate_letters_dict, all_datastreams_separate_locations_dict, separate_datastreams_all_locations_dict, all_datastreams_all_locations_dict]
     
     for i in range(0, len(save_names)):
+        #print((save_dicts[i]))
         save_results(save_names[i], save_dicts[i])
 
     
 
-# file_path_1 = 'main_metrics/phase_2/'
-# phase_1 = "2"  
+# # file_path_1 = 'main_metrics/phase_2/'
+# # phase_1 = "2"  
+# # scheme_1 = "lstm"
+
+# # file_path_2 = 'main_metrics/phase_3/'
+# # phase_2 = "3"  
+# # scheme_2 = "lstm"
+
+# phases = [4]
+# path_start = "main_metrics/"
+# kind = "lstm"
+
+# file_path_1 = 'main_metrics/phase_4/'
+# phase_1 = "4"  
 # scheme_1 = "lstm"
 
-# file_path_2 = 'main_metrics/phase_3/'
-# phase_2 = "3"  
-# scheme_2 = "lstm"
-
-phases = [4]
-path_start = "main_metrics/"
-kind = "lstm"
-
-file_path_1 = 'main_metrics/phase_4/'
-phase_1 = "4"  
-scheme_1 = "lstm"
 
 
+# # # #All separate
+# # kind = "table_separate_all"
+# # letters = ["D", "I"]
 
-# # #All separate
-# kind = "table_separate_all"
-# letters = ["D", "I"]
+# # #One datastream_all_locations
+# # kind = "separate_ds_all_location"
+# # letters = ["C", "F", "Q", "AA"]
 
-# #One datastream_all_locations
-# kind = "separate_ds_all_location"
-# letters = ["C", "F", "Q", "AA"]
-
-# #All datastreams one location
-# kind = "all_ds_separate_location"
-# letters = ["B", "J", "M", "V"]
+# # #All datastreams one location
+# # kind = "all_ds_separate_location"
+# # letters = ["B", "J", "M", "V"]
 
 
-# #All datastreams all locations 
-# kind = "all_ds_all_location"
-# letters = ["A", "G", "N", "T", "W", "Y", "AD"]
+# # #All datastreams all locations 
+# # kind = "all_ds_all_location"
+# # letters = ["A", "G", "N", "T", "W", "Y", "AD"]
 
 
 
 
-#table_letters(kind, letters, file_path_1, phase_1, scheme_1)
-#test_letters(kind, letters, file_path_1, phase_1, scheme_1)
+# #table_letters(kind, letters, file_path_1, phase_1, scheme_1)
+# #test_letters(kind, letters, file_path_1, phase_1, scheme_1)
 
-get_min_per_organization(path_start, phases, kind)
-
-
+# get_min_per_organization(path_start, phases, kind)
 
 
-#print(df_dict)
-#print(json.dumps(df_dict, indent=4))
-    #Get the main metrics that every set has together
+
+
+# #print(df_dict)
+# #print(json.dumps(df_dict, indent=4))
+#     #Get the main metrics that every set has together
 
 
 
