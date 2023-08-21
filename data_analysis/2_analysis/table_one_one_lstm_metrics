@@ -1,0 +1,7 @@
+Metric,D,I
+mean_mse,0.01515,0.04683
+min_mse,0.0008,0.00062
+max_mse,0.05938,0.37697
+stdev_mse,0.01145,0.09251
+mean_training_time,88.62376,67.55729
+mean_num_epochs,69.55747,53.94684

@@ -219,7 +219,7 @@ def get_letter_graphs(phase, letter):
     correlation_vars = ["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
     #Load in the df
     df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=col_names["lstm"])
-    graph_path = f"main_metrics/phase_{phase}/graphs/{letter}/"
+    graph_path = f"{phase}_analysis/graphs/{letter}/"
     if not os.path.exists(graph_path):
         os.makedirs(graph_path)
 
@@ -245,9 +245,10 @@ def get_letter_graphs(phase, letter):
 
 
 
-phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-phases = ["4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
-phases = ["5", "6", "7", "8", "9", "10", "11", "12", "13"]
+#phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+#phases = ["4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
+#phases = ["5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+#phases = ["2", "3", "4"]
 def run_basic_analysis(phases):
     #For each slate of experiments 
     for phase in phases:
@@ -282,16 +283,12 @@ def run_basic_analysis(phases):
                 print(f"Couldn't get min models per network type for reason {e}")
 
 #But we need to find a per-separation scheme, per-network ad-hoc analysis 
-run_basic_analysis(phases)
+#run_basic_analysis(phases)
 
 
+
+##### For inspecting individual graphs! 
 # phase = "2"
 # letter = "D"
 # get_letter_graphs(phase, letter)
 
-# min_mse["network"] = min_mse.assign(network=sub_label)
-#         max_mse["network"] = sub_label
-#         min_mse["letter"] = min_letter
-#         max_mse["letter"] = max_letter
-#         min_mse["Max_or_Min"] = "Min"
-#         max_mse["Max_or_Min"] = "Max"

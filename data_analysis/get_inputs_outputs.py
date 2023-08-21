@@ -100,7 +100,7 @@ def get_all_phases():
                 print(f"Couldn't for {phase} and {letter}")
                 print(e)
 #Get all phases
-get_all_phases()
+#get_all_phases()
 
 def make_aggregate_csv():
     phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]

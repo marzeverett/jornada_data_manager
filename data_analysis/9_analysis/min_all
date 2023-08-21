@@ -1,0 +1,2 @@
+model_name,dataset_name,min_mse,input_size,output_size
+9_AB_exp64,9_AB.v1.l0.ds0.l_combo0.ds_combo0.idays30.odays1,0.010951577685773373,182,209
