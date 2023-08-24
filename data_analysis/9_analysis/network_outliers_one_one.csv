@@ -1,0 +1,3 @@
+,version,location_scheme,datastream_scheme,l_combo,ds_combo,input_days,output_days,loss,mse,mape,mae,dataset_size,training_time,experiment_name,dataset_name,epochs,network,letter,Max_or_Min
+20,1.0,1.0,1.0,1.0,2.0,30.0,1.0,0.0005378855275921524,0.0005378855275921524,13.17365264892578,0.005382248666137457,3337.0,14.190681457519533,9_I_exp8,9_I.v1.l1.ds1.l_combo1.ds_combo2.idays30.odays1,11.0,Network 2,I,Min
+692,1.0,1.0,1.0,14.0,4.0,30.0,1.0,0.3800583481788635,0.3800583481788635,100.0,0.5830566883087158,3385.0,15.060958862304688,9_I_exp64,9_I.v1.l1.ds1.l_combo14.ds_combo4.idays30.odays1,11.0,Network 2,I,Max

@@ -45,7 +45,29 @@ col_names = {
             "dataset_name",
             "epochs"
     ],
-
+    "prediction": [
+        "version",
+            "location_scheme",
+            "datastream_scheme",
+            "l_combo",
+            "ds_combo",
+            "input_days",
+            "output_days",
+            "loss",
+            "mse",
+            "binary_accuracy",
+            "precision",
+            "recall",
+            "true_positives",
+            "true_negatives",
+            "false_positives",
+            "false_negatives",
+            "dataset_size",
+            "training_time",
+            "experiment_name",
+            "dataset_name",
+            "epochs"
+    ],
     "ae": [
             "version",
             "location_scheme",
@@ -335,9 +357,11 @@ def test_letters(kind, letters, file_path_1, phase_1, scheme_1):
     save_results(save_name, letters_dict)
 
 
-def read_in_dfs_concat(file_path_start, letters, phases, kind):
+def read_in_dfs_concat(file_path_start, letters, phases, kind, prediction=False):
     df = pd.DataFrame()
     #for filename in os.listdir(file_path):
+    if prediction:
+        kind = "prediction"
     for phase in phases:
         for letter in letters:
             file_path = file_path_start + "phase_"+str(phase)+"/"+str(phase)+"_"+str(letter)+"main_metrics.csv"
@@ -348,81 +372,7 @@ def read_in_dfs_concat(file_path_start, letters, phases, kind):
                 pass
     return df 
 
-
-def get_min_per_organization_rerun(file_path_start, phases, kind):
-    separate_letters = ['D', 'I']
-    separate_datastreams_all_locations = ["C", "F", "Q", "AA"]
-    all_datastreams_separate_locations = ["B", "J", "M", "V",]
-    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AD"]
-
-
-    location_combo = [*range(0, 16)]
-    datastream_combo = [*range(0, 5)]
-
-    separate_letters_dict = {"l_index": [], "ds_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
-    separate_datastreams_all_locations_dict = {"ds_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
-    all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
-    all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], "min_mse": []}
-
-    #Separate case:
-    df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind)
-    print(df_1.head())
-    print(df_1.columns())
-    for l_index in location_combo:
-        for d_index in datastream_combo:
-            dict_index = f"{l_index}_{d_index}"
-            #Find the appropriate row in the dataframe for df1 
-            df_1_correct = df_1[(df_1['l_combo'] == l_index) & (df_1['ds_combo'] == d_index)]
-            if not df_1_correct.empty:
-                #print(df_1_correct.head())
-                result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
-                separate_letters_dict["l_index"].append(l_index)
-                separate_letters_dict["ds_index"].append(d_index)
-                separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
-                separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
-                separate_letters_dict["min_mse"].append(result_1["mse"].item())
-    #Separate location 
-    df_2 = read_in_dfs_concat(file_path_start, all_datastreams_separate_locations, phases, kind)
-    for l_index in location_combo:
-        dict_index = f"{l_index}"
-        df_2_correct = df_2[df_2.l_combo == l_index]
-        if not df_2_correct.empty:
-                result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
-                all_datastreams_separate_locations_dict["l_index"].append(l_index,)
-                all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
-                all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
-                all_datastreams_separate_locations_dict["min_mse"].append(result_2["mse"].item())
-    #Separate datastream
-    df_3 = read_in_dfs_concat(file_path_start, separate_datastreams_all_locations, phases, kind)
-    for ds_index in datastream_combo:
-        dict_index = f"{ds_index}"
-        df_3_correct = df_3[df_3.ds_combo == ds_index]
-        if not df_3_correct.empty:
-                result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
-                separate_datastreams_all_locations_dict["ds_index"].append(ds_index)
-                separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"].item())
-                separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"].item())
-                separate_datastreams_all_locations_dict["min_mse"].append(result_3["mse"].item())
-                
-    #All together
-    df_4 = read_in_dfs_concat(file_path_start, all_datastreams_all_locations, phases, kind)
-    result_4 = df_4[df_4.mse == df_4.mse.min()]
-    all_datastreams_all_locations_dict = {
-                    "model_name": [result_4["experiment_name"].item()],
-                    "dataset_name": [result_4["dataset_name"].item()],
-                    "min_mse": [result_4["mse"].item()]
-                }
-
-
-    save_names = ["min_separate", "min_location", "min_datastream", "min_all"]
-    save_dicts = [separate_letters_dict, all_datastreams_separate_locations_dict, separate_datastreams_all_locations_dict, all_datastreams_all_locations_dict]
-    
-    for i in range(0, len(save_names)):
-        save_results(save_names[i], save_dicts[i])
-
-
-
-def get_min_per_organization(file_path_start, phases, kind):
+def get_min_per_organization(file_path_start, phases, kind, prediction=False):
     input_output_csv = pd.read_csv("inputs_outputs/full_inputs_outputs.csv")
     separate_letters = ['D', 'I']
     separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
@@ -432,13 +382,21 @@ def get_min_per_organization(file_path_start, phases, kind):
     location_combo = [*range(0, 16)]
     datastream_combo = [*range(0, 5)]
 
-    separate_letters_dict = {"l_index": [], "ds_index": [], "model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
-    separate_datastreams_all_locations_dict = {"ds_index": [], "model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
-    all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
-    all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], "min_mse": [], "input_size": [], "output_size": []}
+    if prediction:
+        use_metric = "binary_accuracy"
+        metric_label = "min_binary_accuracy"
+    else:
+        use_metric = "mse"
+        metric_label = "min_mse"
+
+
+    separate_letters_dict = {"l_index": [], "ds_index": [], "model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
+    separate_datastreams_all_locations_dict = {"ds_index": [], "model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
+    all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
+    all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
 
     #Separate case:
-    df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind)
+    df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind, prediction=prediction)
     for l_index in location_combo:
         for d_index in datastream_combo:
             dict_index = f"{l_index}_{d_index}"
@@ -446,12 +404,22 @@ def get_min_per_organization(file_path_start, phases, kind):
             df_1_correct = df_1[(df_1['l_combo'] == l_index) & (df_1['ds_combo'] == d_index)]
             if not df_1_correct.empty:
                 #print(df_1_correct.head())
-                result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
+                if prediction:
+                    result_1 = df_1_correct[df_1_correct.binary_accuracy == df_1_correct.binary_accuracy.min()]
+                    result_1 = df_1.iloc[0]
+                    #START HERE!!! 
+                    print(result_1)
+                    print(result_1["experiment_name"])
+                    print(len(result_1.index))
+                    #print(len(result_1.index))
+                else:
+                    result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
                 separate_letters_dict["l_index"].append(l_index)
                 separate_letters_dict["ds_index"].append(d_index)
                 separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
                 separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
-                separate_letters_dict["min_mse"].append(result_1["mse"].item())
+
+                separate_letters_dict[metric_label].append(result_1[use_metric].item())
                 new_dataset_name = result_1["dataset_name"].item()
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
@@ -467,11 +435,14 @@ def get_min_per_organization(file_path_start, phases, kind):
         dict_index = f"{l_index}"
         df_2_correct = df_2[df_2.l_combo == l_index]
         if not df_2_correct.empty:
-                result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
+                if prediction:
+                    result_2 = df_2_correct.loc[[df_2_correct.binary_accuracy.idxmin()]]
+                else:
+                    result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
                 all_datastreams_separate_locations_dict["l_index"].append(l_index,)
                 all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
                 all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
-                all_datastreams_separate_locations_dict["min_mse"].append(result_2["mse"].item())
+                all_datastreams_separate_locations_dict[metric_label].append(result_2[use_metric].item())
                 new_dataset_name = result_2["dataset_name"].item()
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
@@ -488,11 +459,14 @@ def get_min_per_organization(file_path_start, phases, kind):
         dict_index = f"{ds_index}"
         df_3_correct = df_3[df_3.ds_combo == ds_index]
         if not df_3_correct.empty:
-                result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
+                if prediction:
+                    result_3 = df_3_correct.loc[[df_3_correct.binary_accuracy.idxmin()]]
+                else:
+                    result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
                 separate_datastreams_all_locations_dict["ds_index"].append(ds_index)
                 separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"].item())
                 separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"].item())
-                separate_datastreams_all_locations_dict["min_mse"].append(result_3["mse"].item())
+                separate_datastreams_all_locations_dict[metric_label].append(result_3[use_metric].item())
                 new_dataset_name = result_3["dataset_name"].item()
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
@@ -506,7 +480,10 @@ def get_min_per_organization(file_path_start, phases, kind):
                 
     #All together
     df_4 = read_in_dfs_concat(file_path_start, all_datastreams_all_locations, phases, kind)
-    result_4 = df_4[df_4.mse == df_4.mse.min()]
+    if prediction:
+        result_4 = df_4.loc[[df_4.binary_accuracy.idxmin()]]
+    else:
+        result_4 = df_4[df_4.mse == df_4.mse.min()]
     try:
         new_dataset_name = result_4["dataset_name"].item()
         i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
@@ -520,7 +497,7 @@ def get_min_per_organization(file_path_start, phases, kind):
     all_datastreams_all_locations_dict = {
                     "model_name": [result_4["experiment_name"].item()],
                     "dataset_name": [result_4["dataset_name"].item()],
-                    "min_mse": [result_4["mse"].item()],
+                    metric_label: [result_4[use_metric].item()],
                     "input_size": input_size,
                     "output_size": output_size
                 }
@@ -587,3 +564,79 @@ def get_min_per_organization(file_path_start, phases, kind):
 
 
 
+# def get_min_per_organization_rerun(file_path_start, phases, kind, prediction=False):
+#     separate_letters = ['D', 'I']
+#     separate_datastreams_all_locations = ["C", "F", "Q", "AA"]
+#     all_datastreams_separate_locations = ["B", "J", "M", "V",]
+#     all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AD"]
+
+#     if prediction:
+#         use_metric = "binary_accuracy"
+#         metric_label = "min_binary_accuracy"
+#     else:
+#         use_metric = "mse"
+#         metric_label = "min_mse"
+
+#     location_combo = [*range(0, 16)]
+#     datastream_combo = [*range(0, 5)]
+
+#     separate_letters_dict = {"l_index": [], "ds_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
+#     separate_datastreams_all_locations_dict = {"ds_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
+#     all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], "min_mse": []}
+#     all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], "min_mse": []}
+
+#     #Separate case:
+#     df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind)
+#     print(df_1.head())
+#     print(df_1.columns())
+#     for l_index in location_combo:
+#         for d_index in datastream_combo:
+#             dict_index = f"{l_index}_{d_index}"
+#             #Find the appropriate row in the dataframe for df1 
+#             df_1_correct = df_1[(df_1['l_combo'] == l_index) & (df_1['ds_combo'] == d_index)]
+#             if not df_1_correct.empty:
+#                 #print(df_1_correct.head())
+#                 result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
+#                 separate_letters_dict["l_index"].append(l_index)
+#                 separate_letters_dict["ds_index"].append(d_index)
+#                 separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
+#                 separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
+#                 separate_letters_dict["min_mse"].append(result_1["mse"].item())
+#     #Separate location 
+#     df_2 = read_in_dfs_concat(file_path_start, all_datastreams_separate_locations, phases, kind)
+#     for l_index in location_combo:
+#         dict_index = f"{l_index}"
+#         df_2_correct = df_2[df_2.l_combo == l_index]
+#         if not df_2_correct.empty:
+#                 result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
+#                 all_datastreams_separate_locations_dict["l_index"].append(l_index,)
+#                 all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
+#                 all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
+#                 all_datastreams_separate_locations_dict["min_mse"].append(result_2["mse"].item())
+#     #Separate datastream
+#     df_3 = read_in_dfs_concat(file_path_start, separate_datastreams_all_locations, phases, kind)
+#     for ds_index in datastream_combo:
+#         dict_index = f"{ds_index}"
+#         df_3_correct = df_3[df_3.ds_combo == ds_index]
+#         if not df_3_correct.empty:
+#                 result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
+#                 separate_datastreams_all_locations_dict["ds_index"].append(ds_index)
+#                 separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"].item())
+#                 separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"].item())
+#                 separate_datastreams_all_locations_dict["min_mse"].append(result_3["mse"].item())
+                
+#     #All together
+#     df_4 = read_in_dfs_concat(file_path_start, all_datastreams_all_locations, phases, kind)
+#     result_4 = df_4[df_4.mse == df_4.mse.min()]
+#     all_datastreams_all_locations_dict = {
+#                     "model_name": [result_4["experiment_name"].item()],
+#                     "dataset_name": [result_4["dataset_name"].item()],
+#                     "min_mse": [result_4["mse"].item()]
+#                 }
+
+
+#     save_names = ["min_separate", "min_location", "min_datastream", "min_all"]
+#     save_dicts = [separate_letters_dict, all_datastreams_separate_locations_dict, separate_datastreams_all_locations_dict, all_datastreams_all_locations_dict]
+    
+#     for i in range(0, len(save_names)):
+#         save_results(save_names[i], save_dicts[i])

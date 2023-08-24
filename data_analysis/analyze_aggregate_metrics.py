@@ -43,7 +43,29 @@ col_names = {
             "dataset_name",
             "epochs"
     ],
-
+    "prediction": [
+        "version",
+            "location_scheme",
+            "datastream_scheme",
+            "l_combo",
+            "ds_combo",
+            "input_days",
+            "output_days",
+            "loss",
+            "mse",
+            "binary_accuracy",
+            "precision",
+            "recall",
+            "true_positives",
+            "true_negatives",
+            "false_positives",
+            "false_negatives",
+            "dataset_size",
+            "training_time",
+            "experiment_name",
+            "dataset_name",
+            "epochs"
+    ],
     "ae": [
             "version",
             "location_scheme",
@@ -87,6 +109,24 @@ aggregate_metrics = {
         "num_experiments": [],
     },
 
+    "lstm_predict": {
+        "letter": [],
+        "phase_letter": [],
+        "mean_accuracy": [],
+        "min_accuracy": [],
+        "max_accuracy": [],
+        "stdev_accuracy": [],
+        "mean_mse": [],
+        "min_mse": [],
+        "max_mse": [],
+        "stdev_mse": [],
+        "mean_training_time": [],
+        "mean_num_epochs": [],
+        "location_scheme": [],
+        "datastream_scheme": [],
+        "num_experiments": [],
+    },
+
     "ae":  {
         "letter": [],
         "phase_letter": [],
@@ -108,7 +148,7 @@ aggregate_metrics = {
 df_dict = {}
 
 
-def read_in_dfs(file_path, phase, ingroup="lstm"):
+def read_in_dfs(file_path, phase, ingroup="lstm", prediction=False):
     df_dict = {}
     for filename in os.listdir(file_path):
         f = os.path.join(file_path, filename)
@@ -121,7 +161,11 @@ def read_in_dfs(file_path, phase, ingroup="lstm"):
                 sub_dict = {}
                 sub_dict["letter"] = letter
                 sub_dict["phase_letter"] = phase_letter
-                cols = col_names[ingroup]
+                if prediction:
+                    cols = col_names["prediction"]
+                else:
+                    cols = col_names[ingroup]
+
                 sub_dict["df"] = pd.read_csv(f, names=cols)
                 df_dict[letter] = sub_dict
 
@@ -143,6 +187,14 @@ def get_metric(df_dict, metric):
         return_metric = round(df["mse"].max(), 5)
     elif metric == "stdev_mse":
         return_metric = round(df["mse"].std(), 5)
+    elif metric == "mean_accuracy":
+        return_metric = round(df["binary_accuracy"].mean(), 5)
+    elif metric == "min_accuracy":
+        return_metric = round(df["binary_accuracy"].min(), 5)
+    elif metric == "max_accuracy":
+        return_metric = round(df["binary_accuracy"].max(), 5)
+    elif metric == "stdev_accuracy":
+        return_metric = round(df["binary_accuracy"].std(), 5)
     elif metric == "mean_mape":
         return_metric = round(df["mape"].mean(), 5)
     elif metric == "min_mape":
@@ -173,7 +225,9 @@ def get_metric(df_dict, metric):
 
 
 
-def calc_aggregate_metrics(df_dict, scheme):
+def calc_aggregate_metrics(df_dict, scheme, prediction=False):
+    if prediction:
+        scheme = "lstm_predict"
     metrics_dict = aggregate_metrics[scheme].copy()
     for letter in list(df_dict.keys()):
         #print(letter)
@@ -188,11 +242,11 @@ def save_results(filename, save_dict):
     df.to_csv(filename, index=False)
 
 
-def save_metrics(phase, scheme, file_path):
-    df_dict = read_in_dfs(file_path, phase, ingroup=scheme)
+def save_metrics(phase, scheme, file_path, prediction=False):
+    df_dict = read_in_dfs(file_path, phase, ingroup=scheme, prediction=prediction)
     #test_df = df_dict["AF"]["df"]
     #print(test_df.head())
-    metrics_dict = calc_aggregate_metrics(df_dict, scheme)
+    metrics_dict = calc_aggregate_metrics(df_dict, scheme, prediction=prediction)
     dir_name = f"{phase}_analysis/"
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)

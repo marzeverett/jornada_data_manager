@@ -19,7 +19,7 @@ import analyze_separation_schemes
 groups = {
     "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD"]
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD", "AF"]
 
 }
 
@@ -58,7 +58,30 @@ col_names = {
             "experiment_name",
             "dataset_name",
             "epochs"
-        ]
+        ],
+    "prediction": [
+        "version",
+            "location_scheme",
+            "datastream_scheme",
+            "l_combo",
+            "ds_combo",
+            "input_days",
+            "output_days",
+            "loss",
+            "mse",
+            "binary_accuracy",
+            "precision",
+            "recall",
+            "true_positives",
+            "true_negatives",
+            "false_positives",
+            "false_negatives",
+            "dataset_size",
+            "training_time",
+            "experiment_name",
+            "dataset_name",
+            "epochs"
+    ],
 }
 
 
@@ -101,33 +124,35 @@ aggregate_metrics = {
     }
 }
 
+prediction_slates = ["10", "11", "12", "13", "14"]
+
 network_1_letters = ["A", "B", "C", "D"]
-network_2_letters = ["E", "F", "G", "H", "I", "J", "L", "M", "N", "Q"]
+network_2_letters = ["E", "F", "G", "H", "I", "J", "L", "M", "N", "Q", "AF", "AG", "AJ"]
 network_3_letters = ["S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB"]
-network_4_letters = ["E", "F", "L", "M", "AC", "AD"]
+network_4_letters = ["E", "F", "L", "M", "AC", "AD", "AF"]
 
 networks_list = [network_1_letters, network_2_letters, network_3_letters, network_4_letters]
 
 
 one_one_letters = ["D", "H", "I"]
 one_all_letters = ["C", "E", "F", "Q", "Z", "AA"]
-all_one_letters = ["B", "J", "L", "M", "U", "V"]
-all_all_letters = ["A", "G", "N", "S", "T", "W", "X", "Y", "AB", "AC", "AD"]
+all_one_letters = ["B", "J", "L", "M", "U", "V", "AF"]
+all_all_letters = ["A", "G", "N", "S", "T", "W", "X", "Y", "AB", "AC", "AD", "AG", "AJ"]
 
 separation_scheme_list = [one_one_letters, one_all_letters, all_one_letters, all_all_letters]
 separation_scheme_kinds = ["one_one", "one_all", "all_one", "all_all" ]
 
 
 
-def minimum_comparison_models(phase):
+def minimum_comparison_models(phase, prediction=False):
     file_path_start = f"main_metrics/"
     #Have kinda a funky way of doing this. But I think it'll work. 
-    analyze_separation_schemes.get_min_per_organization(file_path_start, [phase], "lstm")
+    analyze_separation_schemes.get_min_per_organization(file_path_start, [phase], "lstm", prediction=prediction)
 
-def aggregate_metrics(phase):
+def aggregate_metrics(phase, prediction=False):
     file_path = f'main_metrics/phase_{phase}/'
     scheme = "lstm"
-    analyze_aggregate_metrics.save_metrics(phase, scheme, file_path)
+    analyze_aggregate_metrics.save_metrics(phase, scheme, file_path, prediction=prediction)
 
 def get_correct_letters(sep_scheme, group):
     correct_letters = []
@@ -172,24 +197,27 @@ def get_min_models_per_network_type(sep_kind, correct_letters, phase):
         max_letter = None
         #For each letter in that network 
         for sub_letter in sub_network:
-            #load in the letter df.
-            df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["lstm"])
-            min_df = df[df.mse == df.mse.min()]
-            max_df = df[df.mse == df.mse.max()]
-            if min_mse.empty:
-                min_mse = min_df
-                min_letter = sub_letter
-            else:
-                if min_df["mse"].item() < min_mse["mse"].item():
+            try:
+                #load in the letter df.
+                df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["lstm"])
+                min_df = df[df.mse == df.mse.min()]
+                max_df = df[df.mse == df.mse.max()]
+                if min_mse.empty:
                     min_mse = min_df
                     min_letter = sub_letter
-            if max_mse.empty:
-                max_mse = max_df
-                max_letter = sub_letter
-            else:
-                if max_df["mse"].item() > max_mse["mse"].item():
+                else:
+                    if min_df["mse"].item() < min_mse["mse"].item():
+                        min_mse = min_df
+                        min_letter = sub_letter
+                if max_mse.empty:
                     max_mse = max_df
                     max_letter = sub_letter
+                else:
+                    if max_df["mse"].item() > max_mse["mse"].item():
+                        max_mse = max_df
+                        max_letter = sub_letter
+            except Exception as e:
+                print(f"No letter present {sub_letter} {e}")
         #At the end, will have a min and max row value for a network
         min_mse = min_mse.assign(network=sub_label)
         max_mse = max_mse.assign(network=sub_label)
@@ -228,67 +256,67 @@ def get_letter_graphs(phase, letter):
         #graph_df = df.groupby([graph_var]).mean()
         graph_df = df.groupby([graph_var]).mean()
         graph_df.plot(kind="bar", y="mse")
-        plt.title(f"MSE by {graph_var}")
-        save_name = graph_path+f"{graph_var}_mse.jpg"
+        plt.title(f"MSE by {graph_var} for phase {phase} {letter}")
+        save_name = graph_path+f"{phase} {letter} {graph_var}_mse.jpg"
         plt.savefig(save_name)
+        plt.clf()
 
     #Make the correlation matrix
     corr_df = df[correlation_vars]
     corr_matrix = corr_df.corr()
     sn.heatmap(corr_matrix, annot=True)
     plt.title(f"Correlation Matrix for phase {phase} {letter}")
-    save_name = graph_path+f"correlation_metrix.jpg"
+    plt.xticks(rotation=50)
+    plt.yticks(rotation=50)
+    save_name = graph_path+f"correlation_matrix.jpg"
     plt.savefig(save_name)
+    plt.clf()
 
 
 
-
-
-
-#phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-#phases = ["4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
-#phases = ["5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-#phases = ["2", "3", "4"]
 def run_basic_analysis(phases):
     #For each slate of experiments 
     for phase in phases:
-        #First, get the aggregate metrics on the whole thing 
-        try:
-            aggregate_metrics(phase)
-        except Exception as e:
-               print(f"Couldn't get aggregate metrics for reason {e}")
-        #We also want C 
-        try:
-            minimum_comparison_models(phase)
-        except Exception as e:
-            print(f"Couldn't get minimum comparison models for reason {e}")
-        #Then get the metrics per separation scheme:
-        #Will need to make sure this saves correctly 
-        for i in range(0, len(separation_scheme_list)):
-            #Get the separation scheme letters 
-            sep_scheme = separation_scheme_list[i]
-            #Get the separation kind name
-            sep_kind = separation_scheme_kinds[i]
-            #Limit to only LSTM letters 
-            correct_letters = get_correct_letters(sep_scheme, "lstm")
-            #Test and Table (A I and II)
-            try:
-                test_and_table(sep_kind, correct_letters, phase)
-            except Exception as e:
-                print(f"Couldn't test and table for reason {e}")
-            #Now for B -- We will need to break it up by Network Type
-            try:
-                get_min_models_per_network_type(sep_kind, correct_letters, phase)
-            except Exception as e:
-                print(f"Couldn't get min models per network type for reason {e}")
+        if phase in prediction_slates:
+            prediction = True
+        else:
+            prediction = False
+        ##First, get the aggregate metrics on the whole thing 
+        # try:
+        #     aggregate_metrics(phase, prediction=prediction)
+        # except Exception as e:
+        #       print(f"Couldn't get aggregate metrics for reason {e}")
+        # #We also want C 
+        #try:
+        minimum_comparison_models(phase, prediction=prediction)
+        #except Exception as e:
+        #    print(f"Couldn't get minimum comparison models for reason {e}")
+        # #Then get the metrics per separation scheme:
+        # #Will need to make sure this saves correctly 
+        # for i in range(0, len(separation_scheme_list)):
+        #     #Get the separation scheme letters 
+        #     sep_scheme = separation_scheme_list[i]
+        #     #Get the separation kind name
+        #     sep_kind = separation_scheme_kinds[i]
+        #     #Limit to only LSTM letters 
+        #     correct_letters = get_correct_letters(sep_scheme, "lstm")
+        #     #Test and Table (A I and II)
+        #     try:
+        #         test_and_table(sep_kind, correct_letters, phase)
+        #     except Exception as e:
+        #         print(f"Couldn't test and table for reason {e}")
+        #     #Now for B -- We will need to break it up by Network Type
+        #     try:
+        #         get_min_models_per_network_type(sep_kind, correct_letters, phase)
+        #     except Exception as e:
+        #         print(f"Couldn't get min models per network type for reason {e}")
 
-#But we need to find a per-separation scheme, per-network ad-hoc analysis 
-#run_basic_analysis(phases)
+# # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
+phases = ["10"]
+run_basic_analysis(phases)
 
-
-
-##### For inspecting individual graphs! 
-# phase = "2"
-# letter = "D"
+# # ##### For inspecting individual graphs! 
+# phase = "9"
+# letter = "AD"
 # get_letter_graphs(phase, letter)
 
