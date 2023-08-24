@@ -46,7 +46,7 @@ col_names = {
             "epochs"
     ],
     "prediction": [
-        "version",
+            "version",
             "location_scheme",
             "datastream_scheme",
             "l_combo",
@@ -87,10 +87,6 @@ col_names = {
 }
 
 
-
-
-
-
 def return_aggregate_metrics_dict():
     aggregate_metrics = {
         "lstm": {
@@ -127,6 +123,23 @@ def return_aggregate_metrics_dict():
             "location_scheme": [],
             "datastream_scheme": [],
             "num_experiments": [],
+        },
+        "prediction": {
+            "letter": [],
+            "phase_letter": [],
+            "mean_mse": [],
+            "min_mse": [],
+            "max_mse": [],
+            "stdev_mse": [],
+            "mean_binary_accuracy": [],
+            "min_binary_accuracy": [],
+            "max_binary_accuracy": [],
+            "stdev_binary_accuracy": [],
+            "mean_training_time": [],
+            "mean_num_epochs": [],
+            "location_scheme": [],
+            "datastream_scheme": [],
+            "num_experiments": [],
         }
     }
     return aggregate_metrics
@@ -135,7 +148,7 @@ def return_aggregate_metrics_dict():
 df_dict = {}
 
 
-def read_in_dfs(file_path, phase, ingroup="lstm"):
+def read_in_dfs(file_path, phase, ingroup="lstm", prediction=False):
     df_dict = {}
     for filename in os.listdir(file_path):
         f = os.path.join(file_path, filename)
@@ -148,13 +161,16 @@ def read_in_dfs(file_path, phase, ingroup="lstm"):
                 sub_dict = {}
                 sub_dict["letter"] = letter
                 sub_dict["phase_letter"] = phase_letter
-                cols = col_names[ingroup]
+                if prediction:
+                    cols = col_names["prediction"]
+                else:
+                    cols = col_names[ingroup]
                 sub_dict["df"] = pd.read_csv(f, names=cols)
                 df_dict[letter] = sub_dict
 
     return df_dict 
 
-
+#This is disgusting but I'm too lazy to change it
 def get_metric(df_dict, metric):
     df = df_dict["df"]
     return_metric=None
@@ -170,6 +186,14 @@ def get_metric(df_dict, metric):
         return_metric = round(df["mse"].max(), 5)
     elif metric == "stdev_mse":
         return_metric = round(df["mse"].std(), 5)
+    elif metric == "mean_binary_accuracy":
+        return_metric = round(df["binary_accuracy"].mean(), 5)
+    elif metric == "min_binary_accuracy":
+        return_metric = round(df["binary_accuracy"].min(), 5)
+    elif metric == "max_binary_accuracy":
+        return_metric = round(df["binary_accuracy"].max(), 5)
+    elif metric == "stdev_binary_accuracy":
+        return_metric = round(df["binary_accuracy"].std(), 5)    
     elif metric == "mean_mape":
         return_metric = round(df["mape"].mean(), 5)
     elif metric == "min_mape":
@@ -200,11 +224,14 @@ def get_metric(df_dict, metric):
 
 
 
-def calc_aggregate_metrics(df_dict, scheme):
+def calc_aggregate_metrics(df_dict, scheme, prediction=False):
     #In AG Metrics
     metrics_dict = {}
     aggregate_metrics = return_aggregate_metrics_dict()
-    metrics_dict = aggregate_metrics[scheme].copy()
+    if prediction:
+        metrics_dict = aggregate_metrics["prediction"].copy()
+    else:
+        metrics_dict = aggregate_metrics[scheme].copy()
     #For each present letter 
     for letter in list(df_dict.keys()):
         #Get the dataframe 
@@ -212,7 +239,6 @@ def calc_aggregate_metrics(df_dict, scheme):
         #Get the metrics 
         for metric in list(metrics_dict.keys()):
             metrics_dict[metric].append(get_metric(letter_dict, metric))
-
     return metrics_dict
 
 
@@ -237,43 +263,17 @@ def save_graphs(phase, scheme, file_path):
 #     metrics_dict = calc_aggregate_metrics(df_dict, scheme)
 #     save_results(filename, save_dict)
 
-def table_letters_with_rerun(kind, letters, file_path_1, phase_1, scheme_1, file_path_2, phase_2, scheme_2):
+
+
+
+def table_letters(kind, letters, file_path_1, phase_1, scheme_1, prediction=False):
     letters_dict = {}
-    df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1)
-    df_2 = read_in_dfs(file_path_2, phase_2, ingroup=scheme_2)
-    metrics_dict_1 = calc_aggregate_metrics(df_1, scheme_1)
-    metrics_dict_2 = calc_aggregate_metrics(df_2, scheme_2)
+    df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1, prediction=prediction)
+    metrics_dict_1 = calc_aggregate_metrics(df_1, scheme_1, prediction=prediction)
     #Row are metrics, columns are letters 
     letters_dict["Metric"] = ["mean_mse", "min_mse", "max_mse", "stdev_mse", "mean_training_time", "mean_num_epochs"]
-    for letter in letters:
-        if letter in metrics_dict_1["letter"]:
-            letter_index = metrics_dict_1["letter"].index(letter)
-            #Get og metrics
-            new_list = []
-            for item in letters_dict["Metric"]:
-                new_list.append(metrics_dict_1[item][letter_index])
-            letters_dict[letter] = new_list
-
-            
-            #Get re-run metrics 
-            if letter in metrics_dict_2["letter"]:
-                new_letter = letter + " 0.7"
-                new_list = []
-                for item in letters_dict["Metric"]:
-                    letter_index = metrics_dict_2["letter"].index(letter)
-                    new_list.append(metrics_dict_2[item][letter_index])
-                letters_dict[new_letter] = new_list
-
-    save_name = f"table_{kind}_{scheme_1}_metrics"
-    save_results(save_name, letters_dict)
-
-
-def table_letters(kind, letters, file_path_1, phase_1, scheme_1):
-    letters_dict = {}
-    df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1)
-    metrics_dict_1 = calc_aggregate_metrics(df_1, scheme_1)
-    #Row are metrics, columns are letters 
-    letters_dict["Metric"] = ["mean_mse", "min_mse", "max_mse", "stdev_mse", "mean_training_time", "mean_num_epochs"]
+    if prediction:
+        letters_dict["Metric"] = ["mean_binary_accuracy", "min_binary_accuracy", "max_binary_accuracy", "stdev_binary_accuracy", "mean_training_time", "mean_num_epochs"]
     for letter in letters:
         if letter in metrics_dict_1["letter"]:
             letter_index = metrics_dict_1["letter"].index(letter)
@@ -288,56 +288,26 @@ def table_letters(kind, letters, file_path_1, phase_1, scheme_1):
     
 
 
-def test_letters_rerun(kind, letters, file_path_1, phase_1, scheme_1, file_path_2, phase_2, scheme_2):
+
+
+
+def test_letters(kind, letters, file_path_1, phase_1, scheme_1, prediction=False):
     letters_dict = {}
-    df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1)
-    df_2 = read_in_dfs(file_path_2, phase_2, ingroup=scheme_2)
+    df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1, prediction=prediction)
     #Row are metrics, columns are letters 
 
     #Maybe first, get all columns and labels
     labels_list = []
     columns_list = []
 
-    for letter in letters:
-        if letter in list(df_1.keys()):
-            labels_list.append(letter)
-            columns_list.append(df_1[letter]["df"]["mse"])
-        if letter in list(df_2.keys()):
-            new_label = letter + " 0.7"
-            labels_list.append(new_label)
-            columns_list.append(df_2[letter]["df"]["mse"])
-
-    letters_dict["letter"] = []
-    for i in range(0, len(labels_list)):
-        for j in range(0, len(labels_list)):
-            if labels_list[j] not in list(letters_dict.keys()):
-                letters_dict[labels_list[j]] = []
-            if labels_list[i] != labels_list[j]:
-                col1 = columns_list[i]
-                col2 = columns_list[j]
-                result = stats.wilcoxon(col1, col2)
-                letters_dict[labels_list[j]].append(result.pvalue)
-            else:
-                letters_dict[labels_list[j]].append(-1)
-        letters_dict["letter"].append(labels_list[i])
-                
-    save_name = f"{phase_1}_analysis/test_{kind}_{scheme_1}_metrics"
-    save_results(save_name, letters_dict)
-
-
-def test_letters(kind, letters, file_path_1, phase_1, scheme_1):
-    letters_dict = {}
-    df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1)
-    #Row are metrics, columns are letters 
-
-    #Maybe first, get all columns and labels
-    labels_list = []
-    columns_list = []
+    metric = "mse"
+    if prediction:
+        metric = "binary_accuracy"
 
     for letter in letters:
         if letter in list(df_1.keys()):
             labels_list.append(letter)
-            columns_list.append(df_1[letter]["df"]["mse"])
+            columns_list.append(df_1[letter]["df"][metric])
 
     letters_dict["letter"] = []
     for i in range(0, len(labels_list)):
@@ -384,7 +354,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
 
     if prediction:
         use_metric = "binary_accuracy"
-        metric_label = "min_binary_accuracy"
+        metric_label = "max_binary_accuracy"
     else:
         use_metric = "mse"
         metric_label = "min_mse"
@@ -405,22 +375,30 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
             if not df_1_correct.empty:
                 #print(df_1_correct.head())
                 if prediction:
-                    result_1 = df_1_correct[df_1_correct.binary_accuracy == df_1_correct.binary_accuracy.min()]
-                    result_1 = df_1.iloc[0]
+                    result_1 = df_1_correct[df_1_correct.binary_accuracy == df_1_correct.binary_accuracy.max()]
+                    result_1 = result_1.iloc[0]
                     #START HERE!!! 
-                    print(result_1)
-                    print(result_1["experiment_name"])
-                    print(len(result_1.index))
+                    # print(result_1)
+                    # print(type(result_1))
+                    # print(result_1["experiment_name"])
+                    # print(result_1["binary_accuracy"])
+                    # print(len(result_1.index))
                     #print(len(result_1.index))
                 else:
                     result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
                 separate_letters_dict["l_index"].append(l_index)
                 separate_letters_dict["ds_index"].append(d_index)
-                separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
-                separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
+                #separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
+                #separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
 
-                separate_letters_dict[metric_label].append(result_1[use_metric].item())
-                new_dataset_name = result_1["dataset_name"].item()
+                separate_letters_dict["model_name"].append(result_1["experiment_name"])
+                separate_letters_dict["dataset_name"].append(result_1["dataset_name"])
+
+
+                #separate_letters_dict[metric_label].append(result_1[use_metric].item())
+                separate_letters_dict[metric_label].append(result_1[use_metric])
+                #new_dataset_name = result_1["dataset_name"].item()
+                new_dataset_name = result_1["dataset_name"]
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
@@ -430,20 +408,26 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                     separate_letters_dict["input_size"].append(-1)
                     separate_letters_dict["output_size"].append(-1)
     #Separate location 
-    df_2 = read_in_dfs_concat(file_path_start, all_datastreams_separate_locations, phases, kind)
+    df_2 = read_in_dfs_concat(file_path_start, all_datastreams_separate_locations, phases, kind, prediction=prediction)
     for l_index in location_combo:
         dict_index = f"{l_index}"
         df_2_correct = df_2[df_2.l_combo == l_index]
         if not df_2_correct.empty:
                 if prediction:
-                    result_2 = df_2_correct.loc[[df_2_correct.binary_accuracy.idxmin()]]
+                    result_2 = df_2_correct[df_2_correct.binary_accuracy == df_2_correct.binary_accuracy.max()]
+                    result_2 = result_2.iloc[0]
                 else:
                     result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
+                    result_2 = result_2.iloc[0]
                 all_datastreams_separate_locations_dict["l_index"].append(l_index,)
-                all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
-                all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
-                all_datastreams_separate_locations_dict[metric_label].append(result_2[use_metric].item())
-                new_dataset_name = result_2["dataset_name"].item()
+                # all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
+                # all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
+                # all_datastreams_separate_locations_dict[metric_label].append(result_2[use_metric].item())
+                # new_dataset_name = result_2["dataset_name"].item()
+                all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"])
+                all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"])
+                all_datastreams_separate_locations_dict[metric_label].append(result_2[use_metric])
+                new_dataset_name = result_2["dataset_name"]
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     all_datastreams_separate_locations_dict["input_size"].append(i_o_csv["input_size"].item())
@@ -454,20 +438,26 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                     all_datastreams_separate_locations_dict["output_size"].append(-1)
 
     #Separate datastream
-    df_3 = read_in_dfs_concat(file_path_start, separate_datastreams_all_locations, phases, kind)
+    df_3 = read_in_dfs_concat(file_path_start, separate_datastreams_all_locations, phases, kind, prediction=prediction)
     for ds_index in datastream_combo:
         dict_index = f"{ds_index}"
         df_3_correct = df_3[df_3.ds_combo == ds_index]
         if not df_3_correct.empty:
                 if prediction:
-                    result_3 = df_3_correct.loc[[df_3_correct.binary_accuracy.idxmin()]]
+                    result_3 = df_3_correct[df_3_correct.binary_accuracy == df_3_correct.binary_accuracy.max()]
+                    result_3 = result_3.iloc[0]
                 else:
                     result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
+                    result_3 = result_3.iloc[0]
                 separate_datastreams_all_locations_dict["ds_index"].append(ds_index)
-                separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"].item())
-                separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"].item())
-                separate_datastreams_all_locations_dict[metric_label].append(result_3[use_metric].item())
-                new_dataset_name = result_3["dataset_name"].item()
+                # separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"].item())
+                # separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"].item())
+                # separate_datastreams_all_locations_dict[metric_label].append(result_3[use_metric].item())
+                # new_dataset_name = result_3["dataset_name"].item()
+                separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"])
+                separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"])
+                separate_datastreams_all_locations_dict[metric_label].append(result_3[use_metric])
+                new_dataset_name = result_3["dataset_name"]
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     separate_datastreams_all_locations_dict["input_size"].append(i_o_csv["input_size"].item())
@@ -479,13 +469,19 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
 
                 
     #All together
-    df_4 = read_in_dfs_concat(file_path_start, all_datastreams_all_locations, phases, kind)
+    df_4 = read_in_dfs_concat(file_path_start, all_datastreams_all_locations, phases, kind, prediction=prediction)
+    #Change here
+    #print(df_4.head())
+    #print(df_4.columns)
     if prediction:
-        result_4 = df_4.loc[[df_4.binary_accuracy.idxmin()]]
+        result_4 = df_4[df_4.binary_accuracy == df_4.binary_accuracy.max()]
+        result_4 = result_4.iloc[0]
     else:
         result_4 = df_4[df_4.mse == df_4.mse.min()]
+        result_4 = result_4.iloc[0]
     try:
-        new_dataset_name = result_4["dataset_name"].item()
+        #new_dataset_name = result_4["dataset_name"].item()
+        new_dataset_name = result_4["dataset_name"]
         i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
         input_size = i_o_csv["input_size"].item()
         output_size = i_o_csv["output_size"].item()
@@ -494,10 +490,18 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
         input_size = -1
         output_size = -1 
 
+    # all_datastreams_all_locations_dict = {
+    #                 "model_name": [result_4["experiment_name"].item()],
+    #                 "dataset_name": [result_4["dataset_name"].item()],
+    #                 metric_label: [result_4[use_metric].item()],
+    #                 "input_size": input_size,
+    #                 "output_size": output_size
+    #             }
+
     all_datastreams_all_locations_dict = {
-                    "model_name": [result_4["experiment_name"].item()],
-                    "dataset_name": [result_4["dataset_name"].item()],
-                    metric_label: [result_4[use_metric].item()],
+                    "model_name": [result_4["experiment_name"]],
+                    "dataset_name": [result_4["dataset_name"]],
+                    metric_label: [result_4[use_metric]],
                     "input_size": input_size,
                     "output_size": output_size
                 }
@@ -640,3 +644,75 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
     
 #     for i in range(0, len(save_names)):
 #         save_results(save_names[i], save_dicts[i])
+
+
+# def table_letters_with_rerun(kind, letters, file_path_1, phase_1, scheme_1, file_path_2, phase_2, scheme_2):
+#     letters_dict = {}
+#     df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1)
+#     df_2 = read_in_dfs(file_path_2, phase_2, ingroup=scheme_2)
+#     metrics_dict_1 = calc_aggregate_metrics(df_1, scheme_1)
+#     metrics_dict_2 = calc_aggregate_metrics(df_2, scheme_2)
+#     #Row are metrics, columns are letters 
+#     letters_dict["Metric"] = ["mean_mse", "min_mse", "max_mse", "stdev_mse", "mean_training_time", "mean_num_epochs"]
+#     for letter in letters:
+#         if letter in metrics_dict_1["letter"]:
+#             letter_index = metrics_dict_1["letter"].index(letter)
+#             #Get og metrics
+#             new_list = []
+#             for item in letters_dict["Metric"]:
+#                 new_list.append(metrics_dict_1[item][letter_index])
+#             letters_dict[letter] = new_list
+
+            
+#             #Get re-run metrics 
+#             if letter in metrics_dict_2["letter"]:
+#                 new_letter = letter + " 0.7"
+#                 new_list = []
+#                 for item in letters_dict["Metric"]:
+#                     letter_index = metrics_dict_2["letter"].index(letter)
+#                     new_list.append(metrics_dict_2[item][letter_index])
+#                 letters_dict[new_letter] = new_list
+
+#     save_name = f"table_{kind}_{scheme_1}_metrics"
+#     save_results(save_name, letters_dict)
+
+
+# def test_letters_rerun(kind, letters, file_path_1, phase_1, scheme_1, file_path_2, phase_2, scheme_2, prediction=False):
+#     letters_dict = {}
+#     df_1 = read_in_dfs(file_path_1, phase_1, ingroup=scheme_1, prediction=prediction)
+#     df_2 = read_in_dfs(file_path_2, phase_2, ingroup=scheme_2, prediction=prediction)
+#     #Row are metrics, columns are letters 
+
+#     #Maybe first, get all columns and labels
+#     labels_list = []
+#     columns_list = []
+
+#     metric = "mse"
+#     if prediction:
+#         metric = "binary_accuracy"
+
+#     for letter in letters:
+#         if letter in list(df_1.keys()):
+#             labels_list.append(letter)
+#             columns_list.append(df_1[letter]["df"][metric])
+#         if letter in list(df_2.keys()):
+#             new_label = letter + " 0.7"
+#             labels_list.append(new_label)
+#             columns_list.append(df_2[letter]["df"][metric])
+
+#     letters_dict["letter"] = []
+#     for i in range(0, len(labels_list)):
+#         for j in range(0, len(labels_list)):
+#             if labels_list[j] not in list(letters_dict.keys()):
+#                 letters_dict[labels_list[j]] = []
+#             if labels_list[i] != labels_list[j]:
+#                 col1 = columns_list[i]
+#                 col2 = columns_list[j]
+#                 result = stats.wilcoxon(col1, col2)
+#                 letters_dict[labels_list[j]].append(result.pvalue)
+#             else:
+#                 letters_dict[labels_list[j]].append(-1)
+#         letters_dict["letter"].append(labels_list[i])
+                
+#     save_name = f"{phase_1}_analysis/test_{kind}_{scheme_1}_metrics"
+#     save_results(save_name, letters_dict)

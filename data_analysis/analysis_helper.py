@@ -161,15 +161,15 @@ def get_correct_letters(sep_scheme, group):
             correct_letters.append(letter)
     return correct_letters
 
-def test_and_table(sep_kind, correct_letters, phase):
+def test_and_table(sep_kind, correct_letters, phase, prediction=False):
         #Get the table
         file_path_1 = f"main_metrics/phase_{phase}/"
-        analyze_separation_schemes.table_letters(sep_kind, correct_letters, file_path_1, phase, "lstm")
+        analyze_separation_schemes.table_letters(sep_kind, correct_letters, file_path_1, phase, "lstm", prediction=prediction)
         #Get the test 
-        analyze_separation_schemes.test_letters(sep_kind, correct_letters, file_path_1, phase, "lstm")
+        analyze_separation_schemes.test_letters(sep_kind, correct_letters, file_path_1, phase, "lstm", prediction=prediction)
 
 
-def get_min_models_per_network_type(sep_kind, correct_letters, phase):
+def get_min_models_per_network_type(sep_kind, correct_letters, phase, prediction=False):
     net_1 = []
     net_2 = []
     net_3 = []
@@ -199,21 +199,30 @@ def get_min_models_per_network_type(sep_kind, correct_letters, phase):
         for sub_letter in sub_network:
             try:
                 #load in the letter df.
-                df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["lstm"])
-                min_df = df[df.mse == df.mse.min()]
-                max_df = df[df.mse == df.mse.max()]
+                if prediction:
+                    df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["prediction"])
+                    #print(sub_letter)
+                    #print(df.columns)
+                    min_df = df[df.binary_accuracy == df.binary_accuracy.min()]
+                    max_df = df[df.binary_accuracy == df.binary_accuracy.max()]
+                    main_metric = "binary_accuracy"
+                else:
+                    df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["lstm"])
+                    min_df = df[df.mse == df.mse.min()]
+                    max_df = df[df.mse == df.mse.max()]
+                    main_metric = "mse"
                 if min_mse.empty:
                     min_mse = min_df
                     min_letter = sub_letter
                 else:
-                    if min_df["mse"].item() < min_mse["mse"].item():
+                    if min_df[main_metric].item() < min_mse[main_metric].item():
                         min_mse = min_df
                         min_letter = sub_letter
                 if max_mse.empty:
                     max_mse = max_df
                     max_letter = sub_letter
                 else:
-                    if max_df["mse"].item() > max_mse["mse"].item():
+                    if max_df[main_metric].item() > max_mse[main_metric].item():
                         max_mse = max_df
                         max_letter = sub_letter
             except Exception as e:
@@ -241,12 +250,18 @@ def get_min_models_per_network_type(sep_kind, correct_letters, phase):
 #This is a B thing - may want to do it manually? 
 #I think we very much do want to do this manually
 #It creates the graphs for that letter
-def get_letter_graphs(phase, letter):
+def get_letter_graphs(phase, letter, prediction=False):
     graphing_vars = ["location_scheme", "datastream_scheme", "l_combo", "ds_combo", "input_days", "output_days", "dataset_size", "dataset_name", "experiment_name"]
     #only works for continuous vars
-    correlation_vars = ["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
-    #Load in the df
-    df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=col_names["lstm"])
+    if prediction:
+        correlation_vars =["binary_accuracy", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
+        df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=col_names["prediction"])
+        graph_against = "binary_accuracy"
+    else:
+        correlation_vars = ["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
+        #Load in the df
+        df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=col_names["lstm"])
+        graph_against = "mse"
     graph_path = f"{phase}_analysis/graphs/{letter}/"
     if not os.path.exists(graph_path):
         os.makedirs(graph_path)
@@ -255,9 +270,9 @@ def get_letter_graphs(phase, letter):
     for graph_var in graphing_vars:
         #graph_df = df.groupby([graph_var]).mean()
         graph_df = df.groupby([graph_var]).mean()
-        graph_df.plot(kind="bar", y="mse")
-        plt.title(f"MSE by {graph_var} for phase {phase} {letter}")
-        save_name = graph_path+f"{phase} {letter} {graph_var}_mse.jpg"
+        graph_df.plot(kind="bar", y=graph_against)
+        plt.title(f"{graph_against} by {graph_var} for phase {phase} {letter}")
+        save_name = graph_path+f"{phase} {letter} {graph_var}_{graph_against}.jpg"
         plt.savefig(save_name)
         plt.clf()
 
@@ -281,42 +296,43 @@ def run_basic_analysis(phases):
             prediction = True
         else:
             prediction = False
-        ##First, get the aggregate metrics on the whole thing 
-        # try:
-        #     aggregate_metrics(phase, prediction=prediction)
-        # except Exception as e:
-        #       print(f"Couldn't get aggregate metrics for reason {e}")
-        # #We also want C 
-        #try:
-        minimum_comparison_models(phase, prediction=prediction)
-        #except Exception as e:
-        #    print(f"Couldn't get minimum comparison models for reason {e}")
-        # #Then get the metrics per separation scheme:
-        # #Will need to make sure this saves correctly 
-        # for i in range(0, len(separation_scheme_list)):
-        #     #Get the separation scheme letters 
-        #     sep_scheme = separation_scheme_list[i]
-        #     #Get the separation kind name
-        #     sep_kind = separation_scheme_kinds[i]
-        #     #Limit to only LSTM letters 
-        #     correct_letters = get_correct_letters(sep_scheme, "lstm")
-        #     #Test and Table (A I and II)
-        #     try:
-        #         test_and_table(sep_kind, correct_letters, phase)
-        #     except Exception as e:
-        #         print(f"Couldn't test and table for reason {e}")
-        #     #Now for B -- We will need to break it up by Network Type
-        #     try:
-        #         get_min_models_per_network_type(sep_kind, correct_letters, phase)
-        #     except Exception as e:
-        #         print(f"Couldn't get min models per network type for reason {e}")
+        #First, get the aggregate metrics on the whole thing 
+        try:
+            aggregate_metrics(phase, prediction=prediction)
+        except Exception as e:
+              print(f"Couldn't get aggregate metrics for reason {e}")
+        #We also want C 
+        try:
+            minimum_comparison_models(phase, prediction=prediction)
+        except Exception as e:
+            print(f"Couldn't get minimum comparison models for reason {e}")
+        #Then get the metrics per separation scheme:
+        #Will need to make sure this saves correctly 
+        for i in range(0, len(separation_scheme_list)):
+            #Get the separation scheme letters 
+            sep_scheme = separation_scheme_list[i]
+            #Get the separation kind name
+            sep_kind = separation_scheme_kinds[i]
+            #Limit to only LSTM letters 
+            correct_letters = get_correct_letters(sep_scheme, "lstm")
+            #Test and Table (A I and II)
+            try:
+                test_and_table(sep_kind, correct_letters, phase, prediction=prediction)
+            except Exception as e:
+                print(f"Couldn't test and table for reason {e}")
+            #Now for B -- We will need to break it up by Network Type
+            try:
+                get_min_models_per_network_type(sep_kind, correct_letters, phase, prediction=prediction)
+            except Exception as e:
+                print(f"Couldn't get min models per network type for reason {e}")
 
-# # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
-phases = ["10"]
-run_basic_analysis(phases)
+# # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
+# phases = ["10"]
+# run_basic_analysis(phases)
 
-# # ##### For inspecting individual graphs! 
-# phase = "9"
-# letter = "AD"
-# get_letter_graphs(phase, letter)
+# ##### For inspecting individual graphs! 
+phase = "10"
+letter = "D"
+prediction = True
+get_letter_graphs(phase, letter, prediction=prediction)
 
