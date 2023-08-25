@@ -1,7 +1,7 @@
 Metric
-mean_mse
-min_mse
-max_mse
-stdev_mse
+mean_binary_accuracy
+min_binary_accuracy
+max_binary_accuracy
+stdev_binary_accuracy
 mean_training_time
 mean_num_epochs

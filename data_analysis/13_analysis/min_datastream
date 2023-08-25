@@ -1,1 +1,4 @@
-ds_index,model_name,dataset_name,min_mse,input_size,output_size
+ds_index,model_name,dataset_name,max_binary_accuracy,input_size,output_size
+1,13_F_exp64,13_F.v1.l0.ds1.l_combo0.ds_combo1.idays60.odays1,0.9333333373069764,63,15
+3,13_C_exp64,13_C.v1.l0.ds1.l_combo0.ds_combo3.idays60.odays7,0.9213699102401732,76,15
+4,13_C_exp64,13_C.v1.l0.ds1.l_combo0.ds_combo4.idays30.odays7,0.9147942662239076,28,15

@@ -1,7 +1,7 @@
 Metric,J,V
-mean_mse,893.47778,895.22778
-min_mse,117.0,116.0
-max_mse,2160.0,2187.0
-stdev_mse,704.89209,706.64208
+mean_binary_accuracy,0.8902,0.89134
+min_binary_accuracy,0.82609,0.82925
+max_binary_accuracy,0.94412,0.95575
+stdev_binary_accuracy,0.02581,0.02555
 mean_training_time,163.06899,164.63461
 mean_num_epochs,73.15556,73.89444

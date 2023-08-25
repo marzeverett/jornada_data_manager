@@ -326,13 +326,13 @@ def run_basic_analysis(phases):
             except Exception as e:
                 print(f"Couldn't get min models per network type for reason {e}")
 
-# # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
-# phases = ["10"]
+# # # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
+# phases = ["10", "11", "12", "13", "14"]
 # run_basic_analysis(phases)
 
-# ##### For inspecting individual graphs! 
-phase = "10"
-letter = "D"
+# # ##### For inspecting individual graphs! 
+phase = "12"
+letter = "J"
 prediction = True
 get_letter_graphs(phase, letter, prediction=prediction)
 

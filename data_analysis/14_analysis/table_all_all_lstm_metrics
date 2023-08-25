@@ -1,7 +1,7 @@
 Metric,G,T,W
-mean_mse,9391.41667,8764.58333,9187.91667
-min_mse,2115.0,2073.0,2170.0
-max_mse,17194.0,16165.0,17188.0
-stdev_mse,7442.02453,6843.50472,7246.74943
+mean_binary_accuracy,0.92085,0.91135,0.91064
+min_binary_accuracy,0.90081,0.88998,0.88374
+max_binary_accuracy,0.94448,0.93774,0.93176
+stdev_binary_accuracy,0.01274,0.0169,0.01659
 mean_training_time,111.35911,109.16209,110.21813
 mean_num_epochs,74.0,72.0,72.58333
