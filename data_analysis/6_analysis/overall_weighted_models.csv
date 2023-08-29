@@ -1,0 +1,3 @@
+,letter,input_days,output_days,experiment_name,weighted_metric
+8,T,60,1,6_T_exp64,0.011907406151294708
+8,V,60,1,6_V_exp64,0.012477377788319685

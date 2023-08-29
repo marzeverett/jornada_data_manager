@@ -1,0 +1,5 @@
+,letter,input_days,output_days,experiment_name,weighted_metric
+2,AB,30,1,9_AB_exp64,0.010951577685773373
+0,Q,30,1,9_Q_exp8,0.01206545703309147
+2,M,30,1,9_M_exp64,0.012298198285374488
+0,I,30,1,9_I_exp8,0.02089097396148655

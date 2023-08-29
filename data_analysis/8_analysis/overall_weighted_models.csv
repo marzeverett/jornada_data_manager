@@ -1,0 +1,5 @@
+,letter,input_days,output_days,experiment_name,weighted_metric
+11,G,60,7,8_G_exp64,0.010030312463641168
+11,AA,60,7,8_AA_exp64,0.009221798813852823
+11,B,60,7,8_B_exp64,0.00922939804957458
+11,D,60,7,8_D_exp64,0.009626989702373278

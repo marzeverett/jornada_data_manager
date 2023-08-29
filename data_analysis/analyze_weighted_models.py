@@ -147,74 +147,101 @@ def return_aggregate_metrics_dict():
 #Calculated the weighted metric 
 def calc_weighted_metric(df, input_output_csv, total_outputs, prediction=False):
     #print(df["dataset_name"])
-    new_dataset_name = df["dataset_name"].item()
-    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
-    print(new_dataset_name)
-    print(i_o_csv["output_size"])
-    output_size = i_o_csv["output_size"].item()
-    weighting = output_size/total_outputs
     #And the mse.
     if prediction:
         metric = "binary_accuracy"
     else:
         metric = "mse"
 
+    new_dataset_name = df["dataset_name"].item()
+    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+    #print(new_dataset_name)
+    #print(i_o_csv["output_size"])
+    output_size = i_o_csv["output_size"].item()
     value_metric = df[metric].item()
-    weighted_metric = value_metric*weighting
+    weighting = output_size/total_outputs
+    # print("Value Metric", value_metric)
+    #print("Weighting", weighting)
+    if not prediction:
+        weighted_metric = value_metric*weighting
+    else:
+        weighted_metric = value_metric
     return weighted_metric
 
 #This is ONE variation. 
 def load_and_weight(phase, letter, curr_sep_dict, curr_sep_kind, input_var, output_var, exp_var, input_output_csv, total_outputs, prediction=False):
-    location_combo = [*range(0, 16)]
-    datastream_combo = [*range(0, 5)]
-    exp_name = f"{phase}_{letter}_exp{exp_var}"
-    #Try to load in the whole df for this phase and letter 
-    metrics_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
-    if prediction:
-        cols = col_names["prediction"]
-    else:
-        cols = col_names["lstm"]
-    whole_df = pd.read_csv(metrics_path, names=cols)
-    #Restrict the df to our particular variation
-    df_restrict = whole_df[(whole_df['input_days']==input_var) & (whole_df['output_days']==output_var) & (whole_df['experiment_name']==exp_name)]
-    # print(phase)
-    # print(letter)
-    # print(input_var)
-    # print(output_var)
-    # print(exp_name)
-    # print(df_restrict.head())
-    #CHANGE
-    if curr_sep_kind == "all_all":
-         weighted_mse = calc_weighted_metric(df_restrict, input_output_csv, total_outputs, prediction=prediction)
-    elif curr_sep_kind == "one_all":
-        weighted_sum = 0 
-        for ds_index in datastream_combo:
-            new_df = df_restrict[df_restrict['ds_combo']==ds_index]
-            if not new_df.empty:
-                weighted_sum = weighted_sum + calc_weighted_metric(new_df, input_output_csv, total_outputs, prediction=prediction)
-        weighted_mse = weighted_sum
-    elif curr_sep_kind == "all_one": 
-        weighted_sum = 0 
-        for l_index in location_combo:
-            new_df = df_restrict[df_restrict['l_combo']==l_index]
-            if not new_df.empty:
-                weighted_sum = weighted_sum + calc_weighted_metric(new_df, input_output_csv, total_outputs, prediction=prediction)
-        weighted_mse = weighted_sum
-    elif curr_sep_kind == "one_one":
-        weighted_sum = 0 
-        for l_index in location_combo:
+    try:
+        location_combo = [*range(0, 16)]
+        datastream_combo = [*range(0, 5)]
+        exp_name = f"{phase}_{letter}_exp{exp_var}"
+        #Try to load in the whole df for this phase and letter 
+        metrics_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
+        if prediction:
+            cols = col_names["prediction"]
+        else:
+            cols = col_names["lstm"]
+        whole_df = pd.read_csv(metrics_path, names=cols)
+        # print(whole_df.head())
+        # print(whole_df.columns)
+        # print(whole_df["input_days"])
+
+        #Restrict the df to our particular variation
+        weighted_mse = 0
+        df_restrict = whole_df[(whole_df['input_days']==input_var) & (whole_df['output_days']==output_var) & (whole_df['experiment_name']==exp_name)]
+        if curr_sep_kind == "all_all":
+            if not df_restrict.empty:
+                weighted_mse = calc_weighted_metric(df_restrict, input_output_csv, total_outputs, prediction=prediction)
+        elif curr_sep_kind == "one_all":
+            weighted_sum = 0 
+            num_datastreams = 0
             for ds_index in datastream_combo:
-                new_df = df_restrict[(df_restrict['l_combo']==l_index) & (df_restrict['ds_combo']==ds_index)]
+                new_df = df_restrict[df_restrict['ds_combo']==ds_index]
                 if not new_df.empty:
                     weighted_sum = weighted_sum + calc_weighted_metric(new_df, input_output_csv, total_outputs, prediction=prediction)
-        weighted_mse = weighted_sum
+                    num_datastreams += 1
+            weighted_mse = weighted_sum
+            if prediction:
+                weighted_mse = weighted_mse/num_datastreams
 
-    #Add info to dict
-    curr_sep_dict["letter"].append(letter)
-    curr_sep_dict["input_days"].append(input_var)
-    curr_sep_dict["output_days"].append(output_var)
-    curr_sep_dict["experiment_name"].append(exp_name)
-    curr_sep_dict["weighted_metric"].append(weighted_mse)
+        elif curr_sep_kind == "all_one": 
+            weighted_sum = 0 
+            num_locations = 0
+            for l_index in location_combo:
+                new_df = df_restrict[df_restrict['l_combo']==l_index]
+                if not new_df.empty:
+                    weighted_sum = weighted_sum + calc_weighted_metric(new_df, input_output_csv, total_outputs, prediction=prediction)
+                    num_locations += 1
+            weighted_mse = weighted_sum
+            if prediction:
+                weighted_mse = weighted_mse/num_locations
+
+        elif curr_sep_kind == "one_one":
+            overall_weighted_sum = 0
+            
+            num_locations = 0
+            for l_index in location_combo:
+                num_datastreams = 0
+                sub_weighted_sum = 0 
+                for ds_index in datastream_combo:
+                    new_df = df_restrict[(df_restrict['l_combo']==l_index) & (df_restrict['ds_combo']==ds_index)]
+                    if not new_df.empty:
+                        sub_weighted_sum = sub_weighted_sum + calc_weighted_metric(new_df, input_output_csv, total_outputs, prediction=prediction)
+                        num_datastreams += 1
+                if prediction and num_datastreams!=0:
+                    sub_weighted_sum = sub_weighted_sum/num_datastreams
+                overall_weighted_sum += sub_weighted_sum
+                num_locations += 1
+            if prediction and num_locations!=0:
+                overall_weighted_sum = overall_weighted_sum/num_locations
+            weighted_mse = overall_weighted_sum
+        #Add info to dict
+        curr_sep_dict["letter"].append(letter)
+        curr_sep_dict["input_days"].append(input_var)
+        curr_sep_dict["output_days"].append(output_var)
+        curr_sep_dict["experiment_name"].append(exp_name)
+        curr_sep_dict["weighted_metric"].append(weighted_mse)
+    except Exception as e:
+      print(f"Issue with letter {letter} {input_var} {output_var} {exp_var}: {e}")
 
     
 
@@ -234,7 +261,7 @@ def get_all_weighted_variations(phase, letter, curr_sep_kind, total_outputs, pre
     for input_var in input_days:
         for output_var in output_days:
             for exp_var in scaling_factors:
-                load_and_weight(phase, letter, variation_dict, curr_sep_kind, input_var, output_var, exp_var, input_output_csv, total_outputs, prediction=False)
+                load_and_weight(phase, letter, variation_dict, curr_sep_kind, input_var, output_var, exp_var, input_output_csv, total_outputs, prediction=prediction)
     
     #Then save 
     save_folder = f"{phase}_analysis/combo_models/"
@@ -257,8 +284,10 @@ def get_best_weighted_model_per_organization(phase, total_outputs, prediction=Fa
 
 
     #Alltogether now 
-    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
-    separation_kinds = ["one_one", "one_all", "all_one", "all_all"]
+    #separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
+    separation_schemes = [all_datastreams_all_locations, separate_datastreams_all_locations, all_datastreams_separate_locations, separate_letters]
+    #separation_kinds = ["one_one", "one_all", "all_one", "all_all"]
+    separation_kinds = ["all_all", "one_all", "all_one", "one_one"]
 
     #For each separation scheme: 
     for i in range(0, len(separation_schemes)):
@@ -269,12 +298,84 @@ def get_best_weighted_model_per_organization(phase, total_outputs, prediction=Fa
 
     
 
-phase = "2"
-total_outputs = 209 
-prediction = False
-get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
+# phase = "10"
+# total_outputs = 15
+# prediction = True
+# get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
     
 
 
+def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
+    #Letters
+    separate_letters = ['D', 'I']
+    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
+    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
+    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separation_schemes = [all_datastreams_all_locations, separate_datastreams_all_locations, all_datastreams_separate_locations, separate_letters]
+    final_df = pd.DataFrame()
+    if prediction:
+        metric = "weighted_metric"
+    else:
+        metric = "weighted_metric"
+
+    
+    for scheme_letters in separation_schemes:
+        scheme_df = pd.DataFrame()
+        scheme_min = None
+        min_val = None
+        min_row = pd.DataFrame()
+        for letter in scheme_letters:
+            #Try to load it in 
+            try:
+                #print(letter)
+                df_path = f"{phase}_analysis/combo_models/{letter}_combos_weighted.csv"
+                df = pd.read_csv(df_path)
+                df_row = df[df[metric] == df[metric].min()]
+                #print(df_row.empty)
+                if min_row.empty:
+                    min_row = df_row
+                    min_val = df_row[metric].item()
+                    #print(min_val)
+                else:
+                    curr_min_val = df_row[metric].item()
+                    #print(curr_min_val)
+                    if prediction:
+                        if curr_min_val > min_val:
+                            min_val = curr_min_val
+                            min_row = df_row
+                    else:
+                        if curr_min_val < min_val:
+                            min_val = curr_min_val
+                            min_row = df_row
+            except Exception as e:
+                print(f"Could not load {phase} {letter} because {e}")
+        if scheme_df.empty:
+            scheme_df = min_row
+            scheme_min = min_val
+        else:
+            if prediction:
+                if min_val > scheme_min:
+                    scheme_df = min_row
+                    scheme_min = min_val
+            else:
+                if min_val < scheme_min:
+                    scheme_df = min_row
+                    scheme_min = min_val
 
 
+        if final_df.empty:
+            final_df = scheme_df
+        else:
+            final_df = pd.concat([final_df, scheme_df])
+        #print(final_df.head())
+
+    
+    save_path = f"{phase}_analysis/overall_weighted_models.csv"
+    final_df.to_csv(save_path)
+
+    #For each separation scheme
+    
+
+# phase = "14"
+# prediction = True
+# get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)

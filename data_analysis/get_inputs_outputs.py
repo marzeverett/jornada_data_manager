@@ -120,7 +120,7 @@ def make_aggregate_csv():
                 print(e)
     merged_df.to_csv("inputs_outputs/full_inputs_outputs.csv")
 #Need to do a function call 
-get_all_phases()
+#get_all_phases()
 
 #media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager
 #/dataset_generator/generated_files/datasets/
