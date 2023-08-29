@@ -62,7 +62,7 @@ def get_inputs_outputs(phase, letter, phase_path):
             #get path 
             dataset = dataset_descriptors[i]
             dataset_name = dataset["dataset_name"]
-            experiment_name = dataset["base_name"]+"8"
+            experiment_name = f'{phase}_{dataset["letter"]}_exp8'
             path = experiment_base_path + experiment_name + "/" + dataset_name +"/dataset_result.pickle"
             #Load in dataset result 
             with open(path, "rb") as f:
