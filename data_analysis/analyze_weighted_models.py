@@ -21,8 +21,7 @@ import seaborn as sn
 groups = {
     "ae": ["E", "H", "L", "S", "U", "X", "Z", "AC"],
     "lstm": ["A", "B", "C", "D", "F", "G", "I", "J",
-                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD"
-                ]
+                "M", "N", "Q", "T", "V", "W", "Y", "AA", "AB", "AD"]
 
 }
 
@@ -150,6 +149,7 @@ def calc_weighted_metric(df, input_output_csv, total_outputs, prediction=False):
     #print(df["dataset_name"])
     new_dataset_name = df["dataset_name"].item()
     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+    print(new_dataset_name)
     print(i_o_csv["output_size"])
     output_size = i_o_csv["output_size"].item()
     weighting = output_size/total_outputs

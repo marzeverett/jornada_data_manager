@@ -46,6 +46,7 @@ col_names =  [
 def get_inputs_outputs(phase, letter, phase_path):
     #dataset_base_path = "generated_files/datasets/"
     dataset_base_path = "/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/datasets/"
+    experiments_base_path = "/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/generated_files/experiments/"
     d_pathname = phase_path + "phase1_dataset_descriptors.pickle"
     #Load in descriptors 
     with open(d_pathname, "rb") as f:
@@ -61,7 +62,8 @@ def get_inputs_outputs(phase, letter, phase_path):
             #get path 
             dataset = dataset_descriptors[i]
             dataset_name = dataset["dataset_name"]
-            path = dataset_base_path + dataset_name +"/dataset_result.pickle"
+            experiment_name = dataset["base_name"]+"8"
+            path = experiment_base_path + experiment_name + "/" + dataset_name +"/dataset_result.pickle"
             #Load in dataset result 
             with open(path, "rb") as f:
                 #Load it in
