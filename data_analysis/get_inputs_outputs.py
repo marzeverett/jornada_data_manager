@@ -87,9 +87,7 @@ def get_inputs_outputs(phase, letter, phase_path):
 
 def get_all_phases():
     phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-    phases = ["14"]
-    letters = ['A', 'B', 'C', 'D', 'F', 
-    'I', "J", 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', "AF"]
+    letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
 
     for phase in phases:
         for letter in letters:
@@ -104,8 +102,7 @@ def get_all_phases():
 
 def make_aggregate_csv():
     phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-    letters = ['A', 'B', 'C', 'D', 'F', 
-    'I', 'J', 'L', 'M', 'N', 'Q', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AF']
+    letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
     merged_df = pd.DataFrame()
     for phase in phases:
         for letter in letters:
@@ -121,7 +118,7 @@ def make_aggregate_csv():
                 print(e)
     merged_df.to_csv("inputs_outputs/full_inputs_outputs.csv")
 #Need to do a function call 
-#get_inputs_outputs
+get_inputs_outputs()
 
 #media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager
 #/dataset_generator/generated_files/datasets/

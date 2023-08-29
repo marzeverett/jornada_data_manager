@@ -330,9 +330,20 @@ def run_basic_analysis(phases):
 # phases = ["10", "11", "12", "13", "14"]
 # run_basic_analysis(phases)
 
-# # ##### For inspecting individual graphs! 
-phase = "12"
-letter = "J"
-prediction = True
-get_letter_graphs(phase, letter, prediction=prediction)
+# # # ##### For inspecting individual graphs! 
+# phase = "14"
+# letter = "T"
+# prediction = True
+# get_letter_graphs(phase, letter, prediction=prediction)
 
+
+# phase = "2"
+# letters_dict = {
+#     "one_one": "D",
+#     "one_all": "C",
+#     "all_one": "B",
+#     "all_all": "AD"
+# }
+# file_path_start = f"main_metrics/"
+# prediction=False
+# analyze_separation_schemes.get_mean_min_per_organization(letters_dict, phase, file_path_start, "lstm", prediction=prediction)

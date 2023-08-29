@@ -1,0 +1,2 @@
+model_name,dataset_name,min_mse,input_size,output_size
+2_AD_exp32,2_AD.v1.l0.ds0.l_combo0.ds_combo0.idays60.odays1,0.011553932912647724,105,209

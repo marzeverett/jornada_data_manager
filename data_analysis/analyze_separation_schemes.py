@@ -170,6 +170,16 @@ def read_in_dfs(file_path, phase, ingroup="lstm", prediction=False):
 
     return df_dict 
 
+
+def read_in_df_single(letter, phase, ingroup="lstm", prediction=False):
+    file_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
+    if prediction:
+        cols = col_names["prediction"]
+    else:
+        cols = col_names[ingroup]
+    df = pd.read_csv(file_path, names=cols)
+    return df 
+
 #This is disgusting but I'm too lazy to change it
 def get_metric(df_dict, metric):
     df = df_dict["df"]
@@ -404,7 +414,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                     separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
                     separate_letters_dict["output_size"].append(i_o_csv["output_size"].item())
                 except Exception as e:
-                    print(f"Error getting min per org due to {e}")
+                    print(f"Error getting min per org (1) due to {e}")
                     separate_letters_dict["input_size"].append(-1)
                     separate_letters_dict["output_size"].append(-1)
     #Separate location 
@@ -433,7 +443,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                     all_datastreams_separate_locations_dict["input_size"].append(i_o_csv["input_size"].item())
                     all_datastreams_separate_locations_dict["output_size"].append(i_o_csv["output_size"].item())
                 except Exception as e:
-                    print(f"Error getting min per org due to {e}")
+                    print(f"Error getting min per org (2) due to {e}")
                     all_datastreams_separate_locations_dict["input_size"].append(-1)
                     all_datastreams_separate_locations_dict["output_size"].append(-1)
 
@@ -463,7 +473,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                     separate_datastreams_all_locations_dict["input_size"].append(i_o_csv["input_size"].item())
                     separate_datastreams_all_locations_dict["output_size"].append(i_o_csv["output_size"].item())
                 except Exception as e:
-                    print(f"Error getting min per org due to {e}")
+                    print(f"Error getting min per org (3) due to {e}")
                     separate_datastreams_all_locations_dict["input_size"].append(-1)
                     separate_datastreams_all_locations_dict["output_size"].append(-1)
 
@@ -515,6 +525,186 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
         save_results(save_names[i], save_dicts[i])
 
     
+
+def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, prediction=False):
+    input_output_csv = pd.read_csv("inputs_outputs/full_inputs_outputs.csv")
+    separate_letters = ['D', 'I']
+    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
+    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
+    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+
+    location_combo = [*range(0, 16)]
+    datastream_combo = [*range(0, 5)]
+
+    if prediction:
+        use_metric = "binary_accuracy"
+        metric_label = "max_binary_accuracy"
+    else:
+        use_metric = "mse"
+        metric_label = "min_mse"
+
+
+    separate_letters_dict = {"l_index": [], "ds_index": [], "model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
+    separate_datastreams_all_locations_dict = {"ds_index": [], "model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
+    all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
+    all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
+
+    letter_1 = letters_dict["one_one"]
+    #Separate case:
+    df_1 = read_in_df_single(letter_1, phase, prediction=prediction)
+    for l_index in location_combo:
+        for d_index in datastream_combo:
+            dict_index = f"{l_index}_{d_index}"
+            #Find the appropriate row in the dataframe for df1 
+            df_1_correct = df_1[(df_1['l_combo'] == l_index) & (df_1['ds_combo'] == d_index)]
+            if not df_1_correct.empty:
+                #print(df_1_correct.head())
+                if prediction:
+                    result_1 = df_1_correct[df_1_correct.binary_accuracy == df_1_correct.binary_accuracy.max()]
+                    result_1 = result_1.iloc[0]
+                else:
+                    result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
+                    result_1.iloc[0]
+                separate_letters_dict["l_index"].append(l_index)
+                separate_letters_dict["ds_index"].append(d_index)
+                #separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
+                #separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
+
+                separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
+                separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
+
+
+                #separate_letters_dict[metric_label].append(result_1[use_metric].item())
+                separate_letters_dict[metric_label].append(result_1[use_metric].item())
+                #new_dataset_name = result_1["dataset_name"].item()
+                new_dataset_name = result_1["dataset_name"].item()
+                try:
+                    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+                    separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
+                    separate_letters_dict["output_size"].append(i_o_csv["output_size"].item())
+                except Exception as e:
+                    print(f"Error getting min per org (1) due to {e}")
+                    separate_letters_dict["input_size"].append(-1)
+                    separate_letters_dict["output_size"].append(-1)
+    #Separate location 
+    letter_2 = letters_dict["all_one"]
+    #Separate case:
+    df_2 = read_in_df_single(letter_2, phase, prediction=prediction)
+    for l_index in location_combo:
+        dict_index = f"{l_index}"
+        df_2_correct = df_2[df_2.l_combo == l_index]
+        if not df_2_correct.empty:
+                if prediction:
+                    result_2 = df_2_correct[df_2_correct.binary_accuracy == df_2_correct.binary_accuracy.max()]
+                    result_2 = result_2.iloc[0]
+                else:
+                    result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
+                    result_2 = result_2.iloc[0]
+                all_datastreams_separate_locations_dict["l_index"].append(l_index,)
+                # all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
+                # all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
+                # all_datastreams_separate_locations_dict[metric_label].append(result_2[use_metric].item())
+                # new_dataset_name = result_2["dataset_name"].item()
+                all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"])
+                all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"])
+                all_datastreams_separate_locations_dict[metric_label].append(result_2[use_metric])
+                new_dataset_name = result_2["dataset_name"]
+                try:
+                    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+                    all_datastreams_separate_locations_dict["input_size"].append(i_o_csv["input_size"].item())
+                    all_datastreams_separate_locations_dict["output_size"].append(i_o_csv["output_size"].item())
+                except Exception as e:
+                    print(f"Error getting min per org due to {e}")
+                    all_datastreams_separate_locations_dict["input_size"].append(-1)
+                    all_datastreams_separate_locations_dict["output_size"].append(-1)
+
+    #Separate datastream
+    letter_3 = letters_dict["one_all"]
+    #Separate case:
+    df_3 = read_in_df_single(letter_3, phase, prediction=prediction)
+    for ds_index in datastream_combo:
+        dict_index = f"{ds_index}"
+        df_3_correct = df_3[df_3.ds_combo == ds_index]
+        if not df_3_correct.empty:
+                if prediction:
+                    result_3 = df_3_correct[df_3_correct.binary_accuracy == df_3_correct.binary_accuracy.max()]
+                    result_3 = result_3.iloc[0]
+                else:
+                    result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
+                    result_3 = result_3.iloc[0]
+                separate_datastreams_all_locations_dict["ds_index"].append(ds_index)
+                # separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"].item())
+                # separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"].item())
+                # separate_datastreams_all_locations_dict[metric_label].append(result_3[use_metric].item())
+                # new_dataset_name = result_3["dataset_name"].item()
+                separate_datastreams_all_locations_dict["model_name"].append(result_3["experiment_name"])
+                separate_datastreams_all_locations_dict["dataset_name"].append(result_3["dataset_name"])
+                separate_datastreams_all_locations_dict[metric_label].append(result_3[use_metric])
+                new_dataset_name = result_3["dataset_name"]
+                try:
+                    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+                    separate_datastreams_all_locations_dict["input_size"].append(i_o_csv["input_size"].item())
+                    separate_datastreams_all_locations_dict["output_size"].append(i_o_csv["output_size"].item())
+                except Exception as e:
+                    print(f"Error getting min per org due to {e}")
+                    separate_datastreams_all_locations_dict["input_size"].append(-1)
+                    separate_datastreams_all_locations_dict["output_size"].append(-1)
+
+                
+    #All together
+    letter_4 = letters_dict["all_all"]
+    #Separate case:
+    df_4 = read_in_df_single(letter_4, phase, prediction=prediction)
+    #Change here
+    #print(df_4.head())
+    #print(df_4.columns)
+    if prediction:
+        result_4 = df_4[df_4.binary_accuracy == df_4.binary_accuracy.max()]
+        result_4 = result_4.iloc[0]
+    else:
+        result_4 = df_4[df_4.mse == df_4.mse.min()]
+        result_4 = result_4.iloc[0]
+    try:
+        #new_dataset_name = result_4["dataset_name"].item()
+        new_dataset_name = result_4["dataset_name"]
+        i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+        input_size = i_o_csv["input_size"].item()
+        output_size = i_o_csv["output_size"].item()
+    except Exception as e:
+        print(f"Error getting min per org (4) due to {e}")
+        input_size = -1
+        output_size = -1 
+
+    # all_datastreams_all_locations_dict = {
+    #                 "model_name": [result_4["experiment_name"].item()],
+    #                 "dataset_name": [result_4["dataset_name"].item()],
+    #                 metric_label: [result_4[use_metric].item()],
+    #                 "input_size": input_size,
+    #                 "output_size": output_size
+    #             }
+
+    all_datastreams_all_locations_dict = {
+                    "model_name": [result_4["experiment_name"]],
+                    "dataset_name": [result_4["dataset_name"]],
+                    metric_label: [result_4[use_metric]],
+                    "input_size": input_size,
+                    "output_size": output_size
+                }
+
+    ind_phase = phase
+    save_names = [f"{ind_phase}_analysis/mean_min_separate", f"{ind_phase}_analysis/mean_min_location", f"{ind_phase}_analysis/mean_min_datastream", f"{ind_phase}_analysis/mean_min_all"]
+    save_dicts = [separate_letters_dict, all_datastreams_separate_locations_dict, separate_datastreams_all_locations_dict, all_datastreams_all_locations_dict]
+    
+    for i in range(0, len(save_names)):
+        #print((save_dicts[i]))
+        save_results(save_names[i], save_dicts[i])
+
+    
+
+
+
+
+
 
 # # file_path_1 = 'main_metrics/phase_2/'
 # # phase_1 = "2"  
