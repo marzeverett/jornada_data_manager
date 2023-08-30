@@ -4,10 +4,12 @@ import os
 import graph_and_visualize
 
 #Part to change!"
-model_name = "2_AF_exp32"
-dataset_name = "2_AF.v1.l1.ds0.l_combo6.ds_combo0.idays30.odays1"
+model_name = "8_AA_exp64"
+dataset_name = "8_AA.v1.l1.ds0.l_combo6.ds_combo1.idays60.odays7"
 
 
-dd, dr, ed, er = graph_and_visualize.load_everything(model_name, dataset_name)
+path_start =f"/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/"
+
+dd, dr, ed, er = graph_and_visualize.load_everything(model_name, dataset_name, path_start=path_start)
 graph_and_visualize.just_visualize(dd, dr, ed, er)
 

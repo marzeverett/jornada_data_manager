@@ -477,6 +477,7 @@ def get_more_useful_slate_info(phase, prediction=False):
     for scheme_letters in separation_schemes:
         min_val = None
         min_row = pd.DataFrame()
+        scheme_letter_dict = {"letter": [], "mean metric base 8": [], "mean metric base 32": [], "mean metric base 64": []}
         for letter in scheme_letters:
             #Try to load it in 
             try:
@@ -511,3 +512,118 @@ def get_more_useful_slate_info(phase, prediction=False):
 # phase = "2"
 # prediction = False
 # get_more_useful_slate_info(phase, prediction=prediction)
+
+
+
+def get_model_arch_comparison(phase, prediction=False):
+    #Letters
+    separate_letters = ['D', 'I']
+    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
+    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
+    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
+    if prediction:
+        metric = "binary_accuracy"
+    else:
+        metric = "mse"
+    scheme_letter_dict = {"letter": [], "mean base 8": [], "mean base 32": [], "mean base 64": []}
+    for scheme_letters in separation_schemes:
+        min_val = None
+        min_row = pd.DataFrame()
+        for letter in scheme_letters:
+            #Try to load it in 
+            try:
+                #print(letter)
+                df_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
+                if prediction:
+                    cols = col_names["prediction"]
+                else:
+                    cols = col_names["lstm"]
+                df = pd.read_csv(df_path, names=cols)
+                exp_8_name = f"{phase}_{letter}_exp8"
+                exp_32_name = f"{phase}_{letter}_exp32"
+                exp_64_name = f"{phase}_{letter}_exp64"
+
+                #Group by experiment name and get the mean metric 
+                df_8 = df[df["experiment_name"] == exp_8_name]
+                df_8_mean = df_8[metric].mean()
+
+                df_32 = df[df["experiment_name"] == exp_32_name]
+                df_32_mean = df_32[metric].mean()
+
+                df_64 = df[df["experiment_name"] == exp_64_name]
+                df_64_mean = df_64[metric].mean()
+
+                if not math.isnan(df_8_mean):
+                    scheme_letter_dict["letter"].append(letter)
+                    scheme_letter_dict["mean base 8"].append(df_8_mean)
+                    scheme_letter_dict["mean base 32"].append(df_32_mean)
+                    scheme_letter_dict["mean base 64"].append(df_64_mean)
+
+            except Exception as e:
+                print(f"Could not load {phase} {letter} because {e}")
+       
+    final_df = pd.DataFrame(scheme_letter_dict)
+    save_path = f"{phase}_analysis/compare_by_nodes.csv"
+    final_df.to_csv(save_path)
+
+# phase = "2"
+# prediction = False
+# get_model_arch_comparison(phase, prediction=prediction)
+
+
+def compare_stdev(phase, prediction=False):
+    #Letters
+    separate_letters = ['D', 'I']
+    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
+    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
+    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
+    if prediction:
+        metric = "binary_accuracy"
+    else:
+        metric = "mse"
+    scheme_letter_dict = {"letter": [], "stdev base 8": [], "stdev base 32": [], "stdev base 64": []}
+    for scheme_letters in separation_schemes:
+        min_val = None
+        min_row = pd.DataFrame()
+        for letter in scheme_letters:
+            #Try to load it in 
+            try:
+                #print(letter)
+                df_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
+                if prediction:
+                    cols = col_names["prediction"]
+                else:
+                    cols = col_names["lstm"]
+                df = pd.read_csv(df_path, names=cols)
+                exp_8_name = f"{phase}_{letter}_exp8"
+                exp_32_name = f"{phase}_{letter}_exp32"
+                exp_64_name = f"{phase}_{letter}_exp64"
+
+                #Group by experiment name and get the mean metric 
+                df_8 = df[df["experiment_name"] == exp_8_name]
+                df_8_mean = df_8[metric].std()
+
+                df_32 = df[df["experiment_name"] == exp_32_name]
+                df_32_mean = df_32[metric].std()
+
+                df_64 = df[df["experiment_name"] == exp_64_name]
+                df_64_mean = df_64[metric].std()
+
+                if not math.isnan(df_8_mean):
+                    scheme_letter_dict["letter"].append(letter)
+                    scheme_letter_dict["stdev base 8"].append(df_8_mean)
+                    scheme_letter_dict["stdev base 32"].append(df_32_mean)
+                    scheme_letter_dict["stdev base 64"].append(df_64_mean)
+
+            except Exception as e:
+                print(f"Could not load {phase} {letter} because {e}")
+       
+    final_df = pd.DataFrame(scheme_letter_dict)
+    save_path = f"{phase}_analysis/compare_by_stdev.csv"
+    final_df.to_csv(save_path)
+
+# phase = "2"
+# prediction = False
+# compare_stdev(phase, prediction=prediction)

@@ -226,8 +226,11 @@ def visualize_and_analyze(dataset_descriptor, dataset_result, experiment_descrip
 
 
 
-def load_everything(experiment_model, dataset_name):
-    path = "generated_files/experiments/"+experiment_model+"/"+dataset_name+"/"
+def load_everything(experiment_model, dataset_name, path_start=None):
+    if path_start:
+        path = path_start+"generated_files/experiments/"+experiment_model+"/"+dataset_name+"/"
+    else:
+        path = "generated_files/experiments/"+experiment_model+"/"+dataset_name+"/"
     names = ["dataset_descriptor", "dataset_result", "experiment_descriptor", "experiment_result"]
     return_dict = {}
     for name in names:
