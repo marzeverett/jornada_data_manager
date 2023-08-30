@@ -8,6 +8,7 @@ import json
 import os 
 import scipy.stats as stats 
 import seaborn as sn
+import math 
 
 #Group by Documentation
 #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.groupby.html 
@@ -379,3 +380,134 @@ def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
 # phase = "14"
 # prediction = True
 # get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
+
+#Get lowest or highest mean per scheme
+def get_best_weighted_mean_per_scheme(phase, prediction=False):
+    #Letters
+    separate_letters = ['D', 'I']
+    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
+    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
+    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
+
+    final_dict = {"letters": [], "metric": []}
+    if prediction:
+        metric = "weighted_metric"
+    else:
+        metric = "weighted_metric"
+
+    for scheme_letters in separation_schemes:
+        scheme_letter = None
+        scheme_min = None
+        min_val = None
+        min_letter = None
+        for letter in scheme_letters:
+            #Try to load it in 
+            try:
+                #print(letter)
+                df_path = f"{phase}_analysis/combo_models/{letter}_combos_weighted.csv"
+                df = pd.read_csv(df_path)
+                df_mean = df[metric].mean()
+                #print(letter)
+                if not math.isnan(df_mean):
+                    #print("Df mean ", df_mean)
+                    #print(df_row.empty)
+                    if min_letter == None:
+                        min_letter = letter
+                        min_val = df_mean
+                        #print(min_val)
+                    else:
+                        curr_min_val = df_mean
+                        #print(curr_min_val)
+                        if prediction:
+                            if curr_min_val > min_val:
+                                min_val = curr_min_val
+                                min_letter = letter
+                        else:
+                            if curr_min_val < min_val:
+                                min_val = curr_min_val
+                                min_letter = letter
+            except Exception as e:
+                print(f"Could not load {phase} {letter} because {e}")
+        if scheme_letter == None:
+            scheme_letter = min_letter
+            scheme_min = min_val
+        else:
+            if prediction:
+                if min_val > scheme_min:
+                    scheme_letter = min_letter
+                    scheme_min = min_val
+            else:
+                if min_val < scheme_min:
+                    scheme_letter = min_letter
+                    scheme_min = min_val
+
+        final_dict["letters"].append(scheme_letter)
+        final_dict["metric"].append(scheme_min)
+        print(scheme_letter)
+        print(scheme_min)
+       
+        #print(final_df.head())
+
+    final_df = pd.DataFrame(final_dict)
+    save_path = f"{phase}_analysis/mean_overall_weighted_models.csv"
+    final_df.to_csv(save_path)
+
+    #For each separation scheme
+
+# phase = "2"
+# prediction = False
+# get_best_weighted_mean_per_scheme(phase, prediction=prediction)
+
+
+
+def get_more_useful_slate_info(phase, prediction=False):
+    #Letters
+    separate_letters = ['D', 'I']
+    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
+    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
+    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
+    final_df = pd.DataFrame()
+    if prediction:
+        metric = "weighted_metric"
+    else:
+        metric = "weighted_metric"
+
+    for scheme_letters in separation_schemes:
+        min_val = None
+        min_row = pd.DataFrame()
+        for letter in scheme_letters:
+            #Try to load it in 
+            try:
+                #print(letter)
+                df_path = f"{phase}_analysis/combo_models/{letter}_combos_weighted.csv"
+                df = pd.read_csv(df_path)
+                df_row_min = df[df[metric] == df[metric].min()]
+                df_row_max = df[df[metric] == df[metric].max()]
+                df_mean = df[metric].mean()
+                if not math.isnan(df_mean):
+                    df_row_min = df_row_min.assign(mean_metric=df_mean)
+                    df_row_max = df_row_max.assign(mean_metric=df_mean)
+                    df_row_min = df_row_min.assign(min_or_max="Min")
+                    df_row_max = df_row_max.assign(min_or_max="Max")
+                    add_rows = pd.concat([df_row_min, df_row_max])
+                    if final_df.empty:
+                        final_df = add_rows
+                    else:
+                        final_df = pd.concat([final_df, add_rows])  
+            except Exception as e:
+                print(f"Could not load {phase} {letter} because {e}")
+       
+        #print(final_df.head())
+
+    
+    save_path = f"{phase}_analysis/slate_metrics.csv"
+    final_df.to_csv(save_path)
+
+    #For each separation scheme
+    
+
+# phase = "2"
+# prediction = False
+# get_more_useful_slate_info(phase, prediction=prediction)
