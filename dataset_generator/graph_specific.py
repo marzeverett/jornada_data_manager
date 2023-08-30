@@ -5,7 +5,7 @@ import graph_and_visualize
 
 #Part to change!"
 model_name = "8_AA_exp64"
-dataset_name = "8_AA.v1.l1.ds0.l_combo6.ds_combo1.idays60.odays7"
+dataset_name = "8_AA.v1.l0.ds1.l_combo0.ds_combo1.idays60.odays7"
 
 
 path_start =f"/media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager/dataset_generator/"
