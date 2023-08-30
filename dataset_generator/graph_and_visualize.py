@@ -1,7 +1,6 @@
 
 import pickle
 import os
-import model_generator
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
@@ -11,6 +10,11 @@ import pandas as pd
 #https://plotly.com/python/figure-labels/
 #Help for multiple lines: https://www.tutorialspoint.com/how-to-plot-multiple-lines-on-the-same-y-axis-in-python-plotly 
 #Numpy indexing: https://stackoverflow.com/questions/42916029/indexing-over-the-last-axis-when-you-dont-know-the-rank-in-advance
+
+#Experiment folder path 
+def get_full_experiment_folder(experiment_object):
+    full_path = experiment_object["experiment_folder_path"] + experiment_object["experiment_name"] +"/" +experiment_object["dataset_name"]+"/"
+    return full_path
 
 #CHANGE is here 
 def unnormalize_data_transformation(feature_array, dataset_descriptor):
@@ -80,7 +84,7 @@ def plot_model_training_history(experiment_descriptor, experiment_result, metric
 
 
 def get_graph_folder_path(experiment_descriptor, kind):
-    experiment_folder_path = model_generator.get_full_experiment_folder(experiment_descriptor)
+    experiment_folder_path = get_full_experiment_folder(experiment_descriptor)
     image_path = experiment_folder_path + kind + "/" 
     if not os.path.exists(image_path):
         os.mkdir(image_path)
@@ -183,7 +187,7 @@ def save_all_model_history_graphs(experiment_descriptor, experiment_result):
 
 def save_to_csv(experiment_descriptor, experiment_result):
     csv_name = "metric_results.csv"
-    experiment_folder_path = model_generator.get_full_experiment_folder(experiment_descriptor)
+    experiment_folder_path = get_full_experiment_folder(experiment_descriptor)
     save_path = experiment_folder_path+csv_name
     #per_feature = experiment_result["per_feature"]
     test_metrics = experiment_result["test_metrics"].copy()
