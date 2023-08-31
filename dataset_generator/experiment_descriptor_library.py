@@ -34,6 +34,7 @@ def determine_ae_nodes_from_dataset_object(dataset_object, scaling_factor):
     return nodes 
 
 
+#IMPORTANT - CHANGED TEST SET TO 20%!!!! 
 # def determine_ae_nodes_from_dataset_object(dataset_object, compression):
 #     input_nodes = len(dataset_object["x"[-1]])
 #     final_nodes = input_nodes*compression
@@ -64,7 +65,7 @@ def create_basic_lstm_model_object(num_nodes):
             "optimizer": "adam",
             "batch_size": 32,
             "epochs": 100,
-            "test_split": 0.1,
+            "test_split": 0.2,
             "validation_split": 0.2,
             "use_multiprocessing": True,
             "metrics": ["mse", "mape", "mae"],
@@ -171,7 +172,7 @@ def create_deep_lstm_model_object(num_nodes):
             "batch_size": 32,
             #Change from previous 
             "epochs": 150,
-            "test_split": 0.1,
+            "test_split": 0.2,
             "validation_split": 0.2,
             "use_multiprocessing": True,
             "metrics": ["mse", "mape", "mae"],
@@ -202,7 +203,7 @@ def create_predict_lstm_model_object(num_nodes):
             "optimizer": "adam",
             "batch_size": 32,
             "epochs": 100,
-            "test_split": 0.1,
+            "test_split": 0.2,
             "validation_split": 0.2,
             "use_multiprocessing": True,
             "metrics": ['mse', 'BinaryAccuracy', 'Precision', 'Recall', 
@@ -230,7 +231,7 @@ def create_basic_ae_model_object(num_nodes):
         "optimizer": "adam",
         "batch_size": 32,
         "epochs": 100,
-        "test_split": 0.1,
+        "test_split": 0.2,
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]
@@ -271,7 +272,7 @@ def create_deep_ae_model_object(num_nodes):
         "optimizer": "adam",
         "batch_size": 32,
         "epochs": 150,
-        "test_split": 0.1,
+        "test_split": 0.2,
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]
@@ -299,7 +300,7 @@ def create_basic_conv_ae_model_object(num_nodes):
         "optimizer": "adam",
         "batch_size": 32,
         "epochs": 100,
-        "test_split": 0.1,
+        "test_split": 0.2,
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]

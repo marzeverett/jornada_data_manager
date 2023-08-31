@@ -14,7 +14,7 @@
 #Use this info for per-feature error: https://neptune.ai/blog/keras-loss-functions
 #Helpful for intermediate model layer: https://androidkt.com/get-output-of-intermediate-layers-keras/  
 #Encoder example from Keras: https://keras.io/examples/vision/autoencoder/ 
-
+#https://www.researchgate.net/post/How-to-split-dataset-as-train-and-test-data-into-rows-like-first-90-would-be-train-last-10-would-be-test-data-in-pythonNot-splitting-randomly 
 
 import pickle
 import os
@@ -78,7 +78,8 @@ experiment_1 = {
     "experiment_name": "test_experiment_1"
 }
 
-
+#CHANGE IS HERE - No longer random split!! 
+#This is where we need to do the last n amount of data! 
 def split_training_test(prepared_dataset, experiment_object):
     model_def = experiment_object["model"]
     if "test_split" in list(model_def.keys()):
@@ -88,10 +89,16 @@ def split_training_test(prepared_dataset, experiment_object):
     random_state=None
     if "random_state" in list(model_def.keys()):
         random_state = random_state
+    # x_train, x_test, y_train, y_test, x_train_key, x_test_key, y_train_key, y_test_key = train_test_split(
+    #     prepared_dataset["x"], prepared_dataset["y"], prepared_dataset["x_key"], prepared_dataset["y_key"],
+    #     test_size=test_split,
+    #     random_state=random_state
+    # )
+
     x_train, x_test, y_train, y_test, x_train_key, x_test_key, y_train_key, y_test_key = train_test_split(
         prepared_dataset["x"], prepared_dataset["y"], prepared_dataset["x_key"], prepared_dataset["y_key"],
         test_size=test_split,
-        random_state=random_state
+        shuffle=False
     )
     prepared_dataset["x_train"] = x_train
     prepared_dataset["x_test"] = x_test
