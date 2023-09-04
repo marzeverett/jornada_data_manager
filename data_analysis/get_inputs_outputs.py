@@ -88,7 +88,8 @@ def get_inputs_outputs(phase, letter, phase_path):
 #letter = "A"
 
 def get_all_phases():
-    phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+    #phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+    phases = ["16"]
     letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
 
     for phase in phases:
@@ -103,8 +104,7 @@ def get_all_phases():
 #get_all_phases()
 
 def make_aggregate_csv():
-    #phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-    phases = ["16"]
+    phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "16"]
     letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
     merged_df = pd.DataFrame()
     for phase in phases:
