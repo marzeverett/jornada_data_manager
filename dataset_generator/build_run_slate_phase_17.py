@@ -21,9 +21,13 @@ prev_phase_base = "17"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
-letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
-'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+# letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
+# 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+
+letters = ['B', 'C', 'D', 'F', 'G', 
+'I', 'J', 'M', 'N', 'Q', 'T', 'V', 
+'W', 'Y', 'AA', 'AB', 'AD']
 
 print(len(letters))
 input_days = [30, 60]
