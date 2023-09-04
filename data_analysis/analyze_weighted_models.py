@@ -299,9 +299,9 @@ def get_best_weighted_model_per_organization(phase, total_outputs, prediction=Fa
 
     
 
-# phase = "10"
-# total_outputs = 15
-# prediction = True
+# phase = "16"
+# total_outputs = 209
+# prediction = False
 # get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
     
 
@@ -377,8 +377,8 @@ def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
     #For each separation scheme
     
 
-# phase = "14"
-# prediction = True
+# phase = "16"
+# prediction = False
 # get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
 
 #Get lowest or highest mean per scheme
@@ -455,7 +455,7 @@ def get_best_weighted_mean_per_scheme(phase, prediction=False):
 
     #For each separation scheme
 
-# phase = "2"
+# phase = "16"
 # prediction = False
 # get_best_weighted_mean_per_scheme(phase, prediction=prediction)
 
@@ -509,7 +509,7 @@ def get_more_useful_slate_info(phase, prediction=False):
     #For each separation scheme
     
 
-# phase = "2"
+# phase = "16"
 # prediction = False
 # get_more_useful_slate_info(phase, prediction=prediction)
 
@@ -567,7 +567,7 @@ def get_model_arch_comparison(phase, prediction=False):
     save_path = f"{phase}_analysis/compare_by_nodes.csv"
     final_df.to_csv(save_path)
 
-# phase = "2"
+# phase = "16"
 # prediction = False
 # get_model_arch_comparison(phase, prediction=prediction)
 
@@ -624,6 +624,6 @@ def compare_stdev(phase, prediction=False):
     save_path = f"{phase}_analysis/compare_by_stdev.csv"
     final_df.to_csv(save_path)
 
-# phase = "2"
+# phase = "16"
 # prediction = False
 # compare_stdev(phase, prediction=prediction)

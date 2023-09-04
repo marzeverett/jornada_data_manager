@@ -1,0 +1,233 @@
+l_index,ds_index,model_name,dataset_name,min_mse,input_size,output_size
+0,1,"466    16_D_exp64
+Name: experiment_name, dtype: object","466    16_D.v1.l1.ds1.l_combo0.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","466    0.007254
+Name: mse, dtype: float64",-1,-1
+0,2,"6    16_D_exp8
+Name: experiment_name, dtype: object","6    16_D.v1.l1.ds1.l_combo0.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","6    0.003101
+Name: mse, dtype: float64",-1,-1
+0,3,"474    16_I_exp64
+Name: experiment_name, dtype: object","474    16_I.v1.l1.ds1.l_combo0.ds_combo3.idays60.odays1
+Name: dataset_name, dtype: object","474    0.015218
+Name: mse, dtype: float64",-1,-1
+0,4,"478    16_D_exp64
+Name: experiment_name, dtype: object","478    16_D.v1.l1.ds1.l_combo0.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","478    0.031752
+Name: mse, dtype: float64",-1,-1
+1,1,"480    16_I_exp64
+Name: experiment_name, dtype: object","480    16_I.v1.l1.ds1.l_combo1.ds_combo1.idays30.odays1
+Name: dataset_name, dtype: object","480    0.00736
+Name: mse, dtype: float64",-1,-1
+1,2,"22    16_D_exp8
+Name: experiment_name, dtype: object","22    16_D.v1.l1.ds1.l_combo1.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","22    0.000961
+Name: mse, dtype: float64",-1,-1
+1,3,"26    16_I_exp8
+Name: experiment_name, dtype: object","26    16_I.v1.l1.ds1.l_combo1.ds_combo3.idays60.odays1
+Name: dataset_name, dtype: object","26    0.015282
+Name: mse, dtype: float64",-1,-1
+1,4,"30    16_D_exp8
+Name: experiment_name, dtype: object","30    16_D.v1.l1.ds1.l_combo1.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","30    0.029393
+Name: mse, dtype: float64",-1,-1
+2,1,"496    16_D_exp64
+Name: experiment_name, dtype: object","496    16_D.v1.l1.ds1.l_combo2.ds_combo1.idays30.odays1
+Name: dataset_name, dtype: object","496    0.007003
+Name: mse, dtype: float64",-1,-1
+2,2,"36    16_I_exp8
+Name: experiment_name, dtype: object","36    16_I.v1.l1.ds1.l_combo2.ds_combo2.idays30.odays1
+Name: dataset_name, dtype: object","36    0.004856
+Name: mse, dtype: float64",-1,-1
+2,3,"272    16_I_exp32
+Name: experiment_name, dtype: object","272    16_I.v1.l1.ds1.l_combo2.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","272    0.011656
+Name: mse, dtype: float64",-1,-1
+2,4,"510    16_I_exp64
+Name: experiment_name, dtype: object","510    16_I.v1.l1.ds1.l_combo2.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","510    0.022242
+Name: mse, dtype: float64",-1,-1
+3,1,"282    16_D_exp32
+Name: experiment_name, dtype: object","282    16_D.v1.l1.ds1.l_combo3.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","282    0.007343
+Name: mse, dtype: float64",-1,-1
+3,2,"284    16_D_exp32
+Name: experiment_name, dtype: object","284    16_D.v1.l1.ds1.l_combo3.ds_combo2.idays30.odays1
+Name: dataset_name, dtype: object","284    0.001328
+Name: mse, dtype: float64",-1,-1
+3,3,"288    16_I_exp32
+Name: experiment_name, dtype: object","288    16_I.v1.l1.ds1.l_combo3.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","288    0.012532
+Name: mse, dtype: float64",-1,-1
+3,4,"526    16_D_exp64
+Name: experiment_name, dtype: object","526    16_D.v1.l1.ds1.l_combo3.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","526    0.02364
+Name: mse, dtype: float64",-1,-1
+4,1,"296    16_I_exp32
+Name: experiment_name, dtype: object","296    16_I.v1.l1.ds1.l_combo4.ds_combo1.idays30.odays1
+Name: dataset_name, dtype: object","296    0.007111
+Name: mse, dtype: float64",-1,-1
+4,2,"70    16_I_exp8
+Name: experiment_name, dtype: object","70    16_I.v1.l1.ds1.l_combo4.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","70    0.002918
+Name: mse, dtype: float64",-1,-1
+4,3,"536    16_D_exp64
+Name: experiment_name, dtype: object","536    16_D.v1.l1.ds1.l_combo4.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","536    0.012062
+Name: mse, dtype: float64",-1,-1
+4,4,"78    16_D_exp8
+Name: experiment_name, dtype: object","78    16_D.v1.l1.ds1.l_combo4.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","78    0.03247
+Name: mse, dtype: float64",-1,-1
+5,1,"314    16_D_exp32
+Name: experiment_name, dtype: object","314    16_D.v1.l1.ds1.l_combo5.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","314    0.007309
+Name: mse, dtype: float64",-1,-1
+5,2,"550    16_I_exp64
+Name: experiment_name, dtype: object","550    16_I.v1.l1.ds1.l_combo5.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","550    0.002764
+Name: mse, dtype: float64",-1,-1
+5,3,"320    16_D_exp32
+Name: experiment_name, dtype: object","320    16_D.v1.l1.ds1.l_combo5.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","320    0.012816
+Name: mse, dtype: float64",-1,-1
+5,4,"556    16_D_exp64
+Name: experiment_name, dtype: object","556    16_D.v1.l1.ds1.l_combo5.ds_combo4.idays30.odays1
+Name: dataset_name, dtype: object","556    0.054498
+Name: mse, dtype: float64",-1,-1
+6,1,"330    16_I_exp32
+Name: experiment_name, dtype: object","330    16_I.v1.l1.ds1.l_combo6.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","330    0.006295
+Name: mse, dtype: float64",-1,-1
+6,2,"334    16_D_exp32
+Name: experiment_name, dtype: object","334    16_D.v1.l1.ds1.l_combo6.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","334    0.003774
+Name: mse, dtype: float64",-1,-1
+7,1,"338    16_D_exp32
+Name: experiment_name, dtype: object","338    16_D.v1.l1.ds1.l_combo7.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","338    0.0074
+Name: mse, dtype: float64",-1,-1
+7,2,"110    16_I_exp8
+Name: experiment_name, dtype: object","110    16_I.v1.l1.ds1.l_combo7.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","110    0.001795
+Name: mse, dtype: float64",-1,-1
+7,3,"112    16_I_exp8
+Name: experiment_name, dtype: object","112    16_I.v1.l1.ds1.l_combo7.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","112    0.013944
+Name: mse, dtype: float64",-1,-1
+7,4,"348    16_D_exp32
+Name: experiment_name, dtype: object","348    16_D.v1.l1.ds1.l_combo7.ds_combo4.idays30.odays1
+Name: dataset_name, dtype: object","348    0.03163
+Name: mse, dtype: float64",-1,-1
+8,1,"354    16_D_exp32
+Name: experiment_name, dtype: object","354    16_D.v1.l1.ds1.l_combo8.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","354    0.006006
+Name: mse, dtype: float64",-1,-1
+8,2,"124    16_I_exp8
+Name: experiment_name, dtype: object","124    16_I.v1.l1.ds1.l_combo8.ds_combo2.idays30.odays1
+Name: dataset_name, dtype: object","124    0.001089
+Name: mse, dtype: float64",-1,-1
+8,3,"360    16_I_exp32
+Name: experiment_name, dtype: object","360    16_I.v1.l1.ds1.l_combo8.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","360    0.01091
+Name: mse, dtype: float64",-1,-1
+8,4,"364    16_D_exp32
+Name: experiment_name, dtype: object","364    16_D.v1.l1.ds1.l_combo8.ds_combo4.idays30.odays1
+Name: dataset_name, dtype: object","364    0.028128
+Name: mse, dtype: float64",-1,-1
+9,1,"602    16_D_exp64
+Name: experiment_name, dtype: object","602    16_D.v1.l1.ds1.l_combo9.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","602    0.007437
+Name: mse, dtype: float64",-1,-1
+9,2,"374    16_I_exp32
+Name: experiment_name, dtype: object","374    16_I.v1.l1.ds1.l_combo9.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","374    0.001731
+Name: mse, dtype: float64",-1,-1
+9,3,"610    16_D_exp64
+Name: experiment_name, dtype: object","610    16_D.v1.l1.ds1.l_combo9.ds_combo3.idays60.odays1
+Name: dataset_name, dtype: object","610    0.010422
+Name: mse, dtype: float64",-1,-1
+9,4,"614    16_D_exp64
+Name: experiment_name, dtype: object","614    16_D.v1.l1.ds1.l_combo9.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","614    0.018557
+Name: mse, dtype: float64",-1,-1
+10,1,"152    16_D_exp8
+Name: experiment_name, dtype: object","152    16_D.v1.l1.ds1.l_combo10.ds_combo1.idays30.odays1
+Name: dataset_name, dtype: object","152    0.008053
+Name: mse, dtype: float64",-1,-1
+10,2,"388    16_D_exp32
+Name: experiment_name, dtype: object","388    16_D.v1.l1.ds1.l_combo10.ds_combo2.idays30.odays1
+Name: dataset_name, dtype: object","388    0.001166
+Name: mse, dtype: float64",-1,-1
+10,3,"624    16_D_exp64
+Name: experiment_name, dtype: object","624    16_D.v1.l1.ds1.l_combo10.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","624    0.015177
+Name: mse, dtype: float64",-1,-1
+10,4,"164    16_D_exp8
+Name: experiment_name, dtype: object","164    16_D.v1.l1.ds1.l_combo10.ds_combo4.idays30.odays1
+Name: dataset_name, dtype: object","164    0.035172
+Name: mse, dtype: float64",-1,-1
+11,1,"402    16_D_exp32
+Name: experiment_name, dtype: object","402    16_D.v1.l1.ds1.l_combo11.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","402    0.00656
+Name: mse, dtype: float64",-1,-1
+11,2,"638    16_I_exp64
+Name: experiment_name, dtype: object","638    16_I.v1.l1.ds1.l_combo11.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","638    0.002003
+Name: mse, dtype: float64",-1,-1
+11,3,"178    16_I_exp8
+Name: experiment_name, dtype: object","178    16_I.v1.l1.ds1.l_combo11.ds_combo3.idays60.odays1
+Name: dataset_name, dtype: object","178    0.011786
+Name: mse, dtype: float64",-1,-1
+11,4,"412    16_I_exp32
+Name: experiment_name, dtype: object","412    16_I.v1.l1.ds1.l_combo11.ds_combo4.idays30.odays1
+Name: dataset_name, dtype: object","412    0.023447
+Name: mse, dtype: float64",-1,-1
+12,1,"648    16_I_exp64
+Name: experiment_name, dtype: object","648    16_I.v1.l1.ds1.l_combo12.ds_combo1.idays30.odays1
+Name: dataset_name, dtype: object","648    0.006728
+Name: mse, dtype: float64",-1,-1
+12,2,"422    16_D_exp32
+Name: experiment_name, dtype: object","422    16_D.v1.l1.ds1.l_combo12.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","422    0.00262
+Name: mse, dtype: float64",-1,-1
+12,3,"656    16_D_exp64
+Name: experiment_name, dtype: object","656    16_D.v1.l1.ds1.l_combo12.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","656    0.011553
+Name: mse, dtype: float64",-1,-1
+12,4,"430    16_D_exp32
+Name: experiment_name, dtype: object","430    16_D.v1.l1.ds1.l_combo12.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","430    0.028167
+Name: mse, dtype: float64",-1,-1
+13,1,"434    16_I_exp32
+Name: experiment_name, dtype: object","434    16_I.v1.l1.ds1.l_combo13.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","434    0.006475
+Name: mse, dtype: float64",-1,-1
+13,2,"670    16_D_exp64
+Name: experiment_name, dtype: object","670    16_D.v1.l1.ds1.l_combo13.ds_combo2.idays60.odays1
+Name: dataset_name, dtype: object","670    0.00248
+Name: mse, dtype: float64",-1,-1
+13,3,"208    16_I_exp8
+Name: experiment_name, dtype: object","208    16_I.v1.l1.ds1.l_combo13.ds_combo3.idays30.odays1
+Name: dataset_name, dtype: object","208    0.012836
+Name: mse, dtype: float64",-1,-1
+13,4,"214    16_D_exp8
+Name: experiment_name, dtype: object","214    16_D.v1.l1.ds1.l_combo13.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","214    0.031661
+Name: mse, dtype: float64",-1,-1
+14,1,"682    16_D_exp64
+Name: experiment_name, dtype: object","682    16_D.v1.l1.ds1.l_combo14.ds_combo1.idays60.odays1
+Name: dataset_name, dtype: object","682    0.006698
+Name: mse, dtype: float64",-1,-1
+14,2,"220    16_D_exp8
+Name: experiment_name, dtype: object","220    16_D.v1.l1.ds1.l_combo14.ds_combo2.idays30.odays1
+Name: dataset_name, dtype: object","220    0.002021
+Name: mse, dtype: float64",-1,-1
+14,3,"226    16_D_exp8
+Name: experiment_name, dtype: object","226    16_D.v1.l1.ds1.l_combo14.ds_combo3.idays60.odays1
+Name: dataset_name, dtype: object","226    0.012273
+Name: mse, dtype: float64",-1,-1
+14,4,"462    16_D_exp32
+Name: experiment_name, dtype: object","462    16_D.v1.l1.ds1.l_combo14.ds_combo4.idays60.odays1
+Name: dataset_name, dtype: object","462    0.028161
+Name: mse, dtype: float64",-1,-1
