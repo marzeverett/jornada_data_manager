@@ -81,7 +81,7 @@ experiment_1 = {
         "optimizer": "adam",
         "batch_size": 32,
         "epochs": 2,
-        "test_split": 0.1,
+        "test_split": 0.2,
         "validation_split": 0.2,
         "use_multiprocessing": True,
         #"metrics": ["mse"]
