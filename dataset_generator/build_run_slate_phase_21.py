@@ -16,8 +16,8 @@ import slate_library
 #Phase 5 takes out rain 
 
 #Same basic processes. Taking out some 
-phase_name = "17"
-prev_phase_base = "17"
+phase_name = "21"
+prev_phase_base = "21"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
@@ -25,9 +25,8 @@ phase_path_start = "generated_files/"
 # 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
 # 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
 
-letters = ['A', 'B', 'C', 'D', 'F', 'G', 
-'I', 'J', 'M', 'N', 'Q', 'T', 'V', 
-'W', 'Y', 'AA', 'AB', 'AD']
+letters = ['E', 'F', 'G', 'H',  'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
 
 print(len(letters))
 input_days = [30, 60]
@@ -35,12 +34,11 @@ output_days = [1, 7]
 #Going to use 0.7 factor going forward, from now on.   
 use_scaling_factor = "0.7"
 deep_lstm = False
-deep_ae = False
+deep_ae = True
 test = False
 predict_type = "frost"
 #incoporate phase into base dataset name and base name!!! 
 #Make sure this works, huh? 
-prev_phase_base = "16"
 
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 

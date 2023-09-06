@@ -16,19 +16,20 @@ import slate_library
 #Phase 5 takes out rain 
 
 #Same basic processes. Taking out some 
-phase_name = "17"
-prev_phase_base = "17"
+phase_name = "23"
+prev_phase_base = "23"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
-# letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
-# 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+#letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
+#'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+#'W', 'X', 'Y', 'Z', 'AA', 'AC', 'AD']
+#letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
 
 letters = ['A', 'B', 'C', 'D', 'F', 'G', 
 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 
 'W', 'Y', 'AA', 'AB', 'AD']
-
+#letters = ['A', 'B']
 print(len(letters))
 input_days = [30, 60]
 output_days = [1, 7]
@@ -37,13 +38,14 @@ use_scaling_factor = "0.7"
 deep_lstm = False
 deep_ae = False
 test = False
+delete_stream="temp_hum"
 predict_type = "frost"
+prev_phase_base = "22"
+#test = False
 #incoporate phase into base dataset name and base name!!! 
-#Make sure this works, huh? 
-prev_phase_base = "16"
 
 #ae model is prev base name concat with scaling factor 
 #ae prev name is prev dataset name 
 
-slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, deep_lstm=deep_lstm, test=test, deep_ae=deep_ae, predict_type=predict_type)
+slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, deep_lstm=deep_lstm, test=test, deep_ae=deep_ae, predict_type=predict_type, delete_stream=delete_stream)
 
