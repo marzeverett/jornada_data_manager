@@ -21,7 +21,7 @@ prev_phase_base = "25"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
-letters = ["E", "G", "H", "J", "S", "T", "U", "V", "W"]
+letters = ["G", "J", "T", "V", "W"]
 
 #letters = ['A', 'B']
 print(len(letters))
@@ -42,6 +42,7 @@ transfer_dict = {
     "delete_stream": old_delete_stream,
     "part_train_letters": ["E", "H"],
 }
+prev_phase_base = "24"
 
 slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, test=test, predict_type=predict_type, transfer_learn=transfer_learn, transfer_dict=transfer_dict)
 
