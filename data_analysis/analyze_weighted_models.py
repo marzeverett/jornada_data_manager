@@ -66,7 +66,8 @@ col_names = {
             "training_time",
             "experiment_name",
             "dataset_name",
-            "epochs"
+            "epochs",
+            "f1"
     ],
     "ae": [
             "version",
@@ -131,10 +132,10 @@ def return_aggregate_metrics_dict():
             "min_mse": [],
             "max_mse": [],
             "stdev_mse": [],
-            "mean_binary_accuracy": [],
-            "min_binary_accuracy": [],
-            "max_binary_accuracy": [],
-            "stdev_binary_accuracy": [],
+            "mean_f1": [],
+            "min_f1": [],
+            "max_f1": [],
+            "stdev_f1": [],
             "mean_training_time": [],
             "mean_num_epochs": [],
             "location_scheme": [],
@@ -150,7 +151,7 @@ def calc_weighted_metric(df, input_output_csv, total_outputs, prediction=False):
     #print(df["dataset_name"])
     #And the mse.
     if prediction:
-        metric = "binary_accuracy"
+        metric = "f1"
     else:
         metric = "mse"
 
@@ -455,7 +456,7 @@ def get_best_weighted_mean_per_scheme(phase, prediction=False):
 
     #For each separation scheme
 
-# phase = "16"
+# phase = "10"
 # prediction = False
 # get_best_weighted_mean_per_scheme(phase, prediction=prediction)
 
@@ -523,7 +524,7 @@ def get_model_arch_comparison(phase, prediction=False):
     all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
     separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
     if prediction:
-        metric = "binary_accuracy"
+        metric = "f1"
     else:
         metric = "mse"
     scheme_letter_dict = {"letter": [], "mean base 8": [], "mean base 32": [], "mean base 64": []}
@@ -580,7 +581,7 @@ def compare_stdev(phase, prediction=False):
     all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
     separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
     if prediction:
-        metric = "binary_accuracy"
+        metric = "f1"
     else:
         metric = "mse"
     scheme_letter_dict = {"letter": [], "stdev base 8": [], "stdev base 32": [], "stdev base 64": []}

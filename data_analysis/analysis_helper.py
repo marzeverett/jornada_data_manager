@@ -80,7 +80,8 @@ col_names = {
             "training_time",
             "experiment_name",
             "dataset_name",
-            "epochs"
+            "epochs",
+            "f1"
     ],
 }
 
@@ -203,9 +204,9 @@ def get_min_models_per_network_type(sep_kind, correct_letters, phase, prediction
                     df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["prediction"])
                     #print(sub_letter)
                     #print(df.columns)
-                    min_df = df[df.binary_accuracy == df.binary_accuracy.min()]
-                    max_df = df[df.binary_accuracy == df.binary_accuracy.max()]
-                    main_metric = "binary_accuracy"
+                    min_df = df[df.f1 == df.f1.min()]
+                    max_df = df[df.f1 == df.f1.max()]
+                    main_metric = "f1"
                 else:
                     df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["lstm"])
                     min_df = df[df.mse == df.mse.min()]
@@ -254,9 +255,9 @@ def get_letter_graphs(phase, letter, prediction=False):
     graphing_vars = ["location_scheme", "datastream_scheme", "l_combo", "ds_combo", "input_days", "output_days", "dataset_size", "dataset_name", "experiment_name"]
     #only works for continuous vars
     if prediction:
-        correlation_vars =["binary_accuracy", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
+        correlation_vars =["f1", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
         df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=col_names["prediction"])
-        graph_against = "binary_accuracy"
+        graph_against = "f1"
     else:
         correlation_vars = ["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
         #Load in the df
@@ -326,6 +327,45 @@ def run_basic_analysis(phases):
             except Exception as e:
                 print(f"Couldn't get min models per network type for reason {e}")
 
+
+def adjust_prediction_models(phases):
+    read_in = [
+            "version",
+            "location_scheme",
+            "datastream_scheme",
+            "l_combo",
+            "ds_combo",
+            "input_days",
+            "output_days",
+            "loss",
+            "mse",
+            "f1",
+            "precision",
+            "recall",
+            "true_positives",
+            "true_negatives",
+            "false_positives",
+            "false_negatives",
+            "dataset_size",
+            "training_time",
+            "experiment_name",
+            "dataset_name",
+            "epochs"
+    ]
+    for phase in phases:
+        for letter in groups["lstm"]:
+            try:
+                df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=read_in)
+                df = df.assign(f1=(2*df["precision"]*df["recall"])/(df["precision"]+df["recall"]))
+                #Save it back 
+                df.to_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv")
+            except Exception as e:
+                print(f"No metrics for {phase} {letter}")
+
+
+#DONT ACCIDENTALLY DO ON A NON-PREDICTION MODEL!
+# phase = ["16"]
+# adjust_prediction_models(phase)
 # # # # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
 # phases = ["16"]
 # run_basic_analysis(phases)

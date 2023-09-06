@@ -64,7 +64,8 @@ col_names = {
             "training_time",
             "experiment_name",
             "dataset_name",
-            "epochs"
+            "epochs",
+            "f1"
     ],
     "ae": [
             "version",
@@ -112,10 +113,10 @@ aggregate_metrics = {
     "lstm_predict": {
         "letter": [],
         "phase_letter": [],
-        "mean_accuracy": [],
-        "min_accuracy": [],
-        "max_accuracy": [],
-        "stdev_accuracy": [],
+        "mean_f1": [],
+        "min_f1": [],
+        "max_f1": [],
+        "stdev_f1": [],
         "mean_mse": [],
         "min_mse": [],
         "max_mse": [],
@@ -187,14 +188,14 @@ def get_metric(df_dict, metric):
         return_metric = round(df["mse"].max(), 5)
     elif metric == "stdev_mse":
         return_metric = round(df["mse"].std(), 5)
-    elif metric == "mean_accuracy":
-        return_metric = round(df["binary_accuracy"].mean(), 5)
-    elif metric == "min_accuracy":
-        return_metric = round(df["binary_accuracy"].min(), 5)
-    elif metric == "max_accuracy":
-        return_metric = round(df["binary_accuracy"].max(), 5)
-    elif metric == "stdev_accuracy":
-        return_metric = round(df["binary_accuracy"].std(), 5)
+    elif metric == "mean_f1":
+        return_metric = round(df["f1"].mean(), 5)
+    elif metric == "min_f1":
+        return_metric = round(df["f1"].min(), 5)
+    elif metric == "max_f1":
+        return_metric = round(df["f1"].max(), 5)
+    elif metric == "stdev_f1":
+        return_metric = round(df["f1"].std(), 5)
     elif metric == "mean_mape":
         return_metric = round(df["mape"].mean(), 5)
     elif metric == "min_mape":

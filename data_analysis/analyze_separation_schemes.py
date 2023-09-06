@@ -66,7 +66,8 @@ col_names = {
             "training_time",
             "experiment_name",
             "dataset_name",
-            "epochs"
+            "epochs",
+            "f1"
     ],
     "ae": [
             "version",
@@ -131,10 +132,10 @@ def return_aggregate_metrics_dict():
             "min_mse": [],
             "max_mse": [],
             "stdev_mse": [],
-            "mean_binary_accuracy": [],
-            "min_binary_accuracy": [],
-            "max_binary_accuracy": [],
-            "stdev_binary_accuracy": [],
+            "mean_f1": [],
+            "min_f1": [],
+            "max_f1": [],
+            "stdev_f1": [],
             "mean_training_time": [],
             "mean_num_epochs": [],
             "location_scheme": [],
@@ -196,14 +197,14 @@ def get_metric(df_dict, metric):
         return_metric = round(df["mse"].max(), 5)
     elif metric == "stdev_mse":
         return_metric = round(df["mse"].std(), 5)
-    elif metric == "mean_binary_accuracy":
-        return_metric = round(df["binary_accuracy"].mean(), 5)
-    elif metric == "min_binary_accuracy":
-        return_metric = round(df["binary_accuracy"].min(), 5)
-    elif metric == "max_binary_accuracy":
-        return_metric = round(df["binary_accuracy"].max(), 5)
-    elif metric == "stdev_binary_accuracy":
-        return_metric = round(df["binary_accuracy"].std(), 5)    
+    elif metric == "mean_f1":
+        return_metric = round(df["f1"].mean(), 5)
+    elif metric == "min_f1":
+        return_metric = round(df["f1"].min(), 5)
+    elif metric == "max_f1":
+        return_metric = round(df["f1"].max(), 5)
+    elif metric == "stdev_f1":
+        return_metric = round(df["f1"].std(), 5)    
     elif metric == "mean_mape":
         return_metric = round(df["mape"].mean(), 5)
     elif metric == "min_mape":
@@ -283,7 +284,7 @@ def table_letters(kind, letters, file_path_1, phase_1, scheme_1, prediction=Fals
     #Row are metrics, columns are letters 
     letters_dict["Metric"] = ["mean_mse", "min_mse", "max_mse", "stdev_mse", "mean_training_time", "mean_num_epochs"]
     if prediction:
-        letters_dict["Metric"] = ["mean_binary_accuracy", "min_binary_accuracy", "max_binary_accuracy", "stdev_binary_accuracy", "mean_training_time", "mean_num_epochs"]
+        letters_dict["Metric"] = ["mean_f1", "min_f1", "max_f1", "stdev_f1", "mean_training_time", "mean_num_epochs"]
     for letter in letters:
         if letter in metrics_dict_1["letter"]:
             letter_index = metrics_dict_1["letter"].index(letter)
@@ -312,7 +313,7 @@ def test_letters(kind, letters, file_path_1, phase_1, scheme_1, prediction=False
 
     metric = "mse"
     if prediction:
-        metric = "binary_accuracy"
+        metric = "f1"
 
     for letter in letters:
         if letter in list(df_1.keys()):
@@ -363,8 +364,8 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
     datastream_combo = [*range(0, 5)]
 
     if prediction:
-        use_metric = "binary_accuracy"
-        metric_label = "max_binary_accuracy"
+        use_metric = "f1"
+        metric_label = "max_f1"
     else:
         use_metric = "mse"
         metric_label = "min_mse"
@@ -385,13 +386,13 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
             if not df_1_correct.empty:
                 #print(df_1_correct.head())
                 if prediction:
-                    result_1 = df_1_correct[df_1_correct.binary_accuracy == df_1_correct.binary_accuracy.max()]
+                    result_1 = df_1_correct[df_1_correct.f1 == df_1_correct.f1.max()]
                     result_1 = result_1.iloc[0]
                     #START HERE!!! 
                     # print(result_1)
                     # print(type(result_1))
                     # print(result_1["experiment_name"])
-                    # print(result_1["binary_accuracy"])
+                    # print(result_1["f1"])
                     # print(len(result_1.index))
                     #print(len(result_1.index))
                 else:
@@ -424,7 +425,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
         df_2_correct = df_2[df_2.l_combo == l_index]
         if not df_2_correct.empty:
                 if prediction:
-                    result_2 = df_2_correct[df_2_correct.binary_accuracy == df_2_correct.binary_accuracy.max()]
+                    result_2 = df_2_correct[df_2_correct.f1 == df_2_correct.f1.max()]
                     result_2 = result_2.iloc[0]
                 else:
                     result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
@@ -454,7 +455,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
         df_3_correct = df_3[df_3.ds_combo == ds_index]
         if not df_3_correct.empty:
                 if prediction:
-                    result_3 = df_3_correct[df_3_correct.binary_accuracy == df_3_correct.binary_accuracy.max()]
+                    result_3 = df_3_correct[df_3_correct.f1 == df_3_correct.f1.max()]
                     result_3 = result_3.iloc[0]
                 else:
                     result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
@@ -484,7 +485,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
     #print(df_4.head())
     #print(df_4.columns)
     if prediction:
-        result_4 = df_4[df_4.binary_accuracy == df_4.binary_accuracy.max()]
+        result_4 = df_4[df_4.f1 == df_4.f1.max()]
         result_4 = result_4.iloc[0]
     else:
         result_4 = df_4[df_4.mse == df_4.mse.min()]
@@ -537,8 +538,8 @@ def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, pr
     datastream_combo = [*range(0, 5)]
 
     if prediction:
-        use_metric = "binary_accuracy"
-        metric_label = "max_binary_accuracy"
+        use_metric = "f1"
+        metric_label = "max_f1"
     else:
         use_metric = "mse"
         metric_label = "min_mse"
@@ -560,7 +561,7 @@ def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, pr
             if not df_1_correct.empty:
                 #print(df_1_correct.head())
                 if prediction:
-                    result_1 = df_1_correct[df_1_correct.binary_accuracy == df_1_correct.binary_accuracy.max()]
+                    result_1 = df_1_correct[df_1_correct.f1 == df_1_correct.f1.max()]
                     result_1 = result_1.iloc[0]
                 else:
                     result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
@@ -595,7 +596,7 @@ def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, pr
         df_2_correct = df_2[df_2.l_combo == l_index]
         if not df_2_correct.empty:
                 if prediction:
-                    result_2 = df_2_correct[df_2_correct.binary_accuracy == df_2_correct.binary_accuracy.max()]
+                    result_2 = df_2_correct[df_2_correct.f1 == df_2_correct.f1.max()]
                     result_2 = result_2.iloc[0]
                 else:
                     result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
@@ -627,7 +628,7 @@ def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, pr
         df_3_correct = df_3[df_3.ds_combo == ds_index]
         if not df_3_correct.empty:
                 if prediction:
-                    result_3 = df_3_correct[df_3_correct.binary_accuracy == df_3_correct.binary_accuracy.max()]
+                    result_3 = df_3_correct[df_3_correct.f1 == df_3_correct.f1.max()]
                     result_3 = result_3.iloc[0]
                 else:
                     result_3 = df_3_correct[df_3_correct.mse == df_3_correct.mse.min()]
@@ -659,7 +660,7 @@ def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, pr
     #print(df_4.head())
     #print(df_4.columns)
     if prediction:
-        result_4 = df_4[df_4.binary_accuracy == df_4.binary_accuracy.max()]
+        result_4 = df_4[df_4.f1 == df_4.f1.max()]
         result_4 = result_4.iloc[0]
     else:
         result_4 = df_4[df_4.mse == df_4.mse.min()]
@@ -765,7 +766,7 @@ def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, pr
 #     all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AD"]
 
 #     if prediction:
-#         use_metric = "binary_accuracy"
+#         use_metric = "f1"
 #         metric_label = "min_binary_accuracy"
 #     else:
 #         use_metric = "mse"
@@ -879,7 +880,7 @@ def get_mean_min_per_organization(letters_dict, phase, file_path_start, kind, pr
 
 #     metric = "mse"
 #     if prediction:
-#         metric = "binary_accuracy"
+#         metric = "f1"
 
 #     for letter in letters:
 #         if letter in list(df_1.keys()):
