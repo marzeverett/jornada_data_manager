@@ -399,17 +399,17 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                     result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
                 separate_letters_dict["l_index"].append(l_index)
                 separate_letters_dict["ds_index"].append(d_index)
-                #separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
-                #separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
+                separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
+                separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
 
-                separate_letters_dict["model_name"].append(result_1["experiment_name"])
-                separate_letters_dict["dataset_name"].append(result_1["dataset_name"])
+                #separate_letters_dict["model_name"].append(result_1["experiment_name"])
+                #separate_letters_dict["dataset_name"].append(result_1["dataset_name"])
 
 
-                #separate_letters_dict[metric_label].append(result_1[use_metric].item())
-                separate_letters_dict[metric_label].append(result_1[use_metric])
-                #new_dataset_name = result_1["dataset_name"].item()
-                new_dataset_name = result_1["dataset_name"]
+                separate_letters_dict[metric_label].append(result_1[use_metric].item())
+                #separate_letters_dict[metric_label].append(result_1[use_metric])
+                new_dataset_name = result_1["dataset_name"].item()
+                #new_dataset_name = result_1["dataset_name"]
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())

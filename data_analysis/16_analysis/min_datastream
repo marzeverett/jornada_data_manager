@@ -1,5 +1,5 @@
 ds_index,model_name,dataset_name,min_mse,input_size,output_size
-1,16_F_exp32,16_F.v1.l0.ds1.l_combo0.ds_combo1.idays30.odays1,0.00708923116326332,63,90
-2,16_Q_exp64,16_Q.v1.l0.ds1.l_combo0.ds_combo2.idays30.odays1,0.002499733585864305,15,15
-3,16_F_exp64,16_F.v1.l0.ds1.l_combo0.ds_combo3.idays30.odays1,0.012020659632980824,54,76
-4,16_C_exp8,16_C.v1.l0.ds1.l_combo0.ds_combo4.idays30.odays1,0.03176497668027878,28,28
+1,16_Q_exp64,16_Q.v1.l0.ds1.l_combo0.ds_combo1.idays30.odays1,0.007385593838989735,75,90
+2,16_Q_exp8,16_Q.v1.l0.ds1.l_combo0.ds_combo2.idays30.odays1,0.003187448950484395,15,15
+3,16_AA_exp64,16_AA.v1.l0.ds1.l_combo0.ds_combo3.idays60.odays1,0.013265742920339108,64,76
+4,16_C_exp32,16_C.v1.l0.ds1.l_combo0.ds_combo4.idays30.odays1,0.034843239933252335,28,28

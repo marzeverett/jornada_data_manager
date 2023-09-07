@@ -1,7 +1,7 @@
 Metric,D,I
-mean_mse,0.01526,0.03692
-min_mse,0.00096,0.00109
-max_mse,0.05914,0.36565
-stdev_mse,0.01138,0.07606
-mean_training_time,77.27111,61.60605
-mean_num_epochs,68.27586,54.04454
+mean_mse,0.01639,0.04203
+min_mse,0.00166,0.00182
+max_mse,0.05759,0.39939
+stdev_mse,0.01252,0.08748
+mean_training_time,58.258,47.42312
+mean_num_epochs,52.74569,42.64799
