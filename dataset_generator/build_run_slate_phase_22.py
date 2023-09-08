@@ -18,9 +18,14 @@ phase_name = "22"
 prev_phase_base = "22"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
-letters = ['A', 'B', 'C', 'D', 'F', 'G', 'H', 
+# letters = ['A', 'B', 'C', 'D', 'F', 'G', 'H', 
+# 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+# 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+
+letters = ['D', 'F', 'G', 'H', 
 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+
 
 delete_stream = "temp_hum"
 
