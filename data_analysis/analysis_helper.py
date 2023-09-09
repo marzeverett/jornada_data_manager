@@ -369,6 +369,6 @@ def adjust_prediction_models(phases):
 # # # # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
 
 
-phases = ["16"]
-run_basic_analysis(phases)
+# phases = ["16"]
+# run_basic_analysis(phases)
 

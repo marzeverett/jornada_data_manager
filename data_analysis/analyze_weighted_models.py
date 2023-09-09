@@ -611,12 +611,13 @@ def compare_stdev(phase, prediction=False):
 
 
 
-phase = "16"
-total_outputs = 209
-prediction = False
-get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
-get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
-get_best_weighted_mean_per_scheme(phase, prediction=prediction)
-get_model_arch_comparison(phase, prediction=prediction)
-get_more_useful_slate_info(phase, prediction=prediction)
-compare_stdev(phase, prediction=prediction)
+# phase = "16"
+# total_outputs = 209
+# prediction = False
+# get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
+# get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
+# get_best_weighted_mean_per_scheme(phase, prediction=prediction)
+# get_model_arch_comparison(phase, prediction=prediction)
+# get_more_useful_slate_info(phase, prediction=prediction)
+# compare_stdev(phase, prediction=prediction)
+
