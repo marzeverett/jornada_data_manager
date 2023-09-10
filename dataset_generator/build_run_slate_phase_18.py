@@ -16,8 +16,8 @@ phase_name = "18"
 prev_phase_base = "18"
 phase_path_start = "generated_files/"
 
-letters = letters = ['A', 'B', 'C', 'D', 'F', 'G', 
-'I', 'J', 'M', 'N', 'Q', 'T', 'V', 
+letters = letters = ['A', 'B', 'C', 'F', 'G', 
+'J', 'M', 'N', 'Q', 'T', 'V', 
 'W', 'Y', 'AA', 'AB', 'AD']
 
 print(len(letters))
