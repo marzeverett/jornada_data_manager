@@ -1,1 +1,16 @@
 l_index,model_name,dataset_name,max_f1,input_size,output_size
+0,17_M_exp64,17_M.v1.l1.ds0.l_combo0.ds_combo0.idays30.odays1,0.5794392478592021,11,1
+1,17_B_exp8,17_B.v1.l1.ds0.l_combo1.ds_combo0.idays30.odays1,0.8163265390251359,15,1
+2,17_V_exp8,17_V.v1.l1.ds0.l_combo2.ds_combo0.idays60.odays1,0.8289473638547337,13,1
+3,17_V_exp8,17_V.v1.l1.ds0.l_combo3.ds_combo0.idays30.odays1,0.7807807790714787,13,1
+4,17_M_exp8,17_M.v1.l1.ds0.l_combo4.ds_combo0.idays30.odays1,0.8235294077576709,11,1
+5,17_B_exp32,17_B.v1.l1.ds0.l_combo5.ds_combo0.idays30.odays1,0.5652173897269083,15,1
+6,17_B_exp8,17_B.v1.l1.ds0.l_combo6.ds_combo0.idays60.odays1,0.8123249196532192,7,1
+7,17_M_exp8,17_M.v1.l1.ds0.l_combo7.ds_combo0.idays30.odays1,0.8532423168907841,11,1
+8,17_V_exp8,17_V.v1.l1.ds0.l_combo8.ds_combo0.idays30.odays1,0.8613138564565727,13,1
+9,17_J_exp8,17_J.v1.l1.ds0.l_combo9.ds_combo0.idays60.odays7,0.8216027753139851,10,1
+10,17_V_exp64,17_V.v1.l1.ds0.l_combo10.ds_combo0.idays60.odays1,0.8806818131557546,10,1
+11,17_V_exp32,17_V.v1.l1.ds0.l_combo11.ds_combo0.idays60.odays1,0.8507042337584836,13,1
+12,17_B_exp8,17_B.v1.l1.ds0.l_combo12.ds_combo0.idays30.odays1,0.7926829378832526,15,1
+13,17_B_exp8,17_B.v1.l1.ds0.l_combo13.ds_combo0.idays60.odays1,0.8333333186647891,15,1
+14,17_V_exp64,17_V.v1.l1.ds0.l_combo14.ds_combo0.idays60.odays7,0.7727638954007006,13,1

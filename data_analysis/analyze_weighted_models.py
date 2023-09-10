@@ -618,7 +618,7 @@ def compare_stdev(phase, prediction=False):
 
 
 # phase = "17"
-# total_outputs = 1
+# total_outputs = 15
 # prediction = True
 # get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
 # get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)

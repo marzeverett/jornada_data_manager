@@ -216,14 +216,24 @@ def get_min_models_per_network_type(sep_kind, correct_letters, phase, prediction
                     min_mse = min_df
                     min_letter = sub_letter
                 else:
-                    if min_df[main_metric].item() < min_mse[main_metric].item():
+                    try:
+                        df_min = min_df[main_metric].item()
+                        mse_min = min_mse[main_metric].item()
+                        df_max = max_df[main_metric].item()
+                        mse_max = max_mse[main_metric].item()
+                    except Exception as e:
+                        df_min = min_df[main_metric].iloc[0].item()
+                        mse_min = min_mse[main_metric].iloc[0].item()
+                        df_max = max_df[main_metric].iloc[0].item()
+                        mse_max = max_mse[main_metric].iloc[0].item()
+                    if df_min < mse_min:
                         min_mse = min_df
                         min_letter = sub_letter
                 if max_mse.empty:
                     max_mse = max_df
                     max_letter = sub_letter
                 else:
-                    if max_df[main_metric].item() > max_mse[main_metric].item():
+                    if df_max > mse_max:
                         max_mse = max_df
                         max_letter = sub_letter
             except Exception as e:
@@ -306,7 +316,7 @@ def run_basic_analysis(phases):
         try:
             minimum_comparison_models(phase, prediction=prediction)
         except Exception as e:
-           print(f"Couldn't get minimum comparison models for reason {e}")
+          print(f"Couldn't get minimum comparison models for reason {e}")
         #Then get the metrics per separation scheme:
         #Will need to make sure this saves correctly 
         for i in range(0, len(separation_scheme_list)):

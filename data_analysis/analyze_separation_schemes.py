@@ -349,7 +349,10 @@ def read_in_dfs_concat(file_path_start, letters, phases, kind, prediction=False)
         for letter in letters:
             file_path = file_path_start + "phase_"+str(phase)+"/"+str(phase)+"_"+str(letter)+"main_metrics.csv"
             try:
-                sub_df = pd.read_csv(file_path, names=col_names[kind])
+                if prediction:
+                    sub_df = pd.read_csv(file_path)
+                else:
+                    sub_df = pd.read_csv(file_path, names=col_names[kind])
                 df = df.append(sub_df)
             except Exception as e:
                 pass
@@ -381,8 +384,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
     
     #Separate case:
     df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind, prediction=prediction)
-    #print(df_1.columns)
-    #print(df_1["ds_combo"])
+
     for l_index in location_combo:
         for d_index in datastream_combo:
             dict_index = f"{l_index}_{d_index}"
@@ -407,17 +409,17 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                     result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
                 separate_letters_dict["l_index"].append(l_index)
                 separate_letters_dict["ds_index"].append(d_index)
-                separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
-                separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
+                #separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
+                #separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
 
-                #separate_letters_dict["model_name"].append(result_1["experiment_name"])
-                #separate_letters_dict["dataset_name"].append(result_1["dataset_name"])
+                separate_letters_dict["model_name"].append(result_1["experiment_name"])
+                separate_letters_dict["dataset_name"].append(result_1["dataset_name"])
 
 
-                separate_letters_dict[metric_label].append(result_1[use_metric].item())
-                #separate_letters_dict[metric_label].append(result_1[use_metric])
-                new_dataset_name = result_1["dataset_name"].item()
-                #new_dataset_name = result_1["dataset_name"]
+                #separate_letters_dict[metric_label].append(result_1[use_metric].item())
+                separate_letters_dict[metric_label].append(result_1[use_metric])
+                #new_dataset_name = result_1["dataset_name"].item()
+                new_dataset_name = result_1["dataset_name"]
                 try:
                     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
                     separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
@@ -438,7 +440,7 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
                 else:
                     result_2 = df_2_correct[df_2_correct.mse == df_2_correct.mse.min()]
                     result_2 = result_2.iloc[0]
-                all_datastreams_separate_locations_dict["l_index"].append(l_index,)
+                all_datastreams_separate_locations_dict["l_index"].append(l_index)
                 # all_datastreams_separate_locations_dict["model_name"].append(result_2["experiment_name"].item())
                 # all_datastreams_separate_locations_dict["dataset_name"].append(result_2["dataset_name"].item())
                 # all_datastreams_separate_locations_dict[metric_label].append(result_2[use_metric].item())
