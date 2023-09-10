@@ -127,7 +127,10 @@ def read_in_dfs(file_path, ingroup="lstm"):
                 sub_dict["letter"] = letter
                 sub_dict["phase_letter"] = phase_letter
                 cols = col_names[ingroup]
-                sub_dict["df"] = pd.read_csv(f, names=cols)
+                if ingroup == "prediction":
+                    sub_dict["df"] = pd.read_csv(f)
+                else:
+                    sub_dict["df"] = pd.read_csv(f, names=cols)
                 df_dict[letter] = sub_dict
 
     return df_dict 

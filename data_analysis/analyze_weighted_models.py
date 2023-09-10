@@ -180,9 +180,10 @@ def load_and_weight(phase, letter, curr_sep_dict, curr_sep_kind, input_var, outp
         metrics_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
         if prediction:
             cols = col_names["prediction"]
+            whole_df = pd.read_csv(metrics_path)
         else:
             cols = col_names["lstm"]
-        whole_df = pd.read_csv(metrics_path, names=cols)
+            whole_df = pd.read_csv(metrics_path, names=cols)
         # print(whole_df.head())
         # print(whole_df.columns)
         # print(whole_df["input_days"])
@@ -324,7 +325,10 @@ def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
                 #print(letter)
                 df_path = f"{phase}_analysis/combo_models/{letter}_combos_weighted.csv"
                 df = pd.read_csv(df_path)
-                df_row = df[df[metric] == df[metric].min()]
+                if prediction:
+                    df_row = df[df[metric] == df[metric].max()]
+                else:
+                    df_row = df[df[metric] == df[metric].min()]
                 #print(df_row.empty)
                 if min_row.empty:
                     min_row = df_row
@@ -523,9 +527,10 @@ def get_model_arch_comparison(phase, prediction=False):
                 df_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
                 if prediction:
                     cols = col_names["prediction"]
+                    df = pd.read_csv(df_path)
                 else:
                     cols = col_names["lstm"]
-                df = pd.read_csv(df_path, names=cols)
+                    df = pd.read_csv(df_path, names=cols)
                 exp_8_name = f"{phase}_{letter}_exp8"
                 exp_32_name = f"{phase}_{letter}_exp32"
                 exp_64_name = f"{phase}_{letter}_exp64"
@@ -578,9 +583,10 @@ def compare_stdev(phase, prediction=False):
                 df_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
                 if prediction:
                     cols = col_names["prediction"]
+                    df = pd.read_csv(df_path)
                 else:
                     cols = col_names["lstm"]
-                df = pd.read_csv(df_path, names=cols)
+                    df = pd.read_csv(df_path, names=cols)
                 exp_8_name = f"{phase}_{letter}_exp8"
                 exp_32_name = f"{phase}_{letter}_exp32"
                 exp_64_name = f"{phase}_{letter}_exp64"
@@ -611,9 +617,9 @@ def compare_stdev(phase, prediction=False):
 
 
 
-# phase = "16"
-# total_outputs = 209
-# prediction = False
+# phase = "17"
+# total_outputs = 1
+# prediction = True
 # get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
 # get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
 # get_best_weighted_mean_per_scheme(phase, prediction=prediction)

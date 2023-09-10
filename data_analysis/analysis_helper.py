@@ -125,7 +125,7 @@ aggregate_metrics = {
     }
 }
 
-prediction_slates = ["10", "11", "12", "13", "14"]
+prediction_slates = ["10", "11", "12", "13", "14", "17"]
 
 network_1_letters = ["A", "B", "C", "D"]
 network_2_letters = ["E", "F", "G", "H", "I", "J", "L", "M", "N", "Q", "AF", "AG", "AJ"]
@@ -201,7 +201,7 @@ def get_min_models_per_network_type(sep_kind, correct_letters, phase, prediction
             try:
                 #load in the letter df.
                 if prediction:
-                    df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv", names=col_names["prediction"])
+                    df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{sub_letter}main_metrics.csv")
                     #print(sub_letter)
                     #print(df.columns)
                     min_df = df[df.f1 == df.f1.min()]
@@ -256,7 +256,7 @@ def get_letter_graphs(phase, letter, prediction=False):
     #only works for continuous vars
     if prediction:
         correlation_vars =["f1", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
-        df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=col_names["prediction"])
+        df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv")
         graph_against = "f1"
     else:
         correlation_vars = ["mse", "input_days", "output_days", "dataset_size", "training_time", "epochs"]
@@ -306,7 +306,7 @@ def run_basic_analysis(phases):
         try:
             minimum_comparison_models(phase, prediction=prediction)
         except Exception as e:
-            print(f"Couldn't get minimum comparison models for reason {e}")
+           print(f"Couldn't get minimum comparison models for reason {e}")
         #Then get the metrics per separation scheme:
         #Will need to make sure this saves correctly 
         for i in range(0, len(separation_scheme_list)):
@@ -357,6 +357,7 @@ def adjust_prediction_models(phases):
             try:
                 df = pd.read_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv", names=read_in)
                 df = df.assign(f1=(2*df["precision"]*df["recall"])/(df["precision"]+df["recall"]))
+                df["f1"] = df["f1"].fillna(0)
                 #Save it back 
                 df.to_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv")
             except Exception as e:
@@ -364,11 +365,13 @@ def adjust_prediction_models(phases):
 
 
 #DONT ACCIDENTALLY DO ON A NON-PREDICTION MODEL!
-# phase = ["16"]
+# phase = ["17"]
 # adjust_prediction_models(phase)
 # # # # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
 
 
-# phases = ["16"]
-# run_basic_analysis(phases)
+
+
+phases = ["17"]
+run_basic_analysis(phases)
 

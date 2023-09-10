@@ -164,9 +164,10 @@ def read_in_dfs(file_path, phase, ingroup="lstm", prediction=False):
                 sub_dict["phase_letter"] = phase_letter
                 if prediction:
                     cols = col_names["prediction"]
+                    sub_dict["df"] = pd.read_csv(f)
                 else:
                     cols = col_names[ingroup]
-                sub_dict["df"] = pd.read_csv(f, names=cols)
+                    sub_dict["df"] = pd.read_csv(f, names=cols)
                 df_dict[letter] = sub_dict
 
     return df_dict 
@@ -176,9 +177,10 @@ def read_in_df_single(letter, phase, ingroup="lstm", prediction=False):
     file_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
     if prediction:
         cols = col_names["prediction"]
+        df = pd.read_csv(file_path)
     else:
         cols = col_names[ingroup]
-    df = pd.read_csv(file_path, names=cols)
+        df = pd.read_csv(file_path, names=cols)
     return df 
 
 #This is disgusting but I'm too lazy to change it
@@ -376,13 +378,19 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
     all_datastreams_separate_locations_dict = {"l_index": [], "model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
     all_datastreams_all_locations_dict = {"model_name": [], "dataset_name": [], metric_label: [], "input_size": [], "output_size": []}
 
+    
     #Separate case:
     df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind, prediction=prediction)
+    #print(df_1.columns)
+    #print(df_1["ds_combo"])
     for l_index in location_combo:
         for d_index in datastream_combo:
             dict_index = f"{l_index}_{d_index}"
             #Find the appropriate row in the dataframe for df1 
             df_1_correct = df_1[(df_1['l_combo'] == l_index) & (df_1['ds_combo'] == d_index)]
+            #print(dict_index)
+            #print(len(df_1_correct.index))
+
             if not df_1_correct.empty:
                 #print(df_1_correct.head())
                 if prediction:

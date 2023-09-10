@@ -1,0 +1,2 @@
+model_name,dataset_name,max_f1,input_size,output_size
+training_time,experiment_name,epochs,-1,-1
