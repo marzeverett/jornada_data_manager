@@ -16,14 +16,14 @@ phase_name = "18"
 prev_phase_base = "18"
 phase_path_start = "generated_files/"
 
-letters = letters = ['A', 'B', 'C', 'F', 'G', 
+letters = ['A', 'B', 'C', 'F', 'G', 
 'J', 'M', 'N', 'Q', 'T', 'V', 
 'W', 'Y', 'AA', 'AB', 'AD']
 
 print(len(letters))
 input_days = [30, 60]
 output_days = [1, 7]
-#Going to use 0.7 factor going forward, from now on.   
+#Going to use 0.7 factor going forward, from now on.  
 use_scaling_factor = "0.7"
 deep_lstm = True
 deep_ae = False
