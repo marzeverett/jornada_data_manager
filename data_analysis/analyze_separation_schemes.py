@@ -384,50 +384,50 @@ def get_min_per_organization(file_path_start, phases, kind, prediction=False):
     
     #Separate case:
     df_1 = read_in_dfs_concat(file_path_start, separate_letters, phases, kind, prediction=prediction)
+    if not df_1.empty:
+        for l_index in location_combo:
+            for d_index in datastream_combo:
+                dict_index = f"{l_index}_{d_index}"
+                #Find the appropriate row in the dataframe for df1 
+                df_1_correct = df_1[(df_1['l_combo'] == l_index) & (df_1['ds_combo'] == d_index)]
+                #print(dict_index)
+                #print(len(df_1_correct.index))
 
-    for l_index in location_combo:
-        for d_index in datastream_combo:
-            dict_index = f"{l_index}_{d_index}"
-            #Find the appropriate row in the dataframe for df1 
-            df_1_correct = df_1[(df_1['l_combo'] == l_index) & (df_1['ds_combo'] == d_index)]
-            #print(dict_index)
-            #print(len(df_1_correct.index))
+                if not df_1_correct.empty:
+                    #print(df_1_correct.head())
+                    if prediction:
+                        result_1 = df_1_correct[df_1_correct.f1 == df_1_correct.f1.max()]
+                        result_1 = result_1.iloc[0]
+                        #START HERE!!! 
+                        # print(result_1)
+                        # print(type(result_1))
+                        # print(result_1["experiment_name"])
+                        # print(result_1["f1"])
+                        # print(len(result_1.index))
+                        #print(len(result_1.index))
+                    else:
+                        result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
+                    separate_letters_dict["l_index"].append(l_index)
+                    separate_letters_dict["ds_index"].append(d_index)
+                    #separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
+                    #separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
 
-            if not df_1_correct.empty:
-                #print(df_1_correct.head())
-                if prediction:
-                    result_1 = df_1_correct[df_1_correct.f1 == df_1_correct.f1.max()]
-                    result_1 = result_1.iloc[0]
-                    #START HERE!!! 
-                    # print(result_1)
-                    # print(type(result_1))
-                    # print(result_1["experiment_name"])
-                    # print(result_1["f1"])
-                    # print(len(result_1.index))
-                    #print(len(result_1.index))
-                else:
-                    result_1 = df_1_correct[df_1_correct.mse == df_1_correct.mse.min()]
-                separate_letters_dict["l_index"].append(l_index)
-                separate_letters_dict["ds_index"].append(d_index)
-                #separate_letters_dict["model_name"].append(result_1["experiment_name"].item())
-                #separate_letters_dict["dataset_name"].append(result_1["dataset_name"].item())
-
-                separate_letters_dict["model_name"].append(result_1["experiment_name"])
-                separate_letters_dict["dataset_name"].append(result_1["dataset_name"])
+                    separate_letters_dict["model_name"].append(result_1["experiment_name"])
+                    separate_letters_dict["dataset_name"].append(result_1["dataset_name"])
 
 
-                #separate_letters_dict[metric_label].append(result_1[use_metric].item())
-                separate_letters_dict[metric_label].append(result_1[use_metric])
-                #new_dataset_name = result_1["dataset_name"].item()
-                new_dataset_name = result_1["dataset_name"]
-                try:
-                    i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
-                    separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
-                    separate_letters_dict["output_size"].append(i_o_csv["output_size"].item())
-                except Exception as e:
-                    print(f"Error getting min per org (1) due to {e}")
-                    separate_letters_dict["input_size"].append(-1)
-                    separate_letters_dict["output_size"].append(-1)
+                    #separate_letters_dict[metric_label].append(result_1[use_metric].item())
+                    separate_letters_dict[metric_label].append(result_1[use_metric])
+                    #new_dataset_name = result_1["dataset_name"].item()
+                    new_dataset_name = result_1["dataset_name"]
+                    try:
+                        i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
+                        separate_letters_dict["input_size"].append(i_o_csv["input_size"].item())
+                        separate_letters_dict["output_size"].append(i_o_csv["output_size"].item())
+                    except Exception as e:
+                        print(f"Error getting min per org (1) due to {e}")
+                        separate_letters_dict["input_size"].append(-1)
+                        separate_letters_dict["output_size"].append(-1)
     #Separate location 
     df_2 = read_in_dfs_concat(file_path_start, all_datastreams_separate_locations, phases, kind, prediction=prediction)
     for l_index in location_combo:

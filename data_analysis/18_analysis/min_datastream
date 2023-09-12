@@ -1,0 +1,5 @@
+ds_index,model_name,dataset_name,min_mse,input_size,output_size
+1,18_C_exp64,18_C.v1.l0.ds1.l_combo0.ds_combo1.idays60.odays1,0.007499852217733859,90,90
+2,18_AA_exp64,18_AA.v1.l0.ds1.l_combo0.ds_combo2.idays30.odays1,0.0031956578604876995,15,15
+3,18_C_exp32,18_C.v1.l0.ds1.l_combo0.ds_combo3.idays60.odays1,0.013356107287108898,76,76
+4,18_F_exp64,18_F.v1.l0.ds1.l_combo0.ds_combo4.idays30.odays1,0.034818965941667564,20,28

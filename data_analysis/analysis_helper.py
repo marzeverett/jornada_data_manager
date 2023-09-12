@@ -372,16 +372,17 @@ def adjust_prediction_models(phases):
                 df.to_csv(f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv")
             except Exception as e:
                 print(f"No metrics for {phase} {letter}")
+                print(e)
 
 
-#DONT ACCIDENTALLY DO ON A NON-PREDICTION MODEL!
-# phase = ["17"]
+# #DONT ACCIDENTALLY DO ON A NON-PREDICTION MODEL!
+# phase = ["19"]
 # adjust_prediction_models(phase)
 # # # # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
 
 
 
 
-phases = ["17"]
-run_basic_analysis(phases)
+# phases = ["18"]
+# run_basic_analysis(phases)
 

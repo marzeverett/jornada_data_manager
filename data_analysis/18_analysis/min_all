@@ -1,0 +1,2 @@
+model_name,dataset_name,min_mse,input_size,output_size
+18_A_exp64,18_A.v1.l0.ds0.l_combo0.ds_combo0.idays60.odays1,0.012433555908501148,209,209
