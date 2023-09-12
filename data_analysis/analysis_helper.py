@@ -125,7 +125,7 @@ aggregate_metrics = {
     }
 }
 
-prediction_slates = ["10", "11", "12", "13", "14", "17"]
+prediction_slates = ["10", "11", "12", "13", "14", "17", "19"]
 
 network_1_letters = ["A", "B", "C", "D"]
 network_2_letters = ["E", "F", "G", "H", "I", "J", "L", "M", "N", "Q", "AF", "AG", "AJ"]
@@ -383,6 +383,6 @@ def adjust_prediction_models(phases):
 
 
 
-# phases = ["18"]
+# phases = ["19"]
 # run_basic_analysis(phases)
 
