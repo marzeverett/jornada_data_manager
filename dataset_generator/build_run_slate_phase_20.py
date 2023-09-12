@@ -13,7 +13,7 @@ import slate_library
 
 #Same basic processes. Taking out some 
 phase_name = "20"
-prev_phase_base = "20"
+#prev_phase_base = "20"
 phase_path_start = "generated_files/"
 
 # letters = ['E', 'F', 'G', 'H', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
@@ -32,5 +32,5 @@ test = False
 conv = False
 transfer_learn = False
 
-slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, prev_phase_base=prev_phase_base, test=test)
+slate_library.run(phase_name, phase_path_start, letters, input_days, output_days, use_scaling_factor, test=test)
 
