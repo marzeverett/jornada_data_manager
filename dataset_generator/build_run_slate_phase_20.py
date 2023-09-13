@@ -16,8 +16,13 @@ phase_name = "20"
 #prev_phase_base = "20"
 phase_path_start = "generated_files/"
 
- letters = ['E', 'F', 'G', 'H', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+#  letters = ['E', 'F', 'G', 'H', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
+#  'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+
+
+ letters = ['M', 'N', 'Q', 'S', 'T', 'U', 'V', 
  'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+
 
 #letters = ['J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
 #'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
