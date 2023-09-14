@@ -615,11 +615,9 @@ def compare_stdev(phase, prediction=False):
     final_df.to_csv(save_path)
 
 
-
-
-# phase = "19"
-# total_outputs = 1
-# prediction = True
+# phase = "22"
+# total_outputs = 119
+# prediction = False
 # get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
 # get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
 # get_best_weighted_mean_per_scheme(phase, prediction=prediction)
