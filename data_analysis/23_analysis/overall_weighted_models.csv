@@ -1,0 +1,4 @@
+,letter,input_days,output_days,experiment_name,weighted_metric
+6,N,60,1,23_N_exp8,0.792238049068927
+6,C,60,1,23_C_exp8,0.6048929742068729
+3,B,30,7,23_B_exp8,0.5249969820853811
