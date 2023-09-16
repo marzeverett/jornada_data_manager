@@ -17,7 +17,7 @@ import slate_library
 
 #Same basic processes. Taking out some 
 phase_name = "21"
-prev_phase_base = "21"
+prev_phase_base = "20"
 phase_path_start = "generated_files/"
 #Don't build new datasets!!! 
 #Might not have to use all of the letters here, I think. 
@@ -25,8 +25,8 @@ phase_path_start = "generated_files/"
 # 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
 # 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
 
-letters = ['E', 'F', 'G', 'H', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 
-'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']
+letters = ['F', 'G', 'J', 'M', 'N', 'Q', 'T', 'V', 
+'W', 'Y', 'AA', 'AB', 'AD']
 
 print(len(letters))
 input_days = [30, 60]
@@ -37,6 +37,7 @@ deep_lstm = False
 deep_ae = True
 test = False
 predict_type = "frost"
+prev_phase_base="20"
 #incoporate phase into base dataset name and base name!!! 
 #Make sure this works, huh? 
 
