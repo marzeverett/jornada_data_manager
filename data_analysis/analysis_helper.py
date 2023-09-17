@@ -125,7 +125,7 @@ aggregate_metrics = {
     }
 }
 
-prediction_slates = ["10", "11", "12", "13", "14", "17", "19", "23"]
+prediction_slates = ["10", "11", "12", "13", "14", "17", "19", "23", "25"]
 
 network_1_letters = ["A", "B", "C", "D"]
 network_2_letters = ["E", "F", "G", "H", "I", "J", "L", "M", "N", "Q", "AF", "AG", "AJ"]
@@ -376,13 +376,13 @@ def adjust_prediction_models(phases):
 
 
 # #DONT ACCIDENTALLY DO ON A NON-PREDICTION MODEL!
-# phase = ["23"]
+# phase = ["25"]
 # adjust_prediction_models(phase)
 # # # # # #But we need to find a per-separation scheme, per-network ad-hoc analysis 
 
 
 
 
-# phases = ["24"]
+# phases = ["25"]
 # run_basic_analysis(phases)
 

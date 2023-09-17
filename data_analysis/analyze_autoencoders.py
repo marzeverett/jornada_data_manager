@@ -27,48 +27,6 @@ groups = {
 }
 
 col_names = {
-    "lstm": [
-            "version",
-            "location_scheme",
-            "datastream_scheme",
-            "l_combo",
-            "ds_combo",
-            "input_days",
-            "output_days",
-            "loss",
-            "mse",
-            "mape",
-            "mae",
-            "dataset_size",
-            "training_time",
-            "experiment_name",
-            "dataset_name",
-            "epochs"
-    ],
-    "prediction": [
-            "version",
-            "location_scheme",
-            "datastream_scheme",
-            "l_combo",
-            "ds_combo",
-            "input_days",
-            "output_days",
-            "loss",
-            "mse",
-            "binary_accuracy",
-            "precision",
-            "recall",
-            "true_positives",
-            "true_negatives",
-            "false_positives",
-            "false_negatives",
-            "dataset_size",
-            "training_time",
-            "experiment_name",
-            "dataset_name",
-            "epochs",
-            "f1"
-    ],
     "ae": [
             "version",
             "location_scheme",
@@ -88,63 +46,11 @@ col_names = {
 }
 
 
-def return_aggregate_metrics_dict():
-    aggregate_metrics = {
-        "lstm": {
-            "letter": [],
-            "phase_letter": [],
-            "mean_mse": [],
-            "min_mse": [],
-            "max_mse": [],
-            "stdev_mse": [],
-            "mean_mape": [],
-            "min_mape": [],
-            "max_mape": [],
-            "stdev_mape": [],
-            "mean_mae": [],
-            "min_mae": [],
-            "max_mae": [],
-            "stdev_mae": [],
-            "mean_training_time": [],
-            "mean_num_epochs": [],
-            "location_scheme": [],
-            "datastream_scheme": [],
-            "num_experiments": [],
-        },
-
-        "ae":  {
-            "letter": [],
-            "phase_letter": [],
-            "mean_mse": [],
-            "min_mse": [],
-            "max_mse": [],
-            "stdev_mse": [],
-            "mean_training_time": [],
-            "mean_num_epochs": [],
-            "location_scheme": [],
-            "datastream_scheme": [],
-            "num_experiments": [],
-        },
-        "prediction": {
-            "letter": [],
-            "phase_letter": [],
-            "mean_mse": [],
-            "min_mse": [],
-            "max_mse": [],
-            "stdev_mse": [],
-            "mean_f1": [],
-            "min_f1": [],
-            "max_f1": [],
-            "stdev_f1": [],
-            "mean_training_time": [],
-            "mean_num_epochs": [],
-            "location_scheme": [],
-            "datastream_scheme": [],
-            "num_experiments": [],
-        }
-    }
-    return aggregate_metrics
-
+#What do we want from autoencoders? 
+#Basically
+#Average mse per letter
+#Min model per datastream/location, or both, depending
+#Min per 
 
 #Calculated the weighted metric 
 def calc_weighted_metric(df, input_output_csv, total_outputs, prediction=False):
@@ -157,8 +63,9 @@ def calc_weighted_metric(df, input_output_csv, total_outputs, prediction=False):
 
     new_dataset_name = df["dataset_name"].item()
     i_o_csv = input_output_csv.loc[input_output_csv["dataset_name"] == new_dataset_name]
-    #print(new_dataset_name)
-    #print(i_o_csv["output_size"])
+    print(new_dataset_name)
+    print(i_o_csv["output_size"])
+
     output_size = i_o_csv["output_size"].item()
     value_metric = df[metric].item()
     weighting = output_size/total_outputs
@@ -172,7 +79,7 @@ def calc_weighted_metric(df, input_output_csv, total_outputs, prediction=False):
 
 #This is ONE variation. 
 def load_and_weight(phase, letter, curr_sep_dict, curr_sep_kind, input_var, output_var, exp_var, input_output_csv, total_outputs, prediction=False):
-    try:
+    #try:
         location_combo = [*range(0, 16)]
         datastream_combo = [*range(0, 5)]
         exp_name = f"{phase}_{letter}_exp{exp_var}"
@@ -182,7 +89,7 @@ def load_and_weight(phase, letter, curr_sep_dict, curr_sep_kind, input_var, outp
             cols = col_names["prediction"]
             whole_df = pd.read_csv(metrics_path)
         else:
-            cols = col_names["lstm"]
+            cols = col_names["ae"]
             whole_df = pd.read_csv(metrics_path, names=cols)
         # print(whole_df.head())
         # print(whole_df.columns)
@@ -243,8 +150,8 @@ def load_and_weight(phase, letter, curr_sep_dict, curr_sep_kind, input_var, outp
         curr_sep_dict["output_days"].append(output_var)
         curr_sep_dict["experiment_name"].append(exp_name)
         curr_sep_dict["weighted_metric"].append(weighted_mse)
-    except Exception as e:
-      print(f"Issue with letter {letter} {input_var} {output_var} {exp_var}: {e}")
+    #except Exception as e:
+    #  print(f"Issue with letter {letter} {input_var} {output_var} {exp_var}: {e}")
 
     
 
@@ -259,7 +166,7 @@ def get_all_weighted_variations(phase, letter, curr_sep_kind, total_outputs, pre
     input_output_csv = pd.read_csv("inputs_outputs/full_inputs_outputs.csv")
     input_days = [30, 60]
     output_days = [1, 7]
-    scaling_factors = [8, 32, 64]
+    scaling_factors = [0.7]
     
     for input_var in input_days:
         for output_var in output_days:
@@ -267,7 +174,7 @@ def get_all_weighted_variations(phase, letter, curr_sep_kind, total_outputs, pre
                 load_and_weight(phase, letter, variation_dict, curr_sep_kind, input_var, output_var, exp_var, input_output_csv, total_outputs, prediction=prediction)
     
     #Then save 
-    save_folder = f"{phase}_analysis/combo_models/"
+    save_folder = f"{phase}_analysis/AE_combo_models/"
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
     save_name = f"{letter}_combos_weighted.csv"
@@ -280,10 +187,10 @@ def get_all_weighted_variations(phase, letter, curr_sep_kind, total_outputs, pre
 
 def get_best_weighted_model_per_organization(phase, total_outputs, prediction=False):
     #Letters
-    separate_letters = ['D', 'I']
-    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
-    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
-    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separate_letters = ['H']
+    separate_datastreams_all_locations = ["E", "Z"]
+    all_datastreams_separate_locations = ["L", "U"]
+    all_datastreams_all_locations = ["S", "X", "AC"]
 
 
     #Alltogether now 
@@ -302,10 +209,11 @@ def get_best_weighted_model_per_organization(phase, total_outputs, prediction=Fa
     
 def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
     #Letters
-    separate_letters = ['D', 'I']
-    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
-    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
-    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separate_letters = ['H']
+    separate_datastreams_all_locations = ["E", "Z"]
+    all_datastreams_separate_locations = ["L", "U"]
+    all_datastreams_all_locations = ["S", "X", "AC"]
+
     separation_schemes = [all_datastreams_all_locations, separate_datastreams_all_locations, all_datastreams_separate_locations, separate_letters]
     final_df = pd.DataFrame()
     if prediction:
@@ -323,7 +231,7 @@ def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
             #Try to load it in 
             try:
                 #print(letter)
-                df_path = f"{phase}_analysis/combo_models/{letter}_combos_weighted.csv"
+                df_path = f"{phase}_analysis/AE_combo_models/{letter}_combos_weighted.csv"
                 df = pd.read_csv(df_path)
                 if prediction:
                     df_row = df[df[metric] == df[metric].max()]
@@ -368,7 +276,7 @@ def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
         #print(final_df.head())
 
     
-    save_path = f"{phase}_analysis/overall_weighted_models.csv"
+    save_path = f"{phase}_analysis/AE_overall_weighted_models.csv"
     final_df.to_csv(save_path)
 
     #For each separation scheme
@@ -399,7 +307,7 @@ def get_best_weighted_mean_per_scheme(phase, prediction=False):
             #Try to load it in 
             try:
                 #print(letter)
-                df_path = f"{phase}_analysis/combo_models/{letter}_combos_weighted.csv"
+                df_path = f"{phase}_analysis/AE_combo_models/{letter}_combos_weighted.csv"
                 df = pd.read_csv(df_path)
                 df_mean = df[metric].mean()
                 #print(letter)
@@ -444,184 +352,14 @@ def get_best_weighted_mean_per_scheme(phase, prediction=False):
         #print(final_df.head())
 
     final_df = pd.DataFrame(final_dict)
-    save_path = f"{phase}_analysis/mean_overall_weighted_models.csv"
+    save_path = f"{phase}_analysis/AE_mean_overall_weighted_models.csv"
     final_df.to_csv(save_path)
 
     #For each separation scheme
 
+phase = "16"
+total_outputs = 209 
 
-
-
-
-def get_more_useful_slate_info(phase, prediction=False):
-    #Letters
-    separate_letters = ['D', 'I']
-    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
-    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
-    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
-    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
-    final_df = pd.DataFrame()
-    if prediction:
-        metric = "weighted_metric"
-    else:
-        metric = "weighted_metric"
-
-    for scheme_letters in separation_schemes:
-        min_val = None
-        min_row = pd.DataFrame()
-        scheme_letter_dict = {"letter": [], "mean metric base 8": [], "mean metric base 32": [], "mean metric base 64": []}
-        for letter in scheme_letters:
-            #Try to load it in 
-            try:
-                #print(letter)
-                df_path = f"{phase}_analysis/combo_models/{letter}_combos_weighted.csv"
-                df = pd.read_csv(df_path)
-                df_row_min = df[df[metric] == df[metric].min()]
-                df_row_max = df[df[metric] == df[metric].max()]
-                df_mean = df[metric].mean()
-                if not math.isnan(df_mean):
-                    df_row_min = df_row_min.assign(mean_metric=df_mean)
-                    df_row_max = df_row_max.assign(mean_metric=df_mean)
-                    df_row_min = df_row_min.assign(min_or_max="Min")
-                    df_row_max = df_row_max.assign(min_or_max="Max")
-                    add_rows = pd.concat([df_row_min, df_row_max])
-                    if final_df.empty:
-                        final_df = add_rows
-                    else:
-                        final_df = pd.concat([final_df, add_rows])  
-            except Exception as e:
-                print(f"Could not load {phase} {letter} because {e}")
-       
-        #print(final_df.head())
-
-    
-    save_path = f"{phase}_analysis/slate_metrics.csv"
-    final_df.to_csv(save_path)
-
-    #For each separation scheme
-    
-
-
-
-
-
-def get_model_arch_comparison(phase, prediction=False):
-    #Letters
-    separate_letters = ['D', 'I']
-    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
-    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
-    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
-    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
-    if prediction:
-        metric = "f1"
-    else:
-        metric = "mse"
-    scheme_letter_dict = {"letter": [], "mean base 8": [], "mean base 32": [], "mean base 64": []}
-    for scheme_letters in separation_schemes:
-        min_val = None
-        min_row = pd.DataFrame()
-        for letter in scheme_letters:
-            #Try to load it in 
-            try:
-                #print(letter)
-                df_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
-                if prediction:
-                    cols = col_names["prediction"]
-                    df = pd.read_csv(df_path)
-                else:
-                    cols = col_names["lstm"]
-                    df = pd.read_csv(df_path, names=cols)
-                exp_8_name = f"{phase}_{letter}_exp8"
-                exp_32_name = f"{phase}_{letter}_exp32"
-                exp_64_name = f"{phase}_{letter}_exp64"
-
-                #Group by experiment name and get the mean metric 
-                df_8 = df[df["experiment_name"] == exp_8_name]
-                df_8_mean = df_8[metric].mean()
-
-                df_32 = df[df["experiment_name"] == exp_32_name]
-                df_32_mean = df_32[metric].mean()
-
-                df_64 = df[df["experiment_name"] == exp_64_name]
-                df_64_mean = df_64[metric].mean()
-
-                if not math.isnan(df_8_mean):
-                    scheme_letter_dict["letter"].append(letter)
-                    scheme_letter_dict["mean base 8"].append(df_8_mean)
-                    scheme_letter_dict["mean base 32"].append(df_32_mean)
-                    scheme_letter_dict["mean base 64"].append(df_64_mean)
-
-            except Exception as e:
-                print(f"Could not load {phase} {letter} because {e}")
-       
-    final_df = pd.DataFrame(scheme_letter_dict)
-    save_path = f"{phase}_analysis/compare_by_nodes.csv"
-    final_df.to_csv(save_path)
-
-
-
-
-def compare_stdev(phase, prediction=False):
-    #Letters
-    separate_letters = ['D', 'I']
-    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
-    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
-    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
-    separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
-    if prediction:
-        metric = "f1"
-    else:
-        metric = "mse"
-    scheme_letter_dict = {"letter": [], "stdev base 8": [], "stdev base 32": [], "stdev base 64": []}
-    for scheme_letters in separation_schemes:
-        min_val = None
-        min_row = pd.DataFrame()
-        for letter in scheme_letters:
-            #Try to load it in 
-            try:
-                #print(letter)
-                df_path = f"main_metrics/phase_{phase}/{phase}_{letter}main_metrics.csv"
-                if prediction:
-                    cols = col_names["prediction"]
-                    df = pd.read_csv(df_path)
-                else:
-                    cols = col_names["lstm"]
-                    df = pd.read_csv(df_path, names=cols)
-                exp_8_name = f"{phase}_{letter}_exp8"
-                exp_32_name = f"{phase}_{letter}_exp32"
-                exp_64_name = f"{phase}_{letter}_exp64"
-
-                #Group by experiment name and get the mean metric 
-                df_8 = df[df["experiment_name"] == exp_8_name]
-                df_8_mean = df_8[metric].std()
-
-                df_32 = df[df["experiment_name"] == exp_32_name]
-                df_32_mean = df_32[metric].std()
-
-                df_64 = df[df["experiment_name"] == exp_64_name]
-                df_64_mean = df_64[metric].std()
-
-                if not math.isnan(df_8_mean):
-                    scheme_letter_dict["letter"].append(letter)
-                    scheme_letter_dict["stdev base 8"].append(df_8_mean)
-                    scheme_letter_dict["stdev base 32"].append(df_32_mean)
-                    scheme_letter_dict["stdev base 64"].append(df_64_mean)
-
-            except Exception as e:
-                print(f"Could not load {phase} {letter} because {e}")
-       
-    final_df = pd.DataFrame(scheme_letter_dict)
-    save_path = f"{phase}_analysis/compare_by_stdev.csv"
-    final_df.to_csv(save_path)
-
-
-# phase = "25"
-# total_outputs = 15
-# prediction = True
-# get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
-# get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
-# get_best_weighted_mean_per_scheme(phase, prediction=prediction)
-# get_model_arch_comparison(phase, prediction=prediction)
-# get_more_useful_slate_info(phase, prediction=prediction)
-# compare_stdev(phase, prediction=prediction)
-
+get_best_weighted_model_per_organization(phase, total_outputs, prediction=False)
+#get_best_weighted_model_per_slate_per_scheme(phase, prediction=False)
+#get_best_weighted_mean_per_scheme(phase, prediction=False)
