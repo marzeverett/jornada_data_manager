@@ -42,6 +42,8 @@ col_names =  [
     #Need for each dataset descriptor
     #going to look like {experiment_name}/{dataset_name}/dataset_result.pkl
 
+ae_letters = ['H', 'E', 'Z', 'L', 'U', 'S', 'X', 'AC']
+
 
 def get_inputs_outputs(phase, letter, phase_path):
     #dataset_base_path = "generated_files/datasets/"
@@ -63,6 +65,8 @@ def get_inputs_outputs(phase, letter, phase_path):
             dataset = dataset_descriptors[i]
             dataset_name = dataset["dataset_name"]
             experiment_name = f'{phase}_{letter}_exp8'
+            if letter in ae_letters:
+                experiment_name = f'{phase}_{letter}_exp0.7'
             path = experiment_base_path + experiment_name + "/" + dataset_name +"/dataset_result.pickle"
             #Load in dataset result 
             with open(path, "rb") as f:
@@ -89,8 +93,8 @@ def get_inputs_outputs(phase, letter, phase_path):
 
 def get_all_phases():
     #phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-    phases = ["20"]
-    letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
+    phases = ["16", "17", "18", "19", "20", "21", "22", "23", "24", "25"]
+    letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI', 'H', 'E', 'Z', 'L', 'U', 'S', 'X', 'AC']
 
     for phase in phases:
         for letter in letters:
@@ -123,27 +127,27 @@ def make_aggregate_csv():
     merged_df.to_csv("inputs_outputs/full_inputs_outputs.csv")
 
 
-def make_aggregate_aes():
-    phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "17", "18", "19", "22", "23", "24", "25", "20"]
-    #letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
-    letters = ['E','H', 'L', 'S', 'U', 'X', 'Z', 'AC']
-    merged_df = pd.DataFrame()
-    for phase in phases:
-        for letter in letters:
-            try:
-                phase_path = f"inputs_outputs/{phase}_{letter}inputs_outputs.csv"
-                new_df = pd.read_csv(phase_path)
-                if not merged_df.empty:
-                    merged_df = pd.concat([merged_df, new_df], axis=0)
-                else:
-                    merged_df = new_df
-            except Exception as e:
-                print(f"Couldn't for {phase} and {letter}")
-                print(e)
-    merged_df.to_csv("inputs_outputs/full_inputs_outputs_ae.csv")
+# def make_aggregate_aes():
+#     phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "17", "18", "19", "22", "23", "24", "25", "20"]
+#     #letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
+#     letters = ['E','H', 'L', 'S', 'U', 'X', 'Z', 'AC']
+#     merged_df = pd.DataFrame()
+#     for phase in phases:
+#         for letter in letters:
+#             try:
+#                 phase_path = f"inputs_outputs/{phase}_{letter}inputs_outputs.csv"
+#                 new_df = pd.read_csv(phase_path)
+#                 if not merged_df.empty:
+#                     merged_df = pd.concat([merged_df, new_df], axis=0)
+#                 else:
+#                     merged_df = new_df
+#             except Exception as e:
+#                 print(f"Couldn't for {phase} and {letter}")
+#                 print(e)
+#     merged_df.to_csv("inputs_outputs/full_inputs_outputs_ae.csv")
     
 #Need to do a function call 
-#get_all_phases()
+get_all_phases()
 
 #media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager
 #/dataset_generator/generated_files/datasets/

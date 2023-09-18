@@ -286,10 +286,11 @@ def get_best_weighted_model_per_slate_per_scheme(phase, prediction=False):
 #Get lowest or highest mean per scheme
 def get_best_weighted_mean_per_scheme(phase, prediction=False):
     #Letters
-    separate_letters = ['D', 'I']
-    separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
-    all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
-    all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
+    separate_letters = ['H']
+    separate_datastreams_all_locations = ["E", "Z"]
+    all_datastreams_separate_locations = ["L", "U"]
+    all_datastreams_all_locations = ["S", "X", "AC"]
+    
     separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
 
     final_dict = {"letters": [], "metric": []}
