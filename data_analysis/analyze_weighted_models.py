@@ -244,7 +244,7 @@ def load_and_weight(phase, letter, curr_sep_dict, curr_sep_kind, input_var, outp
         curr_sep_dict["experiment_name"].append(exp_name)
         curr_sep_dict["weighted_metric"].append(weighted_mse)
     except Exception as e:
-      print(f"Issue with letter {letter} {input_var} {output_var} {exp_var}: {e}")
+        print(f"Issue with letter {letter} {input_var} {output_var} {exp_var}: {e}")
 
     
 
@@ -284,7 +284,8 @@ def get_best_weighted_model_per_organization(phase, total_outputs, prediction=Fa
     separate_datastreams_all_locations = ["C", "F", "Q", "AA", "AI"]
     all_datastreams_separate_locations = ["B", "J", "M", "V", "AF"]
     all_datastreams_all_locations = ["A", "G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
-
+    #CHANGE
+    all_datastreams_all_locations = ["G", "N", "T", "W", "Y", "AB", "AD", "AG", "AJ"]
 
     #Alltogether now 
     #separation_schemes = [separate_letters, separate_datastreams_all_locations, all_datastreams_separate_locations, all_datastreams_all_locations]
@@ -615,9 +616,9 @@ def compare_stdev(phase, prediction=False):
     final_df.to_csv(save_path)
 
 
-# phase = "20"
-# total_outputs = 209
-# prediction = False
+# phase = "21"
+# total_outputs = 15
+# prediction = True
 # get_best_weighted_model_per_organization(phase, total_outputs, prediction=prediction)
 # get_best_weighted_model_per_slate_per_scheme(phase, prediction=prediction)
 # get_best_weighted_mean_per_scheme(phase, prediction=prediction)

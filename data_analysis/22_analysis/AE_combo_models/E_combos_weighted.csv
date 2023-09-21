@@ -1,0 +1,5 @@
+letter,input_days,output_days,experiment_name,weighted_metric
+E,30,1,22_E_exp0.7,0.005442281870930573
+E,30,7,22_E_exp0.7,0.015528676636172693
+E,60,1,22_E_exp0.7,0.019197568480813672
+E,60,7,22_E_exp0.7,0.011877692266887821

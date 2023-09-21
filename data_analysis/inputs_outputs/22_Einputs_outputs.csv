@@ -1,0 +1,13 @@
+,dataset_name,input_size,output_size
+0,22_E.v1.l0.ds1.l_combo0.ds_combo2.idays30.odays1,15,15
+1,22_E.v1.l0.ds1.l_combo0.ds_combo2.idays30.odays7,15,15
+2,22_E.v1.l0.ds1.l_combo0.ds_combo2.idays60.odays1,15,15
+3,22_E.v1.l0.ds1.l_combo0.ds_combo2.idays60.odays7,15,15
+4,22_E.v1.l0.ds1.l_combo0.ds_combo3.idays30.odays1,76,76
+5,22_E.v1.l0.ds1.l_combo0.ds_combo3.idays30.odays7,76,76
+6,22_E.v1.l0.ds1.l_combo0.ds_combo3.idays60.odays1,76,76
+7,22_E.v1.l0.ds1.l_combo0.ds_combo3.idays60.odays7,76,76
+8,22_E.v1.l0.ds1.l_combo0.ds_combo4.idays30.odays1,28,28
+9,22_E.v1.l0.ds1.l_combo0.ds_combo4.idays30.odays7,28,28
+10,22_E.v1.l0.ds1.l_combo0.ds_combo4.idays60.odays1,28,28
+11,22_E.v1.l0.ds1.l_combo0.ds_combo4.idays60.odays7,28,28

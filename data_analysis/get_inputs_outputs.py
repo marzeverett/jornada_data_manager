@@ -105,10 +105,10 @@ def get_all_phases():
                 print(f"Couldn't for {phase} and {letter}")
                 print(e)
 #Get all phases
-get_all_phases()
+#get_all_phases()
 
 def make_aggregate_csv():
-    phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "17", "18", "19", "22", "23", "24", "25", "20"]
+    phases = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "17", "18", "19", "22", "23", "24", "25", "20", "21"]
     #letters = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'M', 'N', 'Q', 'T', 'V', 'W', 'Y', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
     letters = ['A', 'B', 'C', 'D', 'E', 'F', 'H', 'G', 'I', 'J', 'L', 'M', 'N', 'Q', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AF', 'AG', 'AI']
     merged_df = pd.DataFrame()
@@ -147,7 +147,7 @@ def make_aggregate_csv():
 #     merged_df.to_csv("inputs_outputs/full_inputs_outputs_ae.csv")
     
 #Need to do a function call 
-get_all_phases()
+#get_all_phases()
 
 #media/maryeverett/Backup4.0TB/Backup_8_16_23/jornada_data_manager
 #/dataset_generator/generated_files/datasets/

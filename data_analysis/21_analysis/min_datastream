@@ -1,0 +1,5 @@
+ds_index,model_name,dataset_name,max_f1,input_size,output_size
+1,21_AA_exp64,21_AA.v1.l0.ds1.l_combo0.ds_combo1.idays60.odays1,0.843281532932717,75,15
+2,21_F_exp32,21_F.v1.l0.ds1.l_combo0.ds_combo2.idays60.odays7,0.169530822483701,11,15
+3,21_Q_exp8,21_Q.v1.l0.ds1.l_combo0.ds_combo3.idays60.odays7,0.7807686266985024,64,15
+4,21_Q_exp64,21_Q.v1.l0.ds1.l_combo0.ds_combo4.idays60.odays7,0.7665161343096225,28,15
